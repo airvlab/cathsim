@@ -19,7 +19,7 @@
 
 ## Installation
 
-1. If using a `conda environment`:
+1. Create a `conda environment`:
 
 ```bash
 conda create -n cathsim python=3.9
