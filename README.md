@@ -1,8 +1,23 @@
-# CathSim
+# CathSim: An Open-source Simulator for Endovascular Intervention
+### *[Tudor Jianu](https://tudorjnu.github.io/), [Baoru Huang](https://baoru.netlify.app), Mohamed E. M. K. Abdelaziz, Minh Nhat Vu, Sebastiano Fichera, Chun-Yi Lee, Pierre Berthet-Rayne, Ferdinando Rodriguez y Baena, [Anh Nguyen](https://cgi.csc.liv.ac.uk/~anguyen/)*
+### [[Project Page](https://robotvision-ai.github.io/cathsim/)] [[Paper](https://arxiv.org/abs/2208.01455)]
+
 
 ![CathSim](./cathsim.png)
 
-## Installation Procedure
+## Contents
+1. [Requirements](#requirements)
+2. [Installation](#installation)
+3. [Quickstart](#quickstart)
+4. [Training](#training)
+
+
+## Requirements
+1. Add enviromnent Requirements (Ubuntu, etc.)
+2. Any other Requirements
+
+
+## Installation
 
 1. If using a `conda environment`:
 
@@ -58,3 +73,6 @@ In order to train the modells available run:
 ```bash
 bash ./scripts/train.sh
 ```
+
+## License
+Creative Commons
