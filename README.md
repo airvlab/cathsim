@@ -1,5 +1,5 @@
 # CathSim: An Open-source Simulator for Endovascular Intervention
-### *[Tudor Jianu](https://tudorjnu.github.io/), [Baoru Huang](https://baoru.netlify.app), Mohamed E. M. K. Abdelaziz, Minh Nhat Vu, Sebastiano Fichera, Chun-Yi Lee, Pierre Berthet-Rayne, Ferdinando Rodriguez y Baena, [Anh Nguyen](https://cgi.csc.liv.ac.uk/~anguyen/)*
+### *[Tudor Jianu](https://tudorjnu.github.io/), [Baoru Huang](https://baoru.netlify.app), [Mohamed E. M. K. Abdelaziz](https://memkabdelaziz.com/), [Minh Nhat Vu](https://www.acin.tuwien.ac.at/staff/mnv/), [Sebastiano Fichera](https://www.liverpool.ac.uk/engineering/staff/sebastiano-fichera/), [Chun-Yi Lee](https://elsalab.ai/about), Pierre Berthet-Rayne, [Ferdinando Rodriguez y Baena](https://www.imperial.ac.uk/people/f.rodriguez), [Anh Nguyen](https://cgi.csc.liv.ac.uk/~anguyen/)*
 ### [[Project Page](https://robotvision-ai.github.io/cathsim/)] [[Paper](https://arxiv.org/abs/2208.01455)]
 
 
