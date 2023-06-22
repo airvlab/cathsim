@@ -1,0 +1,16 @@
+---
+task_kwargs:
+  use_pixels: True
+  use_segment: True
+
+wrapper_kwargs:
+  use_obs:
+    - 'pixels'
+    - 'guidewire'
+    - 'joint_pos'
+    - 'joint_vel'
+
+
+
+
+

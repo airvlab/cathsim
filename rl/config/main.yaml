@@ -1,0 +1,25 @@
+---
+train_kwargs:
+  algo: sac
+  n_runs: 2
+  device: cuda
+  time_steps: 600_000
+  evaluate: False
+  n_envs: null
+
+task_kwargs:
+  image_size: 80
+
+wrapper_kwargs:
+  time_limit: 300
+  grayscale: True
+  channel_first: False
+
+env_kwargs:
+  gym_version: 'gym'
+
+algo_kwargs:
+  policy: MultiInputPolicy
+  policy_kwargs:
+    features_extractor_class: CustomExtractor
+  replay_buffer_class: None
