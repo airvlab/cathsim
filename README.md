@@ -76,14 +76,16 @@ bash ./scripts/train.sh
 ## Contributors
 - [Tudor Jianu](https://tudorjnu.github.io/)
 - [Baoru Huang](https://baoru.netlify.app)
+- Jingxuan Kang
 - [Mohamed E. M. K. Abdelaziz](https://memkabdelaziz.com/)
 - [Minh Nhat Vu](https://www.acin.tuwien.ac.at/staff/mnv/)
 - [Sebastiano Fichera](https://www.liverpool.ac.uk/engineering/staff/sebastiano-fichera/)
 - [Chun-Yi Lee](https://elsalab.ai/about)
+- [Olatunji Mumini Omisore](https://sites.google.com/view/moom1)
 - [Pierre Berthet-Rayne](https://caranx-medical.com/pierre-berthet-rayne-phd-ing/)
 - [Ferdinando Rodriguez y Baena](https://www.imperial.ac.uk/people/f.rodriguez)
 - [Anh Nguyen](https://cgi.csc.liv.ac.uk/~anguyen/)
 
 
 ## License
-Creative Commons
+Please feel free to copy, distribute, display, perform or remix our work but for non-commercial porposes only.
