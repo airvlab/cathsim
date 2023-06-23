@@ -12,8 +12,8 @@
 
 
 ## Requirements
-1. Add enviromnent Requirements (Ubuntu, etc.)
-2. Any other Requirements
+1. Ubuntu based system
+2. Conda
 
 
 ## Installation
@@ -28,7 +28,7 @@ conda activate cathsim
 2. Install the environment:
 
 ```bash
-git clone -b git@github.com:cathsim/cathsim.github.io.git
+git clone git@github.com:robotvision-ai/cathsim
 cd cathsim
 pip install -e .
 ```
