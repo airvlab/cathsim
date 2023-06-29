@@ -1,23 +1,8 @@
 from setuptools import setup, find_packages
 
 extra_dev = [
-    'opencv-python',
-    'matplotlib',
     'pytest',
 ]
-
-extra_rl = [
-    'torch',
-    'stable-baselines3==1.8.0',
-    'imitation',
-    'tqdm',
-    'rich',
-    'mergedeep',
-    'progressbar2',
-    'progress',
-]
-
-extra = extra_dev + extra_rl
 
 
 setup(
@@ -33,15 +18,26 @@ setup(
             'rl',
         ]
     ),
+    setup_requires=[
+        "setuptools==58.0.0",
+    ],
     install_requires=[
         'gym==0.21.*',
         'dm-control',
         'pyyaml',
+        'opencv-python',
+        'matplotlib',
+        'stable-baselines3==1.8.0',
+        'torch',
+        'imitation',
+        'tqdm',
+        'rich',
+        'mergedeep',
+        'progressbar2',
+        'progress',
     ],
     extras_require={
         'dev': extra_dev,
-        'rl': extra_rl,
-        'all': extra,
     },
     entry_points={
         'console_scripts': [
