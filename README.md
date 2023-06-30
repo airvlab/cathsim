@@ -77,6 +77,7 @@ bash ./scripts/train.sh
 - [Tudor Jianu](https://tudorjnu.github.io/)
 - [Baoru Huang](https://baoru.netlify.app)
 - Jingxuan Kang
+- Tuan Van Vo
 - [Mohamed E. M. K. Abdelaziz](https://memkabdelaziz.com/)
 - [Minh Nhat Vu](https://www.acin.tuwien.ac.at/staff/mnv/)
 - [Sebastiano Fichera](https://www.liverpool.ac.uk/engineering/staff/sebastiano-fichera/)
