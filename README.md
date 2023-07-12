@@ -7,21 +7,71 @@
 ## Contents
 1. [Requirements](#requirements)
 2. [Installation](#installation)
+3. [Quickstart](#quickstart)
+4. [Training](#training)
 
 
 ## Requirements
-1. Unity Hub
+1. Ubuntu based system
+2. Conda
 
 
 ## Installation
 
-1. Install the Unity Hub
-2. Import the project package "Unity_VR_Aorta_Guidewires" into Unity, then Run it
+1. Create a `conda environment`:
 
-## Demo
-![ai-vr](./Aorta_VR_Guidewires_operation_unity.png)
+```bash
+conda create -n cathsim python=3.9
+conda activate cathsim
+```
 
-![ai-vr1](./Aorta_VR_Operation_Guidewires_unity_surgical_room.png)
+2. Install the environment:
+
+```bash
+git clone git@github.com:robotvision-ai/cathsim
+cd cathsim
+pip install -e .
+```
+
+## Quickstart
+
+A quick way to have the enviromnent run with gym is to make use of the `make_dm_env` function and then wrap the resulting environment into a `DMEnvToGymWrapper` resulting in a `gym.Env`.
+
+```python
+from cathsim.cathsim.env_utils import make_dm_env
+from cathsim.wrappers.wrappers import DMEnvToGymWrapper
+
+env = make_dm_env(
+    dense_reward=True,
+    success_reward=10.0,
+    delta=0.004,
+    use_pixels=False,
+    use_segment=False,
+    image_size=64,
+    phantom='phantom3',
+    target='bca',
+)
+
+env = DMEnvToGymWrapper(env)
+
+obs = env.reset()
+for _ in range(1):
+    action = env.action_space.sample()
+    obs, reward, done, info = env.step(action)
+    for obs_key in obs:
+        print(obs_key, obs[obs_key].shape)
+    print(reward)
+    print(done)
+    for info_key in info:
+        print(info_key, info[info_key])
+```
+
+## Training 
+
+In order to train the modells available run:
+```bash
+bash ./scripts/train.sh
+```
 
 ## Contributors
 - [Tudor Jianu](https://tudorjnu.github.io/)
