@@ -13,3 +13,9 @@ WARNING: Too many contacts. Either the arena memory is full, or nconmax is speci
 Wed Jul 12 10:57:51 2023
 WARNING: Too many contacts. Either the arena memory is full, or nconmax is specified and is exceeded. Increase arena memory allocation, or increase/remove nconmax. (ncon = 6000) Time = 0.4500.
 
+Wed Jul 12 11:35:21 2023
+WARNING: Too many contacts. Either the arena memory is full, or nconmax is specified and is exceeded. Increase arena memory allocation, or increase/remove nconmax. (ncon = 6000) Time = 0.4500.
+
+Wed Jul 12 11:35:30 2023
+WARNING: Too many contacts. Either the arena memory is full, or nconmax is specified and is exceeded. Increase arena memory allocation, or increase/remove nconmax. (ncon = 6000) Time = 0.4500.
+

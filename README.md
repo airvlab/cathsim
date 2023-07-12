@@ -44,12 +44,13 @@ run_env_with_blood()
 
 
 ```
+![blood](./the_blood_aorta_in_cathsim.png)
 
-## Training 
 
-In order to train the modells available run:
+
+In order to test the only the blood in Aorta on Mujuco modells available run:
 ```bash
-bash ./scripts/train.sh
+python ./scripts/run_blood_in_Aorta.py
 ```
 
 ## Contributors
