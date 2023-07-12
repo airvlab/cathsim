@@ -48,7 +48,7 @@ run_env_with_blood()
 
 
 
-In order to test only the blood in Aorta on Mujuco models available run:
+In order to test only the Fluid in Aorta on Mujuco models available run:
 ```bash
 python ./scripts/run_fluid.py 
 ```
