@@ -1,5 +1,5 @@
 # CathSim: An Open-source Simulator for Endovascular Intervention
-### [[Project Page](https://robotvision-ai.github.io/cathsim/)] [[Paper](https://arxiv.org/abs/2208.01455)]
+### [[Project Page](https://RobotVisionAI.github.io/cathsim/)] [[Paper](https://arxiv.org/abs/2208.01455)]
 
 
 ![CathSim](./cathsim.png)
@@ -12,8 +12,8 @@
 
 
 ## Requirements
-1. Add enviromnent Requirements (Ubuntu, etc.)
-2. Any other Requirements
+1. Ubuntu based system
+2. Conda
 
 
 ## Installation
@@ -28,7 +28,7 @@ conda activate cathsim
 2. Install the environment:
 
 ```bash
-git clone -b git@github.com:cathsim/cathsim.github.io.git
+git clone git@github.com:robotvision-ai/cathsim
 cd cathsim
 pip install -e .
 ```
@@ -76,14 +76,17 @@ bash ./scripts/train.sh
 ## Contributors
 - [Tudor Jianu](https://tudorjnu.github.io/)
 - [Baoru Huang](https://baoru.netlify.app)
+- Jingxuan Kang
+- Tuan Van Vo
 - [Mohamed E. M. K. Abdelaziz](https://memkabdelaziz.com/)
 - [Minh Nhat Vu](https://www.acin.tuwien.ac.at/staff/mnv/)
 - [Sebastiano Fichera](https://www.liverpool.ac.uk/engineering/staff/sebastiano-fichera/)
 - [Chun-Yi Lee](https://elsalab.ai/about)
+- [Olatunji Mumini Omisore](https://sites.google.com/view/moom1)
 - [Pierre Berthet-Rayne](https://caranx-medical.com/pierre-berthet-rayne-phd-ing/)
 - [Ferdinando Rodriguez y Baena](https://www.imperial.ac.uk/people/f.rodriguez)
 - [Anh Nguyen](https://cgi.csc.liv.ac.uk/~anguyen/)
 
 
 ## License
-Creative Commons
+Please feel free to copy, distribute, display, perform or remix our work but for non-commercial porposes only.

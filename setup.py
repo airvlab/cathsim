@@ -1,61 +1,50 @@
 from setuptools import setup, find_packages
 
 extra_dev = [
-    'pytest',
+    "pytest",
 ]
-
-extra_utils = [
-    'rich',
-    'progressbar2',
-    'progress',
-    'tqdm',
-    'opencv-python',
-    'matplotlib',
-    'seaborn',
-]
-
-extra_rl = [
-    'imitation',
-    'stable-baselines3==1.8.0',
-    'torch',
-]
-
-extra = extra_dev + extra_rl
-
 
 setup(
-    name='cathsim',
-    version='0.1.dev1',
-    url='cathsim.github.io',
-    author='Tudor Jianu',
-    author_email='tudorjnu@gmail.com',
+    name="cathsim",
+    version="0.1.dev1",
+    url="cathsim.github.io",
+    author="Tudor Jianu",
+    author_email="tudorjnu@gmail.com",
     packages=find_packages(
-        where='src',
+        where="src",
         include=[
-            'cathsim',
-            'rl',
-            'human',
-            'evaluation',
-        ]
+            "cathsim",
+            "rl",
+            "human",
+            "evaluation",
+        ],
     ),
+    setup_requires=[
+        "setuptools==58.0.0",
+    ],
     install_requires=[
-        'gym==0.21.*',
-        'dm-control',
-        'pyyaml',
-        'mergedeep',
-        *extra_rl,
-        *extra_utils,
+        "gym==0.21.*",
+        "dm-control",
+        "pyyaml",
+        "opencv-python",
+        "matplotlib",
+        "stable-baselines3==1.8.0",
+        "torch",
+        "imitation",
+        "tqdm",
+        "rich",
+        "mergedeep",
+        "progressbar2",
+        "progress",
     ],
     extras_require={
-        'dev': extra_dev,
-        'rl': extra_rl,
-        'all': extra,
+        "dev": extra_dev,
     },
     entry_points={
-        'console_scripts': [
-            'run_env=cathsim.cathsim.env:run_env',
-            'record_traj=human.utils:cmd_record_traj',
-            'visualize_agent=rl.utils:cmd_visualize_agent',
+        "console_scripts": [
+            "run_env=cathsim.cathsim.env:run_env",
+            "record_traj=human.utils:cmd_record_traj",
+            "visualize_agent=rl.utils:cmd_visualize_agent",
         ],
     },
 )
