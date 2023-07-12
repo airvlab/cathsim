@@ -7,8 +7,6 @@
 ## Contents
 1. [Requirements](#requirements)
 2. [Installation](#installation)
-3. [Quickstart](#quickstart)
-4. [Training](#training)
 
 
 ## Requirements
@@ -18,7 +16,7 @@
 ## Installation
 
 1. Install the Unity Hub
-2. Import the project package into Unity, then Run it
+2. Import the project package "Unity_VR_Aorta_Guidewires" into Unity, then Run it
 
 ## Demo
 ![ai-vr](./Aorta_VR_Guidewires_operation_unity.png)
