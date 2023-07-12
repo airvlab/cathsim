@@ -34,7 +34,7 @@ pip install -e .
 
 ## Quickstart
 
-A quick way to run the simulation blood within the cathsim environment.
+A quick way to run the simulation the fluid within the cathsim environment.
 
 ```python
 from cathsim.cathsim.env import run_env_fluid
@@ -43,7 +43,7 @@ run_env_fluid()
 
 
 ```
-![blood](./the_blood_aorta_in_cathsim.png)
+![blood](./fluid_cathsim.png)
 
 
 
@@ -53,7 +53,7 @@ In order to test only the Fluid in Aorta on Mujuco models available run:
 python ./scripts/run_fluid.py 
 ```
 
-![blood_mujoco](./blood_aorta_mujoco.png)
+![blood_mujoco](./fluid_mujoco.png)
 
 ## Contributors
 - [Tudor Jianu](https://tudorjnu.github.io/)
