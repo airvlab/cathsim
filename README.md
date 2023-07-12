@@ -16,7 +16,7 @@
 ## Installation
 
 1. Install the Unity Hub
-2. Import the project package "Unity_VR_Aorta_Guidewires" into Unity, then Run it
+2. Import the project package "unity_ar_vr_cathsim" into Unity, then Run it
 
 ## Demo
 ![ai-vr](./ar_vr_unity_cathsim.png)
