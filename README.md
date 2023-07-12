@@ -48,10 +48,13 @@ run_env_with_blood()
 
 
 
+
 In order to test the only the blood in Aorta on Mujuco modells available run:
 ```bash
 python ./scripts/run_blood_in_Aorta.py
 ```
+
+![blood_mujoco](./blood_aorta_mujoco.png)
 
 ## Contributors
 - [Tudor Jianu](https://tudorjnu.github.io/)
