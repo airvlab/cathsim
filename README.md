@@ -49,7 +49,7 @@ run_env_with_blood()
 
 
 
-In order to test the only the blood in Aorta on Mujuco modells available run:
+In order to test only the blood in Aorta on Mujuco models available run:
 ```bash
 python ./scripts/run_blood_in_Aorta.py
 ```
