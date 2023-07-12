@@ -19,9 +19,9 @@
 2. Import the project package "Unity_VR_Aorta_Guidewires" into Unity, then Run it
 
 ## Demo
-![ai-vr](./Aorta_VR_Guidewires_operation_unity.png)
+![ai-vr](./ar_vr_unity_cathsim.png)
 
-![ai-vr1](./Aorta_VR_Operation_Guidewires_unity_surgical_room.png)
+![ai-vr1](./ar_vr_unity_cathsim_1.png)
 
 ## Contributors
 - [Tudor Jianu](https://tudorjnu.github.io/)
