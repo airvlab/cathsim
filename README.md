@@ -8,7 +8,6 @@
 1. [Requirements](#requirements)
 2. [Installation](#installation)
 3. [Quickstart](#quickstart)
-4. [Training](#training)
 
 
 ## Requirements
