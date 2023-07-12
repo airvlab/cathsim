@@ -12,7 +12,7 @@ from dm_control import composer
 from dm_control.composer import variation
 from dm_control.composer.variation import distributions, noises
 from dm_control.composer.observation import observable
-from cathsim.cathsim.phantom import Phantom, PhantomwithBlood
+from cathsim.cathsim.phantom import Phantom, PhantomFluid
 from cathsim.cathsim.common import point2pixel
 from cathsim.cathsim.env_utils import distance
 from cathsim.cathsim.guidewire import Guidewire, Tip
@@ -21,7 +21,7 @@ from cathsim.cathsim.observables import CameraObservable
 with open(Path(__file__).parent / 'env_config.yaml', 'r') as f:
     env_config = yaml.safe_load(f)
 
-with open(Path(__file__).parent / 'env_config_blood.yaml', 'r') as f:
+with open(Path(__file__).parent / 'env_config_fluid.yaml', 'r') as f:
     env_config_blood = yaml.safe_load(f)
 
 option = env_config['option']
@@ -129,7 +129,7 @@ class Scene(composer.Arena):
         site = self._mjcf_root.worldbody.add('site', name=name, pos=pos)
         return site
 
-class ScenewithBlood(composer.Arena):
+class SceneFluid(composer.Arena):
 
     def _build(self,
                name: str = 'arena',
@@ -416,7 +416,7 @@ class Navigate(composer.Task):
         return target
     
 
-class NavigatewithBlood(composer.Task):
+class NavigateFluid(composer.Task):
 
     def __init__(self,
                  phantom: composer.Entity = None,
@@ -444,7 +444,7 @@ class NavigatewithBlood(composer.Task):
         self.sample_target = sample_target
         self.visualize_sites = visualize_sites
 
-        self._arena = ScenewithBlood("arena")
+        self._arena = SceneFluid("arena")
         if phantom is not None:
             self._phantom = phantom
             self._arena.attach(self._phantom)
@@ -689,23 +689,23 @@ def run_env(args=None):
         launch(env, policy=random_policy)
 
 
-def run_env_with_blood(args=None):
+def run_env_fluid(args=None):
     from argparse import ArgumentParser
     from dm_control.viewer import launch
 
     parser = ArgumentParser()
     parser.add_argument('--interact', type=bool, default=True)
-    parser.add_argument('--phantom', default='phantom3_blood', type=str)
+    parser.add_argument('--phantom', default='phantom3_fluid_cathsim', type=str)
     parser.add_argument('--target', default='bca', type=str)
 
     parsed_args = parser.parse_args(args)
 
-    phantom = PhantomwithBlood(parsed_args.phantom + '.xml')
+    phantom = PhantomFluid(parsed_args.phantom + '.xml')
 
     tip = Tip()
     guidewire = Guidewire()
 
-    task = NavigatewithBlood(
+    task = NavigateFluid(
         phantom=phantom,
         guidewire=guidewire,
         tip=tip,

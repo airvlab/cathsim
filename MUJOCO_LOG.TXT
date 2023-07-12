@@ -1,3 +1,0 @@
-Wed Jul 12 11:39:52 2023
-WARNING: Too many contacts. Either the arena memory is full, or nconmax is specified and is exceeded. Increase arena memory allocation, or increase/remove nconmax. (ncon = 6000) Time = 0.4500.
-

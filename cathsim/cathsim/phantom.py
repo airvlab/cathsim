@@ -66,8 +66,8 @@ class Phantom(composer.Entity):
     def mjcf_model(self):
         return self._mjcf_root
 
-class PhantomwithBlood(composer.Entity):
-    def _build(self, phantom_xml: str = 'phantom3_blood.xml', assets_dir: Path = None, **kwargs):
+class PhantomFluid(composer.Entity):
+    def _build(self, phantom_xml: str = 'phantom3_fluid_cathsim.xml', assets_dir: Path = None, **kwargs):
         self.rgba = phantom_config['rgba']
         self.scale = [phantom_config['scale'] for i in range(3)]
 
