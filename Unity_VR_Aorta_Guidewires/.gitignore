@@ -1,0 +1,20 @@
+# Unity
+/Library
+/Logs
+/Recordings
+/Temp
+
+# Visual Studio
+/.vs
+/*.csproj
+/*.sln
+/obj
+
+# Visual Studio Code
+/.vscode
+
+# Rider
+/.idea
+
+# Build
+/dist

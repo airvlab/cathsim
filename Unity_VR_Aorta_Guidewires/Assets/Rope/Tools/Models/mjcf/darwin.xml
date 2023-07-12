@@ -1,0 +1,216 @@
+<!-- ======================================================
+	This file is part of MuJoCo.     
+	Copyright 2009-2015 Roboti LLC.
+	
+	Model 		:: darwin
+		
+	Mujoco		:: Advanced physics simulation engine
+		Source		: www.roboti.us
+		Version		: 1.22
+		Released 	: 26Nov15
+		
+	Author		:: Vikash Kumar
+		Contacts 	: kumar@roboti.us
+		Last edits 	: 14Dec'15, 30Nov'15, 5Nov'15
+====================================================== -->
+<mujoco model="darwin v1.22">
+   <compiler angle="radian" inertiafromgeom="true" meshdir="../mesh/darwin/"/>
+   <size nconmax="100" njmax="500"/>
+   <default>
+      <geom material="MatFrame" margin='0.001' />
+      <joint limited='true' frictionloss="0.2" damping="0.05" armature="0.005" axis="0 0 1" pos="0 0 0"/>
+	  <position ctrllimited='true' kp='0.5'/>
+   </default>
+   <asset>
+		<mesh file="body_coll.stl"/>
+		<mesh file="neck_coll.stl"/>
+		<mesh file="head_coll.stl"/>
+		<mesh file="shoulder_l_coll.stl"/>
+		<mesh file="arm_high_l_coll.stl"/>
+		<mesh file="shoulder_r_coll.stl"/>
+		<mesh file="arm_high_r_coll.stl"/>
+		<mesh file="pelvis_l_coll.stl"/>
+		<mesh file="thigh1_l_coll.stl"/>
+		<mesh file="thigh2_l_coll.stl"/>
+		<mesh file="tibia_l_coll.stl"/>
+		<mesh file="ankle1_l_coll.stl"/>
+		<mesh file="ankle2_l_coll.stl"/>
+		<mesh file="pelvis_r_coll.stl"/>
+		<mesh file="thigh1_r_coll.stl"/>
+		<mesh file="thigh2_r_coll.stl"/>
+		<mesh file="tibia_r_coll.stl"/>
+		<mesh file="tibia_naked.stl" scale="0.001 0.001 0.001"/>
+		<mesh file="ankle1_r_coll.stl"/>
+		<mesh file="ankle2_r_coll.stl"/>
+		<mesh file="arm_metal_lowres.stl" scale="0.001 0.001 0.001"/>
+		
+		<texture type="skybox" builtin="gradient" rgb1="1 1 1" rgb2="0 0 0" width="100" height="100"/>
+		<texture name="groundplane" type="2d" builtin="checker" rgb1=".7 .7 .75" 
+			rgb2=".9 .9 .95" width="500" height="500" mark="edge" markrgb=".1 .1 .1"/>
+
+		<material name="MatPlastic" specular=".8" shininess=".6" reflectance="0.5" rgba=".4 .41 .4 1"/>
+		<material name="MatFrame" specular="1.2" shininess=".1" reflectance="0.5" rgba=".21 .2 .2 1"/>
+		<material name="MatGnd" texture="groundplane"  specular=".5" shininess=".01" reflectance="0.1"/>
+   </asset>
+   
+    <contact>       
+        <exclude body1="head" body2="torso"/>
+		<exclude body1="foot_l" body2="tibia_l"/>
+        <exclude body1="foot_r" body2="tibia_r"/>
+    </contact>
+	
+	<worldbody>
+		<light directional="false" cutoff="60" exponent="1" diffuse=".5 .5 .5" specular=".1 .1 .1" pos="0.5 0.1 0.8" dir="-0.5 -0.1 -0.8"/>
+		<geom name="ground" pos="0 0 0" size="1 1 .2" material="MatGnd" type="plane"/>
+
+      <geom type="plane" pos="-1 0 0.5" zaxis="1 0 0" size=".5 1 1" rgba=".8 .1 .1 1"/> 
+      <geom type="plane" pos="1 0 0.5" zaxis="-1 0 0" size=".5 1 1" rgba=".8 .1 .1 1"/> 
+      <geom type="plane" pos="0 -1 0.5" zaxis="0 1 0" size="1 .5 1" rgba=".8 .1 .1 1"/> 
+      <geom type="plane" pos="0 1 0.5" zaxis="0 -1 0" size="1 .5 1" rgba=".8 .1 .1 1"/> 
+
+      <body name="torso" pos="0 0 0.4">
+         <inertial diaginertia="6.53693 6.39822 1.88344" mass="0.975599" pos="-0.003053 -0.038651 -0.019268" quat="-0.00879356 0.867004 0.0524199 0.495458"/>
+         <joint type="free" limited='false' damping="0" />
+         <geom mesh="body_coll" type="mesh" material="MatPlastic"/>
+         <body name="neck" pos="0 0 0.0235" quat="0.707107 0 0 0.707107">
+            <inertial diaginertia="0.00482356 0.00482356 0.00482356" mass="0.0243577" pos="0.001424 -0.016567 -0.007128" quat="0.640564 0.00150549 0.00338323 0.767896"/>
+            <joint name="head_pan" range="-3.141592 3.141592" type="hinge"/>
+            <geom mesh="neck_coll" type="mesh" contype='0' conaffinity='0'/>
+            <body name="head" pos="0 0 0.02715" quat="0.5 -0.5 -0.5 0.5">
+               <inertial diaginertia="0.158397 0.123969 0.1178" mass="0.158042" pos="6.4e-005 -0.018565 -0.007667" quat="0.504401 0.495706 -0.489128 0.510499"/>
+               <joint name="head_tilt" range="-.4363323 .959931089" type="hinge"/>
+               <geom mesh="head_coll" type="mesh" material="MatPlastic"/>
+            </body>
+         </body>
+            <body name="shoulder_l" pos="0 0.06035 0" quat=".5 -.5 -.5 -.5">
+               <inertial diaginertia="0.0118742 0.00851644 0.00537304" mass="0.013" pos="-0.0135226 0.0102641 0.00139357" quat="0.89853 0.0814684 0.0409894 0.429332"/>
+               <joint name="l_shoulder_pitch" range="-2.61799 2.61799" type="hinge"/>
+               <geom mesh="shoulder_l_coll" type="mesh" contype='0' conaffinity='0'/>
+               
+               <body name="arm_high_l" pos="-0.016 0 0.025" quat="0.5 0.5 0.5 -0.5">
+                  <inertial diaginertia="0.122178 0.113353 0.0379938" mass="0.17837715" pos="-0.036239 0.000734 0.00066" quat="0.713991 0.698029 0.0283632 -0.0465622"/>
+                  <joint name="l_shoulder_roll" range="-1.308997 2.356194" type="hinge"/>
+                  <geom mesh="arm_high_l_coll" type="mesh" material="MatPlastic"/>
+                  
+                  <body name="arm_low_l" pos="-.06 0 -.016" quat="0 0 0.707107 0.707107">
+                     <inertial diaginertia="0.0875091 0.0872503 0.0201335" mass="0.037" pos=".013 -.015 0" quat=".707107 0 0 .315"/>
+                     <joint name="l_elbow" range="-1.3 1.57" type="hinge"/>
+                     <geom mesh="shoulder_l_coll" pos='.016 -.025 0' euler='-1.57 0 0' type="mesh"/>
+                     <geom mesh="arm_metal_lowres" pos='.021 0.0055 -0.081' euler='0 -1.57 0' type="mesh"/>
+                  </body>
+               </body>
+            </body>
+            <body name="shoulder_r" pos="0 -0.06035 0" euler='1.57 0 1.57'>
+               <inertial diaginertia="0.0118742 0.00851644 0.00537304" mass="0.013" pos="-0.013523 0.010264 0.001394" quat="0.89853 0.0814684 0.0409894 0.429332"/>
+               <joint name="r_shoulder_pitch" range="-3.141592 3.141592" type="hinge"/>
+               <geom mesh="shoulder_r_coll" type="mesh" contype='0' conaffinity='0'/>
+               
+               <body name="arm_high_r" pos="-0.017 0 0.02478" quat='.5 -.5 .5 .5' >
+                  <inertial diaginertia="0.122178 0.113353 0.0379938" mass="0.168377" pos="-0.036239 0.000734 -0.00066" quat="0.713991 0.698029 0.0283632 -0.0465622"/>
+                  <joint name="r_shoulder_roll" range="-2.356194 1.308997" type="hinge"/>
+                  <geom mesh="arm_high_r_coll" type="mesh" material="MatPlastic"/>
+                  
+                  <body name="arm_low_r" pos="-0.06 0 0.016" quat="9.38186e-007 -9.38186e-007 0.707107 0.707107">
+                     <inertial diaginertia="0.0875091 0.0872503 0.0201335" mass="0.0592885" pos="0 0 0" quat="0.362962 0.448533 -0.589325 0.565485"/>
+                     <joint name="r_elbow" range="-1.57 1.3" type="hinge"/>
+                     <geom mesh="shoulder_l_coll" pos='.017 -.0575 0' euler='-1.57 0 0' type="mesh"/>
+                     <geom mesh="arm_metal_lowres" pos='.012 -0.027 0.081' euler='0 1.57 0' type="mesh"/>
+                  </body>
+               </body>
+            </body>
+         <body name="pelvis_l" pos="-0.005 0.037 -0.09355" quat="0 0.707107 0.707107 0">
+            <inertial diaginertia="0.122641 0.11137 0.0411301" mass="0.027069" pos="0 0.00048 0.018437" quat="0.998273 -0.0514899 -0.00396715 0.0279885"/>
+            <joint name="l_hip_yaw" range="-.9250245036 2.14675498" type="hinge"/>
+            <geom mesh="pelvis_l_coll" type="mesh" contype='0' conaffinity='0'/>
+            <body name="thigh1_l" pos="0 0 0.028652" quat="0.707107 0.707107 0 0">
+               <inertial diaginertia="0.114985 0.0979692 0.0327798" mass="0.167107" pos="7.9e-005 0.018242 0.013873" quat="0.485806 0.506867 -0.504884 0.502165"/>
+               <joint  name="l_hip_roll" range="-1.0297442587 .7853981634" type="hinge"/>
+               <geom mesh="thigh1_l_coll" type="mesh"/>
+               <body name="thigh2_l" pos="0 0 0" quat="0.5 0.5 -0.5 -0.5">
+                  <inertial diaginertia="0.114985 0.0979692 0.0327798" mass="0.119043" pos="-0.062965 -0.000323 0.000692" quat="0.485806 0.506867 -0.504884 0.502165"/>
+                  <joint name="l_hip_pitch" range="-.5061454831 1.745329252" type="hinge"/>
+                  <geom mesh="thigh2_l_coll" type="mesh" material="MatPlastic"/>
+
+                  <body name="tibia_l" pos="-0.093 0 0">
+                     <inertial diaginertia="0.115891 0.0933882 0.043901" mass="0.0703098" pos="-0.053955 0.006548 -0.000592" quat="0.456916 0.538297 -0.548699 0.447654"/>
+                     <joint name="l_knee" range="-2.2689280276  .1047197551" type="hinge"/>
+                     <geom mesh="tibia_naked" pos='0.145 0 0.037' euler='1.57 0 -1.57' type="mesh"/>
+
+                     <body name="ankle1_l" pos="-0.093 0 0" quat="0 1 0 0">
+                        <inertial diaginertia="0.120855 0.109532 0.0411304" mass="0.167108" pos="-0.000214 -0.018536 0.013873" quat="0.997965 0.0519065 0.00385358 -0.0368208"/>
+                        <joint name="l_ankle_pitch" range="-1.3962634016 1.2566370614" type="hinge"/>
+                        <geom mesh="ankle1_l_coll" type="mesh"/>
+
+                        <body name="foot_l" pos="0 0 0" quat="0.707107 -0.707107 0 0">
+                           <inertial diaginertia="0.120855 0.109532 0.0411304" mass="0.0794462" pos="-0.025995 -0.009506 -0.000503" quat="0.997965 0.0519065 0.00385358 -0.0368208"/>
+                           <joint name="l_ankle_roll" range="-1.0995574288 .7679448709" type="hinge"/>
+                           <geom mesh="ankle2_l_coll" type="mesh" material="MatPlastic"/>
+                        </body>
+                     </body>
+                  </body>
+               </body>
+            </body>
+         </body>
+         <body name="pelvis_r" pos="-0.005 -0.037 -0.09355" quat="0 -0.707107 0.707107 0">
+            <inertial diaginertia="0.122641 0.11137 0.0411301" mass="0.027069" pos="0 0.00048 0.018437" quat="0.998273 -0.0514899 -0.00396715 0.0279885"/>
+            <joint name="r_hip_yaw" range="-2.14675498 .9250245036" type="hinge"/>
+            <geom mesh="pelvis_r_coll" type="mesh" contype='0' conaffinity='0'/>
+            
+            <body name="thigh1_r" pos="0 0 0.028652" quat="0.707107 -0.707107 0 0">
+               <inertial diaginertia="0.114985 0.0979692 0.0327798" mass="0.167107" pos="7.9e-005 -0.018242 0.0138735" quat="0.485806 0.506867 -0.504884 0.502165"/>
+               <joint name="r_hip_roll" range="-.7853981634 1.0297442587" type="hinge"/>
+               <geom mesh="thigh1_r_coll" type="mesh"/>
+               
+               <body name="thigh2_r" pos="0 0 0" quat="0.5 0.5 -0.5 -0.5">
+                  <inertial diaginertia="0.114985 0.0979692 0.0327798" mass="0.119043" pos="0.062965 -0.000323 0.000692" quat="0.485806 0.506867 -0.504884 0.502165"/>
+                  <joint name="r_hip_pitch" range="-1.745329252 .5061454831" type="hinge"/>
+                  <geom mesh="thigh2_r_coll" type="mesh" material="MatPlastic"/>
+                  
+                  <body name="tibia_r" pos="0.093 0 0">
+                     <inertial diaginertia="0.115891 0.0933882 0.043901" mass="0.0703098" pos="0.053955 0.006548 -0.000592" quat="0.456916 0.538297 -0.548699 0.447654"/>
+                     <joint name="r_knee" range="-.1047197551  2.2689280276" type="hinge"/>
+                     <geom mesh="tibia_naked" pos='-0.145 0 -0.037' euler='1.57 0 1.57' type="mesh"/>
+                     
+                     <body name="ankle1_r" pos="0.093 0 0" quat="0 1 0 0">
+                        <inertial diaginertia="0.120855 0.109532 0.0411304" mass="0.167108" pos="-0.000214 -0.018536 -0.013873" quat="0.997965 0.0519065 0.00385358 -0.0368208"/>
+                        <joint  name="r_ankle_pitch" range="-1.2566370614 1.3962634016" type="hinge"/>
+                        <geom mesh="ankle1_r_coll" type="mesh" />
+                        
+                        <body name="foot_r" pos="0 0 0" quat="0.707107 -0.707107 0 0">
+                           <inertial diaginertia="0.120855 0.109532 0.0411304" mass="0.0794462" pos="0.025995 -0.009506 -0.000503" quat="0.997965 0.0519065 0.00385358 -0.0368208"/>
+                           <joint name="r_ankle_roll" range="-.7679448709 1.0995574288" type="hinge"/>
+                           <geom mesh="ankle2_r_coll" type="mesh" material="MatPlastic"/>
+                        </body>
+                     </body>
+                  </body>
+               </body>
+            </body>
+         </body>
+      </body>
+   </worldbody>
+   
+   
+   <actuator>
+		<position name='r_shoulder_pitch' 	joint='r_shoulder_pitch'ctrlrange='-1.5 1.5'  	/>
+		<position name='r_shoulder_roll'  	joint='r_shoulder_roll' ctrlrange='-.85 1.3'  	/>
+		<position name='r_elbow'          	joint='r_elbow'         ctrlrange='-1.55 1.25'	/>
+		<position name='r_hip_yaw'        	joint='r_hip_yaw'       ctrlrange='-1 .9'   	/>
+		<position name='r_hip_roll'       	joint='r_hip_roll'      ctrlrange='-.7 .45'   />
+		<position name='r_hip_pitch'      	joint='r_hip_pitch'     ctrlrange='-1.7 .45'  />
+		<position name='r_knee'           	joint='r_knee'          ctrlrange='-0.05 2.2' />
+		<position name='r_ankle_pitch'    	joint='r_ankle_pitch'   ctrlrange='-1.2 1.35' />
+		<position name='r_ankle_roll'     	joint='r_ankle_roll'    ctrlrange='-.7 .95'   />
+		<position name='l_shoulder_pitch' 	joint='l_shoulder_pitch'ctrlrange='-1.5  1.5' />
+		<position name='l_shoulder_roll'  	joint='l_shoulder_roll' ctrlrange='-1.25 .85' />
+		<position name='l_elbow'          	joint='l_elbow'         ctrlrange='-1.25 1.55' />
+		<position name='l_hip_yaw'        	joint='l_hip_yaw'       ctrlrange='-.9 1'   />
+		<position name='l_hip_roll'       	joint='l_hip_roll'      ctrlrange='-.45 .7'   />
+		<position name='l_hip_pitch'      	joint='l_hip_pitch'     ctrlrange='-.45 1.7'  />
+		<position name='l_knee'           	joint='l_knee'          ctrlrange='-2.2  .05' />
+		<position name='l_ankle_pitch'    	joint='l_ankle_pitch'   ctrlrange='-1.35 1.2' />
+		<position name='l_ankle_roll'     	joint='l_ankle_roll'    ctrlrange='-.95 .7'   />
+		<position name='head_pan'    		joint='head_pan'       	ctrlrange='-2 2'      /> 
+		<position name='head_tilt'   		joint='head_tilt'      	ctrlrange='-.4 .9'    /> 
+	</actuator>
+	
+</mujoco>

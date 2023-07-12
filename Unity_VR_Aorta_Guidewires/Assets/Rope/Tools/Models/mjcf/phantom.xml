@@ -1,0 +1,136 @@
+<mujoco model="MuJoCo Model">
+    <compiler coordinate="local" angle="radian" meshdir="../mesh/"/>
+    <option solver="Newton" iterations="20" timestep="0.001"/>
+    <size njmax="24" nconmax="8" nstack="-1" nuserdata="300" />
+    <default>
+    	<site size="0.005"/>
+        <geom contype="0" conaffinity="0" />
+        <joint limited="true" />
+    </default>
+    <asset>
+        <mesh name="turret_mesh0" file="res.stl" />
+        <material name="reflective" reflectance="0.5" rgba="0.5 0.5 0.5 1" />
+    </asset>
+
+    <worldbody>
+         <light directional="false" cutoff="50" exponent="20" diffuse="1 1 1" specular="0 0 0" pos="0.095268765 0.156014352 1" dir="0 0 -1"/>
+	
+        <geom name="ground" type="plane" pos="0.095268765 0.156014352 0" quat="-0.340043 0.000555 0.000490 0.940410" size=".4 .4 .025" material="reflective" />
+        <site name="cylhandle" pos="0.095268765 0.156014352 0.500684365"/>
+        <!--body name="base0" pos="0.255 0 0.167" quat="0.707107 0 0 0.707107"-->
+        <body name="base0" pos="-0.067579 0.356801 0.164011" 
+        	quat="-0.340043 0.000555 0.000490 0.940410">
+            <inertial pos="0 0 -0.16" quat="0 0.707107 0 0.707107" mass="4" diaginertia="0.09 0.06 0.031" />
+            <geom pos="0 -0.039 -0.1517" type="box" size="0.127 0.089 0.0127" rgba="0.4 0.3 0.3 1" />
+            <geom pos="0 0 -0.1115" type="box" size="0.013 0.02 0.0275" rgba="0.25 0.25 0.25 1" />
+            <geom pos="0 -0.044 -0.0877" type="box" size="0.013 0.024 0.0037" rgba="0.25 0.25 0.25 1" />
+            <geom pos="0 -0.068 -0.1116" type="cylinder" size="0.0125 0.0275" rgba="0.5 0.3 0.3 1" />
+            <geom pos="0 -0.068 -0.08565" type="cylinder" size="0.013 0.00165" rgba="0.25 0.25 0.25 1" />
+            <geom pos="0 -0.068 -0.076" type="cylinder" size="0.00635 0.007" rgba="0.8 0.8 0.8 1" />
+            <geom pos="0.110571 -0.111164 -0.129096" size="0.0075" rgba="0.6 0.6 0.6 1" />
+            <geom pos="0.086607 -0.0349874 -0.128553" size="0.0075" rgba="0.6 0.6 0.6 1" />
+            <geom pos="-0.11205 -0.0160656 -0.129504" size="0.0075" rgba="0.6 0.6 0.6 1" />
+            <geom pos="-0.0639129 -0.13654 -0.153683" size="0.0075" rgba="0.6 0.6 0.6 1" />
+            <body name="turret0" pos="0 0 0">
+                <inertial pos="-0.01 -0.015 -0.06" quat="0.707107 0 0.707107 0" mass="0.1" diaginertia="0.00025 0.0002 7.5e-05" />
+                <joint name="turret0" pos="0 0 0" axis="0 0 -1" range="-1.6 1.6" armature="0.000114164" damping="0.00101196" frictionloss="0.00387006" />
+                <geom name="turret_mesh0" pos="0 0 -0.083" type="mesh" rgba="0.75 0.3 0.3 1" mesh="turret_mesh0" />
+                <geom pos="0 0 -0.07284" type="cylinder" size="0.0127 0.01016" rgba="0.75 0.3 0.3 1" />
+                <geom pos="0.05334 0 -0.0322" type="box" size="0.00381 0.004445 0.0381" rgba="0.75 0.3 0.3 1" />
+                <geom pos="-0.05334 0 -0.0322" type="box" size="0.00381 0.004445 0.0381" rgba="0.75 0.3 0.3 1" />
+                <geom quat="0.5 0.5 0.5 0.5" type="cylinder" size="0.0032 0.0572" rgba="0.8 0.8 0.8 1" />
+                <geom pos="-0.04064 0 0" quat="0.707107 0 0.707107 0" type="cylinder" size="0.0381 0.00889" rgba="0.75 0.35 0.25 0.25" />
+                <body name="shinmotor0" pos="0 0 0">
+                    <inertial pos="0 -0.00693397 0.031663" quat="0.707107 0 0 -0.707107" mass="0.206998" diaginertia="0.000379796 0.000303837 0.000151918" />
+                    <joint name="shinmotor0" pos="0 0 0" axis="-1 0 0" range="-2.9 0.5" armature="2.63635e-06" damping="0.00106479" frictionloss="0.00152026" />
+                    <geom pos="0 0 0.04459" quat="0.5 0.5 0.5 0.5" type="cylinder" size="0.0125 0.0275" rgba="0.3 0.75 0.3 1" />
+                    <geom pos="0.028 0 -0.008005" type="box" size="0.0034 0.0034 0.026645" rgba="0.3 0.75 0.3 1" />
+                    <geom pos="-0.028 0 0.00667" type="box" size="0.0034 0.0034 0.04132" rgba="0.3 0.75 0.3 1" />
+                    <geom pos="0.03639 0.00957556 0.0365552" quat="0.939693 -0.34202 0 0" type="box" size="0.00889 0.0125 0.0145" rgba="0.3 0.5 0.3 1" />
+                    <geom pos="0 0 -0.03125" quat="0.5 0.5 0.5 0.5" type="cylinder" size="0.00235 0.0315" rgba="0.8 0.8 0.8 1" />
+                    <geom pos="0 0 0.01524" quat="0.5 0.5 0.5 0.5" type="cylinder" size="0.00235 0.0315" rgba="0.8 0.8 0.8 1" />
+                    <geom pos="-0.028 0 0.04459" quat="0.5 0.5 0.5 0.5" type="cylinder" size="0.0145 0.0034" rgba="0.3 0.75 0.3 1" />
+                    <geom pos="0.03639 0 0.04459" quat="0.5 0.5 0.5 0.5" type="cylinder" size="0.0145 0.00889" rgba="0.3 0.5 0.3 1" />
+                    <geom pos="-0.04064 0 0.04459" quat="0.5 0.5 0.5 0.5" type="cylinder" size="0.00508 0.00889" rgba="0.8 0.8 0.8 1" />
+                    <body name="loop0" pos="0 0 -0.03125">
+                        <inertial pos="0 0.06985 0" quat="0.707107 0.707107 0 0" mass="0.02" diaginertia="3.3e-05 3.3e-05 5e-07" />
+                        <joint name="loop0" pos="0 0 0" axis="-1 0 0" range="-0.9 0.9" />
+                        <geom pos="0 0.06985 0" quat="0.707107 0.707107 0 0" type="cylinder" size="0.005 0.06985" rgba="0.3 0.3 0.65 1" />
+                    </body>
+                </body>
+                <body name="thigh0" pos="0 0 0">
+                    <inertial pos="0 -0.0186431 -0.00402749" quat="0.5 -0.5 0.5 0.5" mass="0.374286" diaginertia="0.00074904 0.000665813 0.000104033" />
+                    <joint name="thigh0" pos="0 0 0" axis="-1 0 0"  range="-2.1 1" armature="2.63635e-06" damping="0.000951496" frictionloss="0.00142239" />
+                    <geom pos="0 -0.04459 0" quat="0.5 0.5 0.5 0.5" type="cylinder" size="0.0125 0.0275" rgba="0.3 0.3 0.65 1" />
+                    <geom pos="-0.003 -0.005 0" type="box" size="0.02 0.011 0.006" rgba="0.3 0.3 0.65 1" />
+                    <geom pos="-0.028 -0.027295 0" type="box" size="0.0034 0.017295 0.0034" rgba="0.3 0.3 0.65 1" />
+                    <geom pos="0.03639 -0.0322799 -0.0021706" quat="0.996195 -0.0871557 0 0" type="box" size="0.00889 0.0125 0.0145" rgba="0.25 0.25 0.4 1" />
+                    <geom pos="-0.028 -0.04459 0" quat="0.5 0.5 0.5 0.5" type="cylinder" size="0.0145 0.0034" rgba="0.3 0.3 0.65 1" />
+                    <geom pos="0 0.06985 0" quat="0.707107 0.707107 0 0" type="cylinder" size="0.005 0.06985" rgba="0.3 0.3 0.65 1" />
+                    <geom pos="0.03639 -0.04459 0" quat="0.5 0.5 0.5 0.5" type="cylinder" size="0.0145 0.00889" rgba="0.25 0.25 0.4 1" />
+                    <geom pos="-0.04064 -0.04459 0" quat="0.5 0.5 0.5 0.5" type="cylinder" size="0.00508 0.00889" rgba="0.8 0.8 0.8 1" />
+                    <body name="shin0" pos="0 0.1397 0">
+                        <inertial pos="0 0.0093664 -0.096133" mass="0.0573557" diaginertia="1.01518e-05 9.13658e-06 2.84249e-06" />
+                        <joint name="shin0" pos="0 0 0" axis="-1 0 0"  range="-0.9 0.9" />
+                        <geom pos="0 0 -0.061" type="cylinder" size="0.0032 0.061" rgba="0.3 0.75 0.3 1" />
+                        <geom name="cyl1" pos="0 0 -0.102" type="cylinder" size="0.008 0.02" rgba="0.68 0.66 0.63 1" />
+                        <geom name="cyl2" pos="0.000599202 0 -0.105174" quat="0.707107 -0.707107 0 0" type="cylinder" size="0.009 0.02" rgba="0.68 0.66 0.63 1" />
+                        <body name="ef0" pos="0 0 -0.105174">
+                            <inertial pos="0 0.04 0" quat="0.707107 0.707107 0 0" mass="0.016" diaginertia="2e-06 2e-06 3e-07" />
+                            <joint name="eflr0" pos="0 -0.05 0" axis="0 0 1"  stiffness="20" range="-0.1 0.1" damping="0.01" />
+                            <joint name="efud0" pos="0 -0.05 0" axis="1 0 0"  stiffness="20" range="-0.1 0.1" damping="0.01" />
+                            <joint name="efpush0" pos="0 0 0" axis="0 1 0" type="slide"  stiffness="500" range="-0.002 0.002" damping="0.01" />
+                            <geom name="finger0" pos="0.000599202 0.0540992 0" quat="0.707107 -0.707107 0 0" type="capsule" size="0.008 0.02" rgba="0.3 0.7 0.8 1" />
+                        </body>
+                    </body>
+                </body>
+            </body>
+        </body>
+        <body name="object" pos="0.095268765 0.156014352 0.0665">
+            <inertial pos="0 0 0" mass="0.284" diaginertia="0.00045 0.00045 0.00033" />
+            <freejoint name="object" />
+            <geom name="object" type="cylinder" size="0.055 0.0665" rgba="0.1 0.1 0.6 1" />
+            <geom pos="0.00619587 -0.0438262 0.0753399" size="0.0075" rgba="0.6 0.6 0.6 1" />
+            <geom pos="0.0385259 0.0222627 0.0757222" size="0.0075" rgba="0.6 0.6 0.6 1" />
+            <geom pos="-0.00827415 0.0434504 0.0751261" size="0.0075" rgba="0.6 0.6 0.6 1" />
+            <geom pos="-0.0427617 -0.0123001 0.0752118" size="0.0075" rgba="0.6 0.6 0.6 1" />
+            <geom pos="-0.046581 -0.001348 -0.000477" quat="0.00500436 0.666689 -0.00409452 0.745308" type="box" size="0.0077 0.0105 0.0008" />
+            <site name="imu" pos="-0.046581 -0.001348 -0.000477" quat="0.00500436 0.666689 -0.00409452 0.745308" />
+            <site name="topcenter" pos="0 0 0.0665" />
+        </body>
+    </worldbody>
+    <contact>
+        <pair geom1="finger0" geom2="object" margin="0.2" gap="0.199" friction="1 1 1 1 1" />
+        <pair geom1="ground" geom2="object" />
+        <pair geom1="ground" geom2="finger0" />
+        <pair geom1="ground" geom2="cyl1" />
+        <pair geom1="ground" geom2="cyl2" />
+        <pair geom1="object" geom2="cyl1" />
+        <pair geom1="object" geom2="cyl2" />
+    </contact>
+    <equality>
+        <tendon name="constrainta0" tendon1="tendona0" polycoef="0 1 0 0 0" />
+        <tendon name="constraintb0" tendon1="tendonb0" polycoef="0 1 0 0 0" />
+    </equality>
+    <tendon>
+        <fixed name="tendona0">
+            <joint joint="shinmotor0" coef="-1" />
+            <joint joint="thigh0" coef="1" />
+            <joint joint="loop0" coef="-1" />
+        </fixed>
+        <fixed name="tendonb0">
+            <joint joint="shinmotor0" coef="1" />
+            <joint joint="thigh0" coef="-1" />
+            <joint joint="shin0" coef="-1" />
+        </fixed>
+        <spatial name="cylstring" limited="true" width="0.001" range="-10 0.349" margin="0.0003">
+            <site site="cylhandle" />
+            <site site="topcenter" />
+        </spatial>
+    </tendon>
+    <!--actuator>
+        <general name="turret0" trnprm="8.7" joint="turret0" />
+        <general name="shinmotor0" trnprm="-7.44" joint="shinmotor0" />
+        <general name="thigh0" trnprm="-7.44" joint="thigh0" />
+    </actuator-->
+</mujoco>
