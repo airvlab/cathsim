@@ -37,9 +37,9 @@ pip install -e .
 A quick way to run the simulation blood within the cathsim environment.
 
 ```python
-from cathsim.cathsim.env import run_env_with_blood
+from cathsim.cathsim.env import run_env_fluid
 
-run_env_with_blood()
+run_env_fluid()
 
 
 ```
