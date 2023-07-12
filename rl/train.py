@@ -1,4 +1,4 @@
-from sb3_utils import train, get_config
+from rl.utils import train, get_config
 from pathlib import Path
 import argparse
 

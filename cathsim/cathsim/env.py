@@ -410,7 +410,7 @@ if __name__ == "__main__":
         use_segment=True,
         target='bca',
         sample_target=True,
-        image_size=480,
+        image_size=80,
         visualize_sites=True,
     )
 
@@ -432,9 +432,10 @@ if __name__ == "__main__":
         for step in range(2):
             action = random_policy(time_step)
             img = env.physics.render(height=480, width=480, camera_id=0)
-            plt.imshow(img)
-            plt.imsave(f'../figures/{phantom_name}.png', img)
-            exit()
-            plt.show()
+            # plt.imshow(img)
+            # plt.imsave(f'../figures/{phantom_name}.png', img)
+            # exit()
+            # plt.show()
             time_step = env.step(action)
             print(env._task._target_pos)
+            print(env._task.camera_matrix)

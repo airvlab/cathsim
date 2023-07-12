@@ -1,20 +1,23 @@
 from setuptools import setup, find_packages
 
 extra_dev = [
-    'opencv-python',
-    'matplotlib',
     'pytest',
 ]
 
-extra_rl = [
-    'torch',
-    'stable-baselines3==1.8.0',
-    'imitation',
-    'tqdm',
+extra_utils = [
     'rich',
-    'mergedeep',
     'progressbar2',
     'progress',
+    'tqdm',
+    'opencv-python',
+    'matplotlib',
+    'seaborn',
+]
+
+extra_rl = [
+    'imitation',
+    'stable-baselines3==1.8.0',
+    'torch',
 ]
 
 extra = extra_dev + extra_rl
@@ -31,12 +34,17 @@ setup(
         include=[
             'cathsim',
             'rl',
+            'human',
+            'evaluation',
         ]
     ),
     install_requires=[
         'gym==0.21.*',
         'dm-control',
         'pyyaml',
+        'mergedeep',
+        *extra_rl,
+        *extra_utils,
     ],
     extras_require={
         'dev': extra_dev,
@@ -46,8 +54,8 @@ setup(
     entry_points={
         'console_scripts': [
             'run_env=cathsim.cathsim.env:run_env',
-            'record_traj=rl.expert.utils:cmd_record_traj',
-            'visualize_agent=rl.sb3_utils:cmd_visualize_agent',
+            'record_traj=human.utils:cmd_record_traj',
+            'visualize_agent=rl.utils:cmd_visualize_agent',
         ],
     },
 )

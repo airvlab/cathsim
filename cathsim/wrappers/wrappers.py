@@ -225,7 +225,7 @@ if __name__ == "__main__":
     from stable_baselines3 import DDPG, HerReplayBuffer
     from cathsim.cathsim.env_utils import make_dm_env
     from dm_control import composer
-    from rl.sb3_utils import get_config
+    from rl.utils import get_config
     # from stable_baselines3.common.env_checker import check_env
 
     config = get_config('full')

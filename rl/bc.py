@@ -3,7 +3,7 @@ from pathlib import Path
 
 import torch as th
 
-from sb3_utils import process_transitions, make_experiment, make_vec_env
+from utils import process_transitions, make_experiment, make_vec_env
 
 from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.policies import ActorCriticPolicy

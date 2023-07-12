@@ -15,12 +15,11 @@ def normalize_rgba(rgba: list):
 
 def point2pixel(point, camera_matrix: np.ndarray = None):
     """Transforms from world coordinates to pixel coordinates."""
-    assert len(point) == 3, 'Point must be a 3D vector.'
     assert camera_matrix is not None, 'Camera matrix must be provided.'
     x, y, z = point
     xs, ys, s = camera_matrix.dot(np.array([x, y, z, 1.0]))
 
-    return np.array([round(xs / s), round(ys / s)]).asttype(np.int8)
+    return np.array([round(xs / s), round(ys / s)]).astype(np.int8)
 
 
 def filter_mask(segment_image: np.ndarray):

@@ -1,5 +1,4 @@
 from pathlib import Path
-import warnings
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
@@ -8,13 +7,12 @@ from tqdm import tqdm
 from typing import OrderedDict
 
 from cathsim.cathsim.env_utils import distance
-from cathsim.cathsim.common import filter_mask, point2pixel
-from rl.sb3_utils import make_experiment
-from rl.sb3_utils import EXPERIMENT_PATH, EVALUATION_PATH
+from rl.utils import make_experiment
+from rl.utils import EXPERIMENT_PATH, EVALUATION_PATH
 
 from stable_baselines3.common.base_class import BaseAlgorithm
 
-from typing import Union, Callable, Optional, Any, Dict, List, Tuple
+from typing import List, Tuple
 
 
 def calculate_total_distance(positions):
@@ -349,7 +347,7 @@ def evaluate_model(algorithm_path, n_episodes=10):
     :param n_episodes int: The number of episodes to evaluate the policy for.
     """
     from stable_baselines3 import SAC
-    from rl.sb3_utils import get_config, make_experiment
+    from rl.utils import get_config, make_experiment
     from cathsim.cathsim.env_utils import make_gym_env
 
     model_path, _, eval_path = make_experiment(algorithm_path)
@@ -438,53 +436,14 @@ def get_experiment_tensorboard_logs(path: Path, n_interpolations: int = None) ->
     return logs, (mean, stdev)
 
 
-def collate_experiment_tensorboard_logs(path: str, n_interpolations: int = 30):
-    logs = get_experiment_tensorboard_logs(path)
-    logs = [log.reindex(np.arange(0, 600_000, 600_000 / n_interpolations), method='nearest') for log in logs]
-    print(len(logs))
-    mean = pd.concat(logs, axis=0).groupby(level=0).mean().squeeze()
-    stdev = pd.concat(logs, axis=0).groupby(level=0).std().squeeze()
-    return mean, stdev
-
-
-def collate_experiments_tensorboard_logs(experiments_path: Path = None, n_interpolations: int = 30):
-    if not experiments_path:
-        experiments_path = EXPERIMENT_PATH
-    results = {}
-    for experiment in experiments_path.iterdir():
-        if not experiment.is_dir():
-            continue
-        mean, stdev = collate_experiment_tensorboard_logs(experiment.name, n_interpolations)
-        results[experiment.name] = dict(mean=mean, stdev=stdev)
-    return results
-
-
 def plot_error_line_graph(ax: plt.Axes, mean: pd.Series, std: pd.Series,
                           color: str = 'C0', label: str = None, **kwargs):
-    """ Plot a line graph with error bars.
-
-    :param ax plt.Axes: The axes to plot on.
-    :param mean pd.Series: The mean values.
-    :param std pd.Series: The standard deviation values.
-    :param color str: The color of the line.
-    :param label str: The label of the line.
-    :return plt.Axes: The axes.
-    """
-
     x = mean.index
     ax.plot(x, mean, color=color, label=label)
     ax.fill_between(x, mean - std, mean + std, alpha=0.3, color=color, **kwargs)
 
 
 def plot_human_line(ax, phantom, target, n_interpolations=30):
-    """ Plot the human line.
-
-    :param ax plt.Axes: The axes to plot on.
-    :param phantom str: The phantom to plot.
-    :param target str: The target to plot.
-    :param n_interpolations int: The number of interpolations to use.
-    :return plt.Axes: The axes.
-    """
     experiment_data = pd.read_csv(EVALUATION_PATH / 'results_2.csv')
     human_data = experiment_data[(experiment_data['algorithm'] == 'human') & (experiment_data['phantom'] == phantom) & (experiment_data['target'] == target)]
     mean = human_data['episode_length'].to_numpy()[0]

@@ -11,10 +11,10 @@ from dm_control.viewer.application import Application
 from imitation.algorithms import bc
 from stable_baselines3.common import policies
 from cathsim.wrappers import Dict2Array
-from dm_control.mujoco import wrapper
 from stable_baselines3.common.vec_env import SubprocVecEnv, DummyVecEnv
 import gym
-from cathsim.cathsim.env_utils import make_gym_env, make_dm_env
+from cathsim.cathsim.env_utils import make_gym_env
+from abc import ABC, abstractmethod
 
 
 def filter_mask(segment_image: np.ndarray):
@@ -26,16 +26,7 @@ def filter_mask(segment_image: np.ndarray):
 
 
 class CnnPolicy(policies.ActorCriticCnnPolicy):
-    """A feed forward policy network with two hidden layers of 32 units.
-    This matches the IRL policies in the original AIRL paper.
-
-    Note: This differs from stable_baselines3 ActorCriticPolicy in two ways: by
-    having 32 rather than 64 units, and by having policy and value networks
-    share weights except at the final layer, where there are different linear heads.
-    """
-
     def __init__(self, *args, **kwargs):
-        """Builds FeedForward32Policy; arguments passed to `ActorCriticPolicy`."""
         super().__init__(*args, **kwargs)
 
 
@@ -408,6 +399,34 @@ def get_config(config_name):
     if main_config['algo_kwargs']['replay_buffer_class'] == 'HerReplayBuffer':
         main_config['algo_kwargs']['replay_buffer_class'] = HerReplayBuffer
     return main_config
+
+
+def process_human_trajectories(path: Path, flatten=False, mapping: dict = None):
+    trajectories = {}
+    for episode in path.iterdir():
+        trajectory_path = episode / 'trajectory.npz'
+        if not trajectory_path.exists():
+            continue
+        episode_data = np.load(episode / 'trajectory.npz', allow_pickle=True)
+        episode_data = dict(episode_data)
+        if flatten:
+            for key, value in episode_data.items():
+                if mapping is not None:
+                    if key in mapping:
+                        key = mapping[key]
+                if key == 'time':
+                    continue
+                trajectories.setdefault(key, []).extend(value)
+        else:
+            if mapping is not None:
+                for key, value in mapping.items():
+                    episode_data[mapping[key]] = episode_data.pop(key)
+            trajectories[episode.name] = episode_data
+    if flatten:
+        for key, value in trajectories.items():
+            trajectories[key] = np.array(value)
+
+    return trajectories
 
 
 if __name__ == '__main__':

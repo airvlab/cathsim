@@ -189,7 +189,7 @@ def launch(environment_loader, policy=None, title='Explorer', width=1024,
 
 
 if __name__ == "__main__":
-    from rl.sb3_utils import get_config
+    from rl.utils import get_config
     config = get_config('test')
     __import__('pprint').pprint(config)
     # env = make_env(config)
