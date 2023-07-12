@@ -1,0 +1,378 @@
+<!-- ======================================================
+	This file is part of MuJoCo.     
+	Copyright 2009-2016 Roboti LLC.
+	
+	Model 		:: Atlas from Boston Dynamics
+		Source		: https://bitbucket.org/osrf/drcsim
+		Downloaded	: --
+		
+	Mujoco		:: Advanced physics simulation engine
+		Source		: www.roboti.us
+		Version		: 1.31
+		Released 	: 23Apr'16
+		
+	Author		:: Vikash Kumar
+		Contacts 	: kumar@roboti.us
+		Last edits 	: 30Apr'16, 15Dec'15
+====================================================== -->
+
+<mujoco model="Atlas (v1.31)">
+	<compiler coordinate="local" angle="radian" meshdir="../mesh/atlas/"/>
+	<size njmax ="1000"/>
+	<default>
+		<site type="sphere" size="0.005" group="3"/>
+		<joint limited="true" damping="3"/>
+		<geom contype="0" conaffinity="1" friction="0.7 0.1 0.1" material="matgeom" margin="0.001" type="mesh" group="3"/>
+		<motor ctrlrange="-.95 .95"/>
+	</default>
+	
+	<asset>
+		<mesh name="pelvis"         file="pelvis.stl"/>
+		<mesh name="ltorso"         file="ltorso.stl"/>
+		<mesh name="mtorso"         file="mtorso.stl"/>
+		<mesh name="utorso"         file="utorso.stl"/>
+		<mesh name="l_clav"         file="l_clav.stl"/>
+		<mesh name="l_scap"         file="l_scap.stl"/>
+		<mesh name="l_uarm"         file="l_uarm.stl"/>
+		<mesh name="l_larm"         file="l_larm.stl"/>
+		<mesh name="l_farm"         file="l_farm.stl"/>
+		<mesh name="l_hand"			file="l_hand.stl"/>
+		<mesh name="head"           file="head.stl"/>
+		<mesh name="head_camera"    file="head_camera.stl"/>
+		<mesh name="r_clav"         file="r_clav.stl"/>
+		<mesh name="r_scap"         file="r_scap.stl"/>
+		<mesh name="r_uarm"         file="r_uarm.stl"/>
+		<mesh name="r_larm"         file="r_larm.stl"/>
+		<mesh name="r_farm"         file="r_farm.stl"/>
+		<mesh name="r_hand"         file="r_hand.stl"/>
+		<mesh name="l_uglut"        file="l_uglut.stl"/>
+		<mesh name="l_lglut"        file="l_lglut.stl"/>
+		<mesh name="l_uleg"         file="l_uleg.stl"/>
+		<mesh name="l_lleg"         file="l_lleg.stl"/>
+		<mesh name="l_talus"        file="l_talus.stl"/>
+		<mesh name="l_foot"         file="l_foot.stl"/>
+		<mesh name="r_uglut"        file="r_uglut.stl"/>
+		<mesh name="r_lglut"        file="r_lglut.stl"/>
+		<mesh name="r_uleg"         file="r_uleg.stl"/>
+		<mesh name="r_lleg"         file="r_lleg.stl"/>
+		<mesh name="r_talus"        file="r_talus.stl"/>
+		<mesh name="r_foot"         file="r_foot.stl"/>
+		
+		<texture name="groundplane" type="2d" builtin="checker" rgb1=".25 .26 .25" 
+			rgb2=".22 .22 .22" width="100" height="100" mark="none" markrgb=".8 .8 .8"/>
+		<material name="MatGnd" texture="groundplane"  texrepeat="20 20" specular="1" shininess=".3" reflectance="0.00001" rgba="1 1 1 1"/>
+		<material name="matgeom" rgba = "0.1 0.1 0.1 1"/>
+	</asset>
+	<option timestep="0.001"/>
+	<visual>
+        <map fogstart="2" fogend="4"/>
+    </visual>
+
+	<worldbody>
+		<!-- GROUND -->
+		<light directional="true" cutoff="60" exponent="1" diffuse="1 1 1" specular=".1 .1 .1" pos="1 1 1.5" dir="-1 -1 -1.3"/>
+		<geom name="ground" type="plane" pos="0 0 0" size="2.5 2.5 .2" group="1" contype="1" material="MatGnd"/>
+
+      	<geom type="plane" pos="-2.5 0 0.5" zaxis="1 0 0" contype="1" size=".5 2.5 1" rgba=".8 .1 .1 1"/> 
+      	<geom type="plane" pos="2.5 0 0.5" zaxis="-1 0 0" contype="1" size=".5 2.5 1" rgba=".8 .1 .1 1"/> 
+      	<geom type="plane" pos="0 -2.5 0.5" zaxis="0 1 0" contype="1" size="2.5 .5 1" rgba=".8 .1 .1 1"/> 
+      	<geom type="plane" pos="0 2.5 0.5" zaxis="0 -1 0" contype="1" size="2.5 .5 1" rgba=".8 .1 .1 1"/> 
+        		
+		<body name="pelvis" pos="0 -1 1">
+			<site name="butt" pos="-.15 0 -.15"/>
+			<joint type="free" limited="false" name="root" damping="0" stiffness="0" armature="0"/>
+			<inertial pos="0.0111 0 0.0271" quat="0.483552 0.511912 -0.490148 0.513691" mass="12.54638" diaginertia="0.056060 0.056060 0.056060" />
+			<geom group="1"  contype="0" mesh="pelvis" />
+			<!--geom type="cylinder" pos="0.046 0 -0.02" quat="0.707107 0.707107 0 0" size="0.11 0.03" />
+			<geom type="cylinder" pos="-0.03 0 -0.02" quat="0.707107 0.707107 0 0" size="0.11 0.03" /-->
+			<geom type="cylinder" pos="0.01 0.042 0.09" size="0.16 0.025" />
+			<geom type="cylinder" pos="0.01 -0.042 0.09" size="0.16 0.025" />
+			<geom type="box" pos="-0.1 0 -0.05" size="0.05 0.075 0.1" />
+			<body name="ltorso" pos="-0.0125 0 0" >
+				<inertial pos="-0.011298 -0.000003 0.074684" quat="0.498101 0.498096 -0.501893 0.501896" mass="1.62729" diaginertia="0.109733 0.064662 0.050298" />
+				<joint name="back_lbz" type="hinge" pos="0 0 0" axis="0 0 1" range="-0.610865 0.610865" damping="35" stiffness="0"/>
+				<geom group="1"  contype="0" mesh="ltorso" />
+				<body name="mtorso" pos="0 0 0.09" >
+					<inertial pos="-0.008163 -0.013125 0.030597" quat="0.707045 -0.000116 -0.000202 0.707169" mass="3.8068" diaginertia="0.283991 0.283991 0.283991" />
+					<joint name="back_mby" type="hinge" pos="0 0 0" axis="0 1 0" range="-1.2 1.28" damping="35" stiffness="0"/>
+					<geom group="1"  contype="0" mesh="mtorso" />
+					<!--geom type="cylinder" pos="0 0 0" quat="0.707107 0.707107 0 0" size="0.017 0.015" />
+					<geom type="cylinder" pos="0.0285 0 0.05" quat="0.707107 0 0.707107 0" size="0.015 0.01" />
+					<geom type="cylinder" pos="-0.0285 0 0.05" quat="0.707107 0 0.707107 0" size="0.015 0.01" /-->
+					<body name="utorso" pos="0 0 0.05"   user="-6006">
+						<inertial pos="0.02 -0.001 0.211" quat="0.699117 -0.095385 -0.090376 0.702829" mass="15.2272" diaginertia="0.349824 0.349824 0.349824" />
+						<joint name="back_ubx" type="hinge" pos="0 0 0" axis="1 0 0" range="-0.790809 0.790809" damping="35" stiffness="0"/>
+						<geom group="1"  contype="0" mesh="utorso" />
+						<geom type="box" pos="0.0446 0 0.1869" size="0.1594 0.12 0.1581" />
+						<geom type="capsule" pos="0.024 0.16 0.18" quat="0.965926 -0.258820 0 0" size="0.0363 0.111875"/>
+						<geom type="capsule" pos="0.024 -0.16 0.18" quat="0.965926 0.258820 0 0" size="0.0363 0.111875"/>
+						<body name="l_clav" pos="0.024 0.221 0.289" >
+							<inertial pos="0.014 0.058 0.029" quat="0.137950 0.693520 -0.137950 0.693520" mass="2.369" diaginertia="0.007 0.006414 0.003586" />
+							<joint name="l_arm_usy" type="hinge" pos="0 0 0" axis="0 0.500000 0.866025" range="-1.9635 1.9635" user="0 0.5" stiffness="0"/>
+							<geom group="1"  contype="0" pos="-0.000934 0.001692 0.069242" quat="-0.414459 0.573156 -0.415293 0.572056" mesh="l_clav" />
+							<!-- <geom type="cylinder" pos="0 0.0697 0.0261" quat="0.707107 0 0.707107 0" size="0.045 0.07625"  colmask="0 2"/>
+							<geom type="box" pos="-0.005 -0.0074 -0.0538" quat="0.866025 0.500001 0 0" size="0.065 0.075 0.025"  colmask="0 2"/> -->
+							<body name="l_scap" pos="0 0.075 0.036" >
+								<inertial pos="-0.002 0.108 0" quat="0.5 0.5 -0.5 0.5" mass="2.707" diaginertia="0.013 0.01 0.005" />
+								<joint name="l_arm_shx" type="hinge" pos="0 0 0" axis="1 0 0" range="-1.39626 1.74533" user="0 -1" stiffness="0"/>
+								<geom group="1"  contype="0" mesh="l_scap" />
+								<!--geom type="cylinder" pos="0.001 0.12651 0.01521" quat="0.707107 0.707107 0 0" size="0.045 0.0625" /-->
+								<geom type="box" pos="0.001 0.05 0.016" size="0.075 0.075 0.03" />
+								<body name="l_uarm" pos="0 0.185 0" >
+									<inertial pos="0.007 0.114 0.008" quat="0.5 0.5 0.5 0.5" mass="1.881" diaginertia="0.003 0.003 0.002" />
+									<joint name="l_arm_ely" type="hinge" pos="0 0 0" axis="0 1 0" range="0 3.14159" user="0 1.5" stiffness="0"/>
+									<geom group="1"  contype="0" mesh="l_uarm" />
+									<geom type="cylinder" pos="0.001 0.111 0" quat="0.707105 0 0.707108 0" size="0.045 0.0625" />
+									<!--geom type="box" pos="0.001 0.043 0.01" quat="0.707107 0 0.707107 0" size="0.02 0.035 0.065" /-->
+									<body name="l_larm" pos="0 0.121 0.013" >
+										<inertial pos="-0.003 0.099 -0.014" quat="0.5 0.5 -0.5 0.5" mass="2.148" diaginertia="0.006 0.005 0.003" />
+										<joint name="l_arm_elx" type="hinge" pos="0 0 0" axis="1 0 0" range="0 2.35619" user="0 1" stiffness="0"/>
+										<geom group="1"  contype="0" mesh="l_larm" />
+										<!--geom type="cylinder" pos="0.001 0.127 0" quat="0.707107 0.707107 0 0" size="0.045 0.0625" /-->
+										<geom type="box" pos="0.001 0.051 0" size="0.0675 0.075 0.03" />
+										<body name="l_farm" pos="0 0.188 -0.013" >
+											<inertial pos="0 0.041 0" quat="0.707107 0.707107 0 0" mass="0.981" diaginertia="0.003 0.003 0.001" />
+											<joint name="l_arm_uwy" type="hinge" pos="0 0 0" axis="0 1 0" range="-1.571 1.571" stiffness="0"/>
+											<geom group="1"  contype="0" pos="0.000654 -0.018685 -0.001301" quat="0.707069 0.707067 0.007393 0.007393" mesh="l_farm" />
+											<!--geom type="cylinder" pos="0 0.065 0.004" quat="0.707105 0 0.707108 0" size="0.045 0.0625" /-->
+											<!--geom type="box" pos="0.001 0.015 -0.002" size="0.0675 0.05 0.0225" /-->
+											<body name="l_hand" pos="0 0.058 0" >
+												<inertial pos="0 0.093 0" quat="0.707107 0.707107 0 0" mass="2.263" diaginertia="0.01 0.01 0.002" />
+												<joint name="l_arm_mwx" type="hinge" pos="0 0 0" axis="1 0 0" range="-0.436 1.571" user="9001" stiffness="0"/>
+												<geom group="1"  contype="0" mesh="l_hand" />
+												<geom type="cylinder" pos="0.001 0.1 0.01" quat="0.707107 0.707107 0 0" size="0.03 0.025" />
+												<geom type="box" pos="0.001 0.05 0.01" size="0.065 0.045 0.035"/>
+												
+												<!-- ========== INCLUDE A HAND HERE ========== -->
+												<!--<include file="../sandiaHand/include_sandia_left_hand_chain.xml"/>-->
+											</body>
+										</body>
+									</body>
+								</body>
+							</body>
+						</body>
+						<body name="head" pos="0.21672 0 0.53796"  user="-6001">
+							<inertial pos="-0.075493 0.000033 0.02774" quat="0.981276 -0.000974 0.192607 -0.000133" mass="1.41984" diaginertia="0.002489 0.002489 0.002489" />
+							<joint name="neck_ay" type="hinge" pos="0 0 0" axis="0 1 0" range="-0.610865 1.134464" damping="2" stiffness="5"/>
+							<geom group="1" contype="0" rgba="0.9098 0.44314 0.031373 1" mesh="head" />
+							<geom type="box" pos="-0.0503 0 -0.00195" size="0.06555 0.06 0.02955" rgba="0.9098 0.44314 0.031373 1" />
+							<geom type="box" pos="-0.093 0 0.0868" size="0.0234 0.06 0.0592" rgba="0.9098 0.44314 0.031373 1" />
+							<!-->body name="hokuyo_link" pos="-0.0446 0 0.088" >
+								<inertial pos="0.012428 0.000408 -0.004183" quat="0.498020 0.501987 0.501988 0.497989" mass="0.057654" diaginertia="0.002080 0.001783 0.000401" />
+								<joint name="hokuyo_joint" type="hinge" limtype="0" pos="0 0 0" axis="1 0 0" />
+								<geom group="1" contype="0" pos="0.025818 0.000574 0.003510" quat="0.601393 -0.007554 -0.075370 0.795355" rgba="0.72941 0.35686 0.023529 1" mesh="head_camera" />
+								<geom type="box" pos="0.01885 0 -0.02119" size="0.04 0.03 0.02119" rgba="0.72941 0.35686 0.023529 1" />
+								<geom type="cylinder" pos="0.03 0 0.0235" size="0.024425 0.0235" rgba="0.72941 0.35686 0.023529 1" />
+								<body name="head_hokuyo_frame" pos="0.03 0 0.015" >
+									<inertial pos="0.042428 0.000408 0.010817" mass="0.001" diaginertia="0.000001 0.000001 0.000001" />
+								</body>
+							</body-->
+							<body name="left_camera_frame" pos="0 0.035 -0.002" >
+								<inertial pos="-0.075493 0.035033 0.02574" mass="0.001" diaginertia="0.000001 0.000001 0.000001" />
+								<site name="head_camera_site" pos="0 0 0" quat="0.5 0.5 -0.5 -0.5" user="100"/>
+								<body name="left_camera_optical_frame" pos="0 0 0" quat="0.499998 -0.5 0.500002 -0.5" >
+									<inertial pos="0 0 0" mass="0.001" diaginertia="0.000001 0.000001 0.000001" />
+								</body>
+							</body>
+							<body name="right_camera_frame" pos="0 -0.035 -0.002" >
+								<inertial pos="-0.075493 -0.034967 0.02574" mass="0.001" diaginertia="0.000001 0.000001 0.000001" />
+								<body name="right_camera_optical_frame" pos="0 0 0" quat="0.499998 -0.5 0.500002 -0.5" >
+									<inertial pos="0 0 0" mass="0.001" diaginertia="0.000001 0.000001 0.000001" />
+								</body>
+							</body>
+							<body name="center_top_led_frame" pos="0.01125 0 0.0105" >
+								<inertial pos="-0.064243 0.000033 0.03824" mass="0.001" diaginertia="0.000001 0.000001 0.000001" />
+							</body>
+							<body name="center_bottom_led_frame" pos="0.01125 0 -0.0155" >
+								<inertial pos="-0.064243 0.000033 0.01224" mass="0.001" diaginertia="0.000001 0.000001 0.000001" />
+							</body>
+							<body name="left_led_frame" pos="-0.01443 0.07452 0.050346" quat="0.962379 0.019625 -0.072314 0.261173" >
+								<inertial pos="-0.089923 0.074553 0.078086" quat="0.962379 0.019625 -0.072314 0.261173" mass="0.001" diaginertia="0.000001 0.000001 0.000001" />
+							</body>
+							<body name="right_led_frame" pos="-0.01443 -0.07452 0.050346" quat="0.962379 -0.019625 -0.072314 -0.261173" >
+								<inertial pos="-0.089923 -0.074487 0.07908" quat="0.962379 -0.019625 -0.072314 -0.261173" mass="0.001" diaginertia="0.000001 0.000001 0.000001" />
+							</body>
+							<body name="head_imu_link" pos="-0.0475 0.035 0" >
+								<inertial pos="-0.122993 0.035033 0.02774" mass="0.001" diaginertia="0.000001 0.000001 0.000001" />
+								<geom type="box" contype="0" pos="0 0 0" size="0.005 0.005 0.005" />
+							</body>
+						</body>
+						<body name="r_clav" pos="0.024 -0.221 0.289" >
+							<inertial pos="0.014 -0.058 0.029" quat="-0.137950 0.693520 0.137950 0.693520" mass="2.369" diaginertia="0.007 0.006414 0.003586" />
+							<joint name="r_arm_usy" type="hinge" pos="0 0 0" axis="0 0.500000 -0.866025" range="-1.9635 1.9635" user="0 0.5" stiffness="0"/>
+							<geom group="1"  contype="0" pos="-0.000934 -0.001693 0.069243" quat="0.414472 0.573149 0.415305 0.572044" mesh="r_clav" />
+							<!--geom type="cylinder" pos="0 -0.0697 0.0261" quat="0.707107 0 0.707107 0" size="0.045 0.07625" />
+							<geom type="box" pos="-0.005 0.0074 -0.0538" quat="0.866025 -0.500001 0 0" size="0.065 0.075 0.025" /-->
+							<body name="r_scap" pos="0 -0.075 0.036" >
+								<inertial pos="-0.002 -0.108 0" quat="0.5 0.5 -0.5 0.5" mass="2.707" diaginertia="0.013 0.01 0.005" />
+								<joint name="r_arm_shx" type="hinge" pos="0 0 0" axis="1 0 0" range="-1.74533 1.39626" user="0 1" stiffness="0"/>
+								<geom group="1"  contype="0" mesh="r_scap" />
+								<!--geom type="cylinder" pos="0.001 -0.12651 0.01521" quat="0.707107 0.707107 0 0" size="0.045 0.0625" /-->
+								<geom type="box" pos="0.001 -0.05 0.016" size="0.075 0.075 0.03" />
+								<body name="r_uarm" pos="0 -0.185 0" >
+									<inertial pos="0.007 -0.114 0.008" quat="0.5 0.5 0.5 0.5" mass="1.881" diaginertia="0.003 0.003 0.002" />
+									<joint name="r_arm_ely" type="hinge" pos="0 0 0" axis="0 1 0" range="0 3.14159" user="0 1.5" stiffness="0"/>
+									<geom group="1"  contype="0" mesh="r_uarm" />
+									<geom type="cylinder" pos="0.001 -0.111 0" quat="0.707105 0 0.707108 0" size="0.045 0.0625" />
+									<!--geom type="box" pos="0.001 -0.043 0.01" quat="0.707107 0 0.707107 0" size="0.02 0.035 0.065" /-->
+									<body name="r_larm" pos="0 -0.121 0.013" >
+										<inertial pos="-0.003 -0.099 -0.014" quat="0.5 0.5 -0.5 0.5" mass="2.148" diaginertia="0.006 0.005 0.003" />
+										<joint name="r_arm_elx" type="hinge" pos="0 0 0" axis="1 0 0" range="-2.35619 0" user="0 -1" stiffness="0"/>
+										<geom group="1"  contype="0" mesh="r_larm" />
+										<!--geom type="cylinder" pos="0.001 -0.127 0" quat="0.707107 0.707107 0 0" size="0.045 0.0625" /-->
+										<geom type="box" pos="0.001 -0.051 0" size="0.0675 0.075 0.03" />
+										<body name="r_farm" pos="0 -0.188 -0.013" >
+											<inertial pos="0 -0.041 0" quat="0.707107 0.707107 0 0" mass="0.981" diaginertia="0.003 0.003 0.001" />
+											<joint name="r_arm_uwy" type="hinge" pos="0 0 0" axis="0 1 0" range="-1.571 1.571" stiffness="0" />
+											<geom group="1"  contype="0" pos="0.000654 0.018685 -0.001301" quat="0.707067 0.707069 -0.007393 -0.007393" mesh="r_farm" />
+											<!--geom type="cylinder" pos="0 -0.065 0.004" quat="0.707105 0 0.707108 0" size="0.045 0.0625" />
+											<geom type="box" pos="0.001 -0.015 -0.002" size="0.0675 0.05 0.0225" /-->
+											<body name="r_hand" pos="0 -0.058 0" >
+												<inertial pos="0 -0.093 0" quat="0.707107 0.707107 0 0" mass="2.263" diaginertia="0.01 0.01 0.002" />
+												<joint name="r_arm_mwx" type="hinge" pos="0 0 0" axis="1 0 0" range="-1.571 0.436" user="9001" stiffness="0"/>
+												<geom group="1"  contype="0" mesh="r_hand" />
+												<geom type="cylinder" pos="0.001 -0.1 0.01" quat="0.707107 0.707107 0 0" size="0.03 0.025" />
+												<geom type="box" pos="0.001 -0.05 0.01" size="0.065 0.045 0.035" />
+												
+												<!-- ========== INCLUDE A HAND HERE ========== -->
+												<!--<include file="../sandiaHand/include_sandia_right_hand_chain.xml"/>-->
+											</body>
+										</body>
+									</body>
+								</body>
+							</body>
+						</body>
+					</body>
+				</body>
+			</body>
+			<body name="l_uglut" pos="0 0.089 0" >
+				<inertial pos="0.005293 -0.003447 0.003130" quat="1.000000 -0.000002 0.000547 -0.000001" mass="1.51622" diaginertia="0.019094 0.019094 0.019094" />
+				<joint name="l_leg_uhz" type="hinge" pos="0 0 0" axis="0 0 1" range="-0.32 1.14" />
+				<geom group="1"  contype="0" mesh="l_uglut" />
+				<!--geom type="cylinder" pos="0 0 0" quat="0.707107 0 0.707107 0" size="0.019096 0.039198" />
+				<geom type="cylinder" pos="0 0 0" size="0.019841 0.040421" /-->
+				<body name="l_lglut" pos="0 0 0" >
+					<inertial pos="0.013334 0.017048 -0.031205" quat="0.999977 0.006717 -0.000034 -0.000401" mass="0.803" diaginertia="0.023308 0.023308 0.023308" />
+					<joint name="l_leg_mhx" type="hinge" pos="0 0 0" axis="1 0 0" range="-0.47 0.495" />
+					<geom group="1"  contype="0" mesh="l_lglut" />
+					<!--geom type="cylinder" pos="0.049968 0.022488 -0.050117" quat="0.707107 0.707107 0 0" size="0.020097 0.030153" />
+					<geom type="cylinder" pos="0 0 0" quat="0.707107 0 0.707107 0" size="0.02 0.06" /-->
+					<body name="l_uleg" pos="0.05 0 -0.05" >
+						<inertial pos="0 0 -0.21" quat="0.707107 0 0 0.707107" mass="7.227" diaginertia="0.047502 0.047502 0.047502" />
+						<joint name="l_leg_lhy" type="hinge" pos="0 0 0" axis="0 1 0" range="-1.75 0.524"/>
+						<geom group="1"  contype="0" mesh="l_uleg" />
+						<geom type="cylinder" pos="-0.0179 0.02085 -0.13" size="0.1 0.05" />
+						<geom type="capsule" pos="-0.03 0.01 -0.23" quat="0.988771 0 -0.149438 0" size="0.07 0.075" />
+						<geom type="capsule" pos="-0.005 0.01 -0.23" quat="0.988771 0 0.149438 0" size="0.07 0.075" />
+						<!--geom type="cylinder" pos="-0.02 0.03 -0.23" quat="0.992198 -0.124675 0 0" size="0.07 0.075" /-->
+						<body name="l_lleg" pos="-0.05 0 -0.374" >
+							<inertial pos="0.001 0 -0.187" quat="0.999751 0 0.022327 0" mass="4.367" diaginertia="0.077134 0.076 0.009866" />
+							<joint name="l_leg_kny" type="hinge" pos="0 0 0" axis="0 1 0" range="0 2.45"/>
+							<geom group="1"  contype="0" mesh="l_lleg" />
+							<geom type="capsule" pos="0.02 0.00295 -0.18" quat="0.998750 0 0.049979 0" size="0.07 0.2" />
+							<site name="lkneecap" pos="0 0 0.1" />
+							<body name="l_talus" pos="0 0 -0.422" >
+								<inertial pos="0 0 0" quat="0 0.707107 0 0.707107" mass="0.867" diaginertia="0.004007 0.003504 0.001" />
+								<joint name="l_leg_uay" type="hinge" pos="0 0 0" axis="0 1 0" range="-0.698 0.698" />
+								<geom group="1"  contype="0" mesh="l_talus" />
+								<!--geom type="cylinder" pos="0 0 0" quat="0.707107 0 0.707107 0" size="0.010181 0.014771" />
+								<geom type="cylinder" pos="0 0 0" quat="0.707107 0.707107 0 0" size="0.010348 0.005030" /-->
+								<body name="l_foot" pos="0 0 0"  user ="-6007">
+									<inertial pos="0.027 0 -0.067" quat="0 0.707107 0 0.707107" mass="0.867" diaginertia="0.004007 0.003504 0.002" />
+									<joint name="l_leg_lax" type="hinge" pos="0 0 0" axis="1 0 0" range="-0.436 0.436" />
+									<geom group="1"  contype="0" mesh="l_foot" />
+									<geom type="box" pos="0.048 0 -0.056119" size="0.13 0.062443 0.025" />
+									<site name="r_foot_target" pos="0.4 -0.08 -0.05"/>
+									<site name="l_foot_toes" pos="0.18 0 -0.09"/>
+								</body>
+							</body>
+						</body>
+					</body>
+				</body>
+			</body>
+			<body name="r_uglut" pos="0 -0.089 0" >
+				<inertial pos="0.005293 0.003447 0.003130" quat="1.000000 0.000002 0.000547 0.000001" mass="1.51622" diaginertia="0.019094 0.019094 0.019094" />
+				<joint name="r_leg_uhz" type="hinge" pos="0 0 0" axis="0 0 1" range="-1.14 0.32" />
+				<geom group="1"  contype="0" mesh="r_uglut" />
+				<!--geom type="cylinder" pos="0 0 0" quat="0.707107 0 0.707107 0" size="0.019096 0.039198" />
+				<geom type="cylinder" pos="0 0 0" size="0.019841 0.040421" /-->
+				<body name="r_lglut" pos="0 0 0" >
+					<inertial pos="0.013334 -0.017048 -0.031205" quat="0.999977 -0.006717 -0.000034 0.000401" mass="0.803" diaginertia="0.023308 0.023308 0.023308" />
+					<joint name="r_leg_mhx" type="hinge" pos="0 0 0" axis="1 0 0" range="-0.495 0.47" />
+					<geom group="1"  contype="0" mesh="r_lglut" />
+					<!--geom type="cylinder" pos="0.049968 -0.022488 -0.050117" quat="0.707107 0.707107 0 0" size="0.020097 0.030153" />
+					<geom type="cylinder" pos="0 0 0" quat="0.707107 0 0.707107 0" size="0.02 0.06" /-->
+					<body name="r_uleg" pos="0.05 0 -0.05" >
+						<inertial pos="0 0 -0.21" quat="0.707107 0 0 0.707107" mass="7.227" diaginertia="0.047502 0.047502 0.047502" />
+						<joint name="r_leg_lhy" type="hinge" pos="0 0 0" axis="0 1 0" range="-1.745 0.524"/>
+						<geom 	group="1"  contype="0" mesh="r_uleg" />
+						<geom type="cylinder" pos="-0.0179 -0.02085 -0.13" size="0.1 0.05" />
+						<geom type="capsule" pos="-0.03 -0.01 -0.23" quat="0.988771 0 -0.149438 0" size="0.07 0.075" />
+						<geom type="capsule" pos="-0.005 -0.01 -0.23" quat="0.988771 0 0.149438 0" size="0.07 0.075" />
+						<!--geom type="cylinder" pos="-0.02 -0.03 -0.23" quat="0.992198 0.124675 0 0" size="0.07 0.075" /-->
+						<body name="r_lleg" pos="-0.05 0 -0.374" >
+							<inertial pos="0.001 0 -0.187" quat="0.999751 0 0.022327 0" mass="4.367" diaginertia="0.077134 0.076 0.009866" />
+							<joint name="r_leg_kny" type="hinge" pos="0 0 0" axis="0 1 0" range="0 2.45"/>
+							<geom group="1"  contype="0" mesh="r_lleg" />
+							<geom type="capsule" pos="0.02 -0.00295 -0.18" quat="0.998750 0 0.049979 0" size="0.07 0.2" />
+							<site name="rkneecap" pos="0 0 0.1" />
+							<body name="r_talus" pos="0 0 -0.422" >
+								<inertial pos="0 0 0" quat="0 0.707107 0 0.707107" mass="0.867" diaginertia="0.004007 0.003504 0.001" />
+								<joint name="r_leg_uay" type="hinge" pos="0 0 0" axis="0 1 0" range="-0.698 0.698" />
+								<geom group="1"  contype="0" mesh="r_talus" />
+								<!--geom type="cylinder" pos="0 0 0" quat="0.707107 0 0.707107 0" size="0.010181 0.014771" />
+								<geom type="cylinder" pos="0 0 0" quat="0.707107 0.707107 0 0" size="0.010348 0.005030" /-->
+								<body name="r_foot" pos="0 0 0"  user ="-6008">
+									<inertial pos="0.027 0 -0.067" quat="0 0.707107 0 0.707107" mass="0.867" diaginertia="0.004007 0.003504 0.002" />
+									<joint name="r_leg_lax" type="hinge" pos="0 0 0" axis="1 0 0" range="-0.436 0.436" />
+									<geom group="1"  contype="0" mesh="r_foot" />
+									<geom type="box" pos="0.048 0 -0.056119" size="0.13 0.062443 0.025" />
+									<site name="r_foot_toes" pos="0.18 0 -0.09"/>
+									<site name="l_foot_target" pos="0.4 0.08 -0.05"/>
+								</body>
+							</body>
+						</body>
+					</body>
+				</body>
+			</body>
+			<body name="imu_link" pos="0.059915 0 -0.01415" >
+				<inertial pos="0 0 0" mass="0.1" diaginertia="0.001 0.001 0.001" />
+				<!--geom type="box" contype="0" pos="0 0 0" size="0.005 0.005 0.005" /-->
+			</body>
+		</body>
+		
+	</worldbody>
+
+
+	<actuator>
+		<motor name="back_lbz_actuator" joint="back_lbz" gear="124"/>
+		<motor name="back_mby_actuator" joint="back_mby" gear="206"/>
+		<motor name="back_ubx_actuator" joint="back_ubx" gear="95"/>
+		<motor name="l_arm_usy_actuator" joint="l_arm_usy" gear="212"/>
+		<motor name="l_arm_shx_actuator" joint="l_arm_shx" gear="170"/>
+		<motor name="l_arm_ely_actuator" joint="l_arm_ely" gear="114"/>
+		<motor name="l_arm_elx_actuator" joint="l_arm_elx" gear="114"/>
+		<motor name="l_arm_uwy_actuator" joint="l_arm_uwy" gear="114"/>
+		<motor name="l_arm_mwx_actuator" joint="l_arm_mwx" gear="60"/>
+		<motor name="neck_ay_actuator" 	 joint="neck_ay" 	gear="5"/>
+		<motor name="r_arm_usy_actuator" joint="r_arm_usy" gear="212"/>
+		<motor name="r_arm_shx_actuator" joint="r_arm_shx" gear="170"/>
+		<motor name="r_arm_ely_actuator" joint="r_arm_ely" gear="114"/>
+		<motor name="r_arm_elx_actuator" joint="r_arm_elx" gear="114"/>
+		<motor name="r_arm_uwy_actuator" joint="r_arm_uwy" gear="114"/>
+		<motor name="r_arm_mwx_actuator" joint="r_arm_mwx" gear="60"/>
+		<motor name="l_leg_uhz_actuator" joint="l_leg_uhz" gear="110"/>
+		<motor name="l_leg_mhx_actuator" joint="l_leg_mhx" gear="180"/>
+		<motor name="l_leg_lhy_actuator" joint="l_leg_lhy" gear="260"/>
+		<motor name="l_leg_kny_actuator" joint="l_leg_kny" gear="400"/>
+		<motor name="l_leg_uay_actuator" joint="l_leg_uay" gear="220"/>
+		<motor name="l_leg_lax_actuator" joint="l_leg_lax" gear="90"/>
+		<motor name="r_leg_uhz_actuator" joint="r_leg_uhz" gear="110"/>
+		<motor name="r_leg_mhx_actuator" joint="r_leg_mhx" gear="180"/>
+		<motor name="r_leg_lhy_actuator" joint="r_leg_lhy" gear="260"/>
+		<motor name="r_leg_kny_actuator" joint="r_leg_kny" gear="400"/>
+		<motor name="r_leg_uay_actuator" joint="r_leg_uay" gear="220"/>
+		<motor name="r_leg_lax_actuator" joint="r_leg_lax" gear="90"/>
+	</actuator>
+	
+</mujoco>
