@@ -3,6 +3,7 @@ rl/imitation/
 rl/expert/
 figures/
 results/
+human/
 # scripts/
 scratch/
 .sync*

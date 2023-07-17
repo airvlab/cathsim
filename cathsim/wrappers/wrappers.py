@@ -10,24 +10,32 @@ from dm_env import specs
 
 
 def convert_dm_control_to_gym_space(dm_control_space):
-    r"""Convert dm_control space to gym space. """
+    r"""Convert dm_control space to gym space."""
     if isinstance(dm_control_space, specs.BoundedArray):
         if len(dm_control_space.shape) > 1:
-            space = spaces.Box(low=0,
-                               high=255,
-                               shape=dm_control_space.shape,
-                               dtype=dm_control_space.dtype)
+            space = spaces.Box(
+                low=0,
+                high=255,
+                shape=dm_control_space.shape,
+                dtype=dm_control_space.dtype,
+            )
         else:
-            space = spaces.Box(low=dm_control_space.minimum,
-                               high=dm_control_space.maximum,
-                               shape=dm_control_space.shape,
-                               dtype=np.float32)
+            space = spaces.Box(
+                low=dm_control_space.minimum,
+                high=dm_control_space.maximum,
+                shape=dm_control_space.shape,
+                dtype=np.float32,
+            )
         return space
-    elif isinstance(dm_control_space, specs.Array) and not isinstance(dm_control_space, specs.BoundedArray):
-        space = spaces.Box(low=-float('inf'),
-                           high=float('inf'),
-                           shape=dm_control_space.shape,
-                           dtype=np.float32)
+    elif isinstance(dm_control_space, specs.Array) and not isinstance(
+        dm_control_space, specs.BoundedArray
+    ):
+        space = spaces.Box(
+            low=-float("inf"),
+            high=float("inf"),
+            shape=dm_control_space.shape,
+            dtype=np.float32,
+        )
         return space
     elif isinstance(dm_control_space, dict):
         space = spaces.Dict()
@@ -39,21 +47,24 @@ def convert_dm_control_to_gym_space(dm_control_space):
 class DMEnvToGymWrapper(gym.Env):
     """Wrapper for dm_control environments to be used with OpenAI gym."""
 
-    spec = EnvSpec('CathSim-v0', max_episode_steps=300)
+    spec = EnvSpec("CathSim-v0", max_episode_steps=300)
 
     def __init__(self, env: composer.Environment, env_kwargs: dict = {}) -> gym.Env:
-
         self._env = env
-        self.metadata = {'render.modes': ['rgb_array'],
-                         'video.frames_per_second': round(1.0 / self._env.control_timestep())}
+        self.metadata = {
+            "render.modes": ["rgb_array"],
+            "video.frames_per_second": round(1.0 / self._env.control_timestep()),
+        }
 
         self.env_kwargs = env_kwargs
         self.image_size = self._env.task.image_size
 
         self.action_space = convert_dm_control_to_gym_space(
-            self._env.action_spec(), )
+            self._env.action_spec(),
+        )
         self.observation_space = convert_dm_control_to_gym_space(
-            self._env.observation_spec(), )
+            self._env.observation_spec(),
+        )
 
         self.viewer = None
         self.include_contact_forces = False
@@ -72,7 +83,7 @@ class DMEnvToGymWrapper(gym.Env):
             forces=self.force.copy(),
         )
         if self.include_contact_forces:
-            info['contact_forces'] = self.contact_forces.copy()
+            info["contact_forces"] = self.contact_forces.copy()
         return observation, reward, done, info
 
     def reset(self):
@@ -82,8 +93,7 @@ class DMEnvToGymWrapper(gym.Env):
 
     def render(self, mode="rgb_array", image_size=None):
         image_size = image_size if image_size else self.image_size
-        img = self._env.physics.render(
-            height=image_size, width=image_size, camera_id=0)
+        img = self._env.physics.render(height=image_size, width=image_size, camera_id=0)
         return img
 
     def close(self):
@@ -128,7 +138,7 @@ class DMEnvToGymWrapper(gym.Env):
 
 
 class GoalEnvWrapper(gym.ObservationWrapper):
-    """ Wraps a Gym environment into a GoalEnv"""
+    """Wraps a Gym environment into a GoalEnv"""
 
     def __init__(self, env: gym.Env):
         super().__init__(env)
@@ -136,18 +146,22 @@ class GoalEnvWrapper(gym.ObservationWrapper):
 
         self.observation_space = gym.spaces.Dict(
             **self._env.observation_space.spaces,
-            desired_goal=spaces.Box(low=-np.inf, high=np.inf, shape=self._env.target.shape, dtype=np.float32),
-            achieved_goal=spaces.Box(low=-np.inf, high=np.inf, shape=self._env.target.shape, dtype=np.float32),
+            desired_goal=spaces.Box(
+                low=-np.inf, high=np.inf, shape=self._env.target.shape, dtype=np.float32
+            ),
+            achieved_goal=spaces.Box(
+                low=-np.inf, high=np.inf, shape=self._env.target.shape, dtype=np.float32
+            ),
         )
 
-        print('\nGoalEnvWrapper Observation Space:')
+        print("\nGoalEnvWrapper Observation Space:")
         for key, value in self.observation_space.spaces.items():
             print("\t", key, type(value))
 
     def observation(self, observation):
         obs = observation.copy()
-        obs['desired_goal'] = self.goal
-        obs['achieved_goal'] = self._env.head_pos
+        obs["desired_goal"] = self.goal
+        obs["achieved_goal"] = self._env.head_pos
         return obs
 
     @property
@@ -170,14 +184,13 @@ class Dict2Array(gym.ObservationWrapper):
 
 
 class MultiInputImageWrapper(gym.ObservationWrapper):
-
     def __init__(
         self,
         env: gym.Env,
         grayscale: bool = False,
         keep_dim: bool = True,
         channel_first: bool = False,
-        image_key: str = 'pixels',
+        image_key: str = "pixels",
     ):
         super(MultiInputImageWrapper, self).__init__(env)
         self.grayscale = grayscale
@@ -198,13 +211,12 @@ class MultiInputImageWrapper(gym.ObservationWrapper):
                 else:
                     shape = (image_space.shape[0], image_space.shape[1], 1)
                 image_space = spaces.Box(
-                    low=0, high=255,
-                    shape=shape,
-                    dtype=image_space.dtype
+                    low=0, high=255, shape=shape, dtype=image_space.dtype
                 )
             else:
                 image_space = spaces.Box(
-                    low=0, high=255,
+                    low=0,
+                    high=255,
                     shape=(image_space.shape[0], image_space.shape[1]),
                     dtype=image_space.dtype,
                 )
@@ -226,20 +238,21 @@ if __name__ == "__main__":
     from cathsim.cathsim.env_utils import make_dm_env
     from dm_control import composer
     from rl.utils import get_config
+
     # from stable_baselines3.common.env_checker import check_env
 
-    config = get_config('full')
-    env = make_dm_env(**config['task_kwargs'])
+    config = get_config("full")
+    env = make_dm_env(**config["task_kwargs"])
     env = DMEnvToGymWrapper(env)
     env = GoalEnvWrapper(env)
     env = MultiInputImageWrapper(env, grayscale=True)
     # check_env(env, warn=True)
 
     obs = env.reset()
-    print('\nReset Observation Space:')
+    print("\nReset Observation Space:")
     for key, value in obs.items():
         print("\t", key, value.shape, value.dtype)
-    print('\n')
+    print("\n")
 
     for i in range(1):
         action = env.action_space.sample()
