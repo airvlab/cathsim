@@ -12,7 +12,7 @@
 
 
 ## Requirements
-1. Ubuntu based system
+1. Ubuntu based system (tested on Ubuntu 22.04)
 2. Conda
 
 
@@ -66,12 +66,17 @@ for _ in range(1):
         print(info_key, info[info_key])
 ```
 
+For a list of the environment libraries at the current time, see the accompanying `environment.yml`
+
 ## Training 
 
-In order to train the modells available run:
+In order to train the models available run:
+
 ```bash
 bash ./scripts/train.sh
 ```
+
+The evaluation data along with the tensorboard information and the models will then be placed in `./results/`.
 
 ## Contributors
 - [Tudor Jianu](https://tudorjnu.github.io/)
