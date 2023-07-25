@@ -6,6 +6,8 @@ import trimesh
 from pathlib import Path
 import random
 
+# from typing import List,
+
 
 from dm_control import mjcf
 from dm_control import mujoco
@@ -133,6 +135,24 @@ class Scene(composer.Arena):
         return site
 
 
+class UniformCircle(variation.Variation):
+    def __init__(
+        self,
+        x_range: tuple[int] = (-0.001, 0.001),
+        y_range: tuple[int] = (-0.001, 0.001),
+        z_range: tuple[int] = (-0.001, 0.001),
+    ):
+        self._x_distrib = distributions.Uniform(*x_range)
+        self._y_distrib = distributions.Uniform(*y_range)
+        self._z_distrib = distributions.Uniform(*z_range)
+
+    def __call__(self, initial_value=None, current_value=None, random_state=None):
+        x_pos = variation.evaluate(self._x_distrib, random_state=random_state)
+        y_pos = variation.evaluate(self._y_distrib, random_state=random_state)
+        z_pos = variation.evaluate(self._z_distrib, random_state=random_state)
+        return (x_pos, y_pos, z_pos)
+
+
 class Navigate(composer.Task):
     def __init__(
         self,
@@ -149,6 +169,7 @@ class Navigate(composer.Task):
         sample_target: bool = False,
         visualize_sites: bool = False,
         target_from_sites: bool = True,
+        random_init_distance: float = 0.001,
         target=None,
     ):
         self.delta = delta
@@ -161,6 +182,7 @@ class Navigate(composer.Task):
         self.sample_target = sample_target
         self.visualize_sites = visualize_sites
         self.target_from_sites = target_from_sites
+        self.random_init_distance = random_init_distance
 
         self._arena = Scene("arena")
         if phantom is not None:
@@ -174,13 +196,16 @@ class Navigate(composer.Task):
             self._arena.attach(self._guidewire)
 
         # Configure initial poses
-        self._guidewire_initial_pose = [0, 0, 0]
+        self._guidewire_initial_pose = UniformCircle(
+            x_range=(-random_init_distance, random_init_distance),
+            y_range=(-random_init_distance, random_init_distance),
+            z_range=(-random_init_distance, random_init_distance),
+        )
 
         # Configure variators
         self._mjcf_variator = variation.MJCFVariator()
         self._physics_variator = variation.PhysicsVariator()
 
-        # Configure and enable observables
         pos_corrptor = noises.Additive(distributions.Normal(scale=0.0001))
         vel_corruptor = noises.Multiplicative(distributions.LogNormal(sigma=0.0001))
 
@@ -461,6 +486,7 @@ if __name__ == "__main__":
     for episode in range(2):
         time_step = env.reset()
         print(env._task.target_pos)
+        print(env._task.get_head_pos(env._physics))
         for step in range(2):
             action = random_policy(time_step)
             img = env.physics.render(height=480, width=480, camera_id=0)
