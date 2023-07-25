@@ -36,6 +36,9 @@ setup(
         "mergedeep",
         "progressbar2",
         "progress",
+        "trimesh",
+        "rtree",
+        "toolz",
     ],
     extras_require={
         "dev": extra_dev,
