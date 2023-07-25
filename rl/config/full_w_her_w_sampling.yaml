@@ -4,6 +4,7 @@ task_kwargs:
   use_segment: True
   sample_target: True
   target_from_sites: False
+  dense_reward: True
 
 wrapper_kwargs:
   use_obs:

@@ -2,7 +2,11 @@
 task_kwargs:
   use_pixels: True
   use_segment: True
-  random_init_distance: 0
+  sample_target: True
+  target_from_sites: True
+  dense_reward: True
+  random_init_distance: 0.002
+
 
 wrapper_kwargs:
   use_obs:
@@ -11,7 +15,5 @@ wrapper_kwargs:
     - 'joint_pos'
     - 'joint_vel'
 
-
-
-
-
+algo_kwargs:
+  replay_buffer_class: 'HerReplayBuffer'
