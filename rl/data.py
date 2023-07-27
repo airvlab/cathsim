@@ -8,60 +8,45 @@ import torch
 from torch.utils import data
 import pprint
 from toolz import dicttoolz
-
-
-def flatten_dict(d: dict, parent_key: str = None) -> dict:
-    acc = {}
-    for k, v in d.items():
-        if parent_key:
-            k = parent_key + "-" + k
-        if isinstance(v, dict):
-            flatten_dict(v, k)
-        else:
-            acc[k] = v
-    return acc
-
-
-def mapd(d: dict, fn: callable, key: str = None) -> dict:
-    def map(d: dict, acc: dict):
-        for k, v in d.items():
-            if not isinstance(v, dict):
-                acc[k] = fn(v)
-            else:
-                acc[k] = map(v, {})
-        return acc
-
-    return map(d, {})
-
-
-def expand_dict(xd: dict, yd: dict) -> dict:
-    zd = {}
-    for k, v in xd.items():
-        if isinstance(v, dict):
-            zd[k] = expand_dict(v, yd[k])
-        else:
-            zd[k] = xd[k] + [yd[k]]
-    return zd
+from toolz.dicttoolz import itemmap
+from cathsim.utils.common import flatten_dict, expand_dict
 
 
 class Trajectory:
-    def __init__(self, keys=None, image_size=480):
-        self.data = {key: [] for key in keys} if keys is not None else None
+    def __init__(self, image_size=480, **kwargs):
+        self.data = kwargs or self._initialize(kwargs)
 
     def __str__(self):
-        d = self.data.copy()
-        d = dicttoolz.valmap(
-            lambda x: x if isinstance(x, np.ndarray) else np.array(x), d
-        )
-        d = dicttoolz.valmap(lambda x: x.shape, d)
-        return pprint.pformat(d)
+        def fn(item):
+            k, v = item
+            if isinstance(v, dict):
+                return (k, itemmap(fn, v))
+            else:
+                return (k, v.shape if isinstance(v, np.ndarray) else np.array(v).shape)
+
+        return pprint.pformat(itemmap(fn, self.data))
 
     def __len__(self):
-        dict_keys = list(self.data)
-        return len(self.data[dict_keys[0]])
+        def find_len(d: dict):
+            for k, v in self.data.items():
+                if isinstance(v, list) or isinstance(v, np.ndarray):
+                    return len(v)
+                elif isinstance(v, dict):
+                    return find_len(v)
+                else:
+                    raise TypeError(f"dict_val is not a np.ndarray or list: {type(v)}")
+
+        return find_len(self.data)
 
     def _initialize(self, d: dict):
-        self.data = mapd(d, lambda x: [])
+        def fn(item):
+            k, v = item
+            if isinstance(v, dict):
+                return (k, itemmap(fn, v))
+            else:
+                return (k, [])
+
+        self.data = itemmap(fn, d)
 
     @staticmethod
     def from_dict(data):
@@ -78,17 +63,19 @@ class Trajectory:
         self.data = flatten_dict(self.data)
         return self
 
-    def apply(self, fn: callable, key: int = None):
-        if key is not None:
-            self.data = dicttoolz.itemmap(
-                lambda item: (item[0], fn(item[1])) if item[0] == key else item,
-                self.data,
-            )
-        else:
-            self.data = dicttoolz.valmap(
-                lambda v: fn(v),
-                self.data,
-            )
+    def apply(self, fn: callable, key: str = None):
+        def gn(item):
+            k, v = item
+            if isinstance(v, dict):
+                return (k, itemmap(gn, v))
+            else:
+                if key is None:
+                    return (k, fn(v))
+                else:
+                    return (k, fn(v) if k == key else v)
+
+        self.data = itemmap(gn, self.data)
+
         return self
 
     def save(self, file_path):
@@ -133,21 +120,18 @@ def generate_trajectory(
     while not done:
         act, _ = model.predict(obs)
         next_obs, reward, done, info = env.step(act)
-        trajectory.add_transition(
-            obs=obs, act=act, next_obs=next_obs, reward=reward, info=info
-        )
-        print(trajectory)
+        trajectory.add_transition(obs=obs, act=act, reward=reward, info=info)
     return trajectory
 
 
-def generate_trajectories(algorithm_path: Path, n_episodes: int = 2):
+def generate_trajectories(algorithm_path: Path, n_episodes: int = 20):
     from stable_baselines3 import SAC
     from rl.utils import get_config, make_experiment
     from cathsim.cathsim.env_utils import make_gym_env
 
     model_path, _, eval_path = make_experiment(
         algorithm_path,
-        base_path=Path.cwd() / Path("experiments/"),
+        base_path=Path.cwd() / Path("results/experiments/"),
     )
     print(model_path)
 
@@ -171,14 +155,14 @@ def generate_trajectories(algorithm_path: Path, n_episodes: int = 2):
 
 
 if __name__ == "__main__":
-    generate_trajectories(Path("phantom3/bca/full"))
+    # generate_trajectories(Path("phantom3/bca/full"))
     trajectories_path = Path.cwd() / Path("transitions/")
     trajectories = list(trajectories_path.iterdir())
-    traj_1 = Trajectory.load(trajectories[0])
-    print(traj_1.data)
-    print(traj_1)
-    traj_1 = traj_1.apply(lambda x: np.array(x))
-    print(traj_1.data["info"][0])
-    print(traj_1)
-    td = TrajectoriesDataset(trajectories=trajectories, lazy_load=False)
-    td_loader = data.DataLoader(td, batch_size=2)
+    traj_1 = Trajectory.load(trajectories[0]).apply(lambda x: print(len(x)))
+    # print(traj_1.flatten())
+    # print(traj_1)
+    # traj_1 = traj_1.apply(lambda x: np.array(x))
+    # print(traj_1.data["info"][0])
+    # print(traj_1)
+    # td = TrajectoriesDataset(trajectories=trajectories, lazy_load=False)
+    # td_loader = data.DataLoader(td, batch_size=2)
