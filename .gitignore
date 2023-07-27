@@ -4,6 +4,7 @@ rl/expert/
 figures/
 results/
 human/
+experiments/
 # scripts/
 scratch/
 .sync*
