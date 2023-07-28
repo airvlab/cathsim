@@ -1,3 +1,6 @@
+from toolz.dicttoolz import itemmap
+
+
 def flatten_dict(d: dict, parent_key: str = None) -> dict:
     acc = {}
     for k, v in d.items():
@@ -20,3 +23,14 @@ def expand_dict(xd: dict, yd: dict) -> dict:
         else:
             zd[k] = xd[k] + [v]
     return zd
+
+
+def map_val(g: callable, d: dict):
+    def f(item):
+        k, v = item
+        if isinstance(v, dict):
+            return (k, itemmap(f, v))
+        else:
+            return (k, g(v))
+
+    return itemmap(f, d)
