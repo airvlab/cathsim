@@ -2,19 +2,32 @@
 ### [[Project Page](https://RobotVisionAI.github.io/cathsim/)] [[Paper](https://arxiv.org/abs/2208.01455)]
 
 
-![CathSim](./cathsim.png)
+![CathSim](./mics/cathsim_dn.png)
 
 ## Contents
 1. [Requirements](#requirements)
 2. [Installation](#installation)
 3. [Quickstart](#quickstart)
 4. [Training](#training)
+5. [Manual Control](#Manual Control)
+
 
 
 ## Requirements
-1. Ubuntu based system
-2. Conda
+1. Ubuntu (tested with Ubuntu 22.04 LTS)
+2. Miniconda 
 
+If `miniconda` is not installed run the following for a quick Installation. Note: the script assumes you use `bash`.
+
+```bash
+# installing miniconda
+mkdir -p ~/.miniconda3
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/.miniconda3/miniconda.sh
+bash ~/.miniconda3/miniconda.sh -b -u -p ~/.miniconda3
+rm -rf ~/.miniconda3/miniconda.sh
+~/.miniconda3/bin/conda init bash
+source .bashrc
+```
 
 ## Installation
 
@@ -66,12 +79,29 @@ for _ in range(1):
         print(info_key, info[info_key])
 ```
 
+
 ## Training 
 
-In order to train the modells available run:
+In order to train the models available run:
 ```bash
 bash ./scripts/train.sh
 ```
+
+The script will create a results directory on the `cwd`. The script saves the data in `<phantom>/<target>/<model>` format. Each model has three subfolders `eval`, `models` and `logs`, where the evaluation data contains the `np.array` data resulting from the evaluation of the policy, the `models` contains the `pytorch` models and the `logs` contains the `tensorboard` logs.
+
+
+## Manual Control
+Describle how to control the catheter manually with the keyboard here.
+
+
+## TODO's
+- [x] Code refactoring
+- [x] Add fluid simulation
+- [x] Add VR/AR interface through Unity
+- [ ] Implement multiple aortic models
+- [ ] Add guidewire representation
+
+
 
 ## Contributors
 - [Tudor Jianu](https://tudorjnu.github.io/)
