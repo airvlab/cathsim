@@ -2,7 +2,10 @@
 ### [[Project Page](https://RobotVisionAI.github.io/cathsim/)] [[Paper](https://arxiv.org/abs/2208.01455)]
 
 
-![CathSim](./mics/cathsim_dn.gif)
+<div align="center">
+    <a href="https://"><img height="auto" src="/mics/cathsim_dn.gif"></a>
+</div>
+
 
 ## Contents
 1. [Requirements](#requirements)
