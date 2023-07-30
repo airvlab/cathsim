@@ -130,9 +130,11 @@ Please feel free to copy, distribute, display, perform or remix our work but for
 ## Citation
 If you find our paper useful in your research, please consider citing:
 
-	@article{jianu2022cathsim,
-	  title={CathSim: An Open-source Simulator for Endovascular Intervention},
-	  author={Jianu, Tudor and Huang, Baoru and Abdelaziz, Mohamed EMK and Vu, Minh Nhat and Fichera, Sebastiano and Lee, Chun-Yi and Berthet-Rayne, Pierre and Nguyen, Anh and others},
-	  journal={arXiv preprint arXiv:2208.01455},
-	  year={2022}
-	}
+``` bibtex
+@article{jianu2022cathsim,
+  title={CathSim: An Open-source Simulator for Endovascular Intervention},
+  author={Jianu, Tudor and Huang, Baoru and Abdelaziz, Mohamed EMK and Vu, Minh Nhat and Fichera, Sebastiano and Lee, Chun-Yi and Berthet-Rayne, Pierre and Nguyen, Anh and others},
+  journal={arXiv preprint arXiv:2208.01455},
+  year={2022}
+}
+```
