@@ -90,7 +90,7 @@ bash ./scripts/train.sh
 The script will create a results directory on the `cwd`. The script saves the data in `<phantom>/<target>/<model>` format. Each model has three subfolders `eval`, `models` and `logs`, where the evaluation data contains the `np.array` data resulting from the evaluation of the policy, the `models` contains the `pytorch` models and the `logs` contains the `tensorboard` logs.
 
 
-## Control
+## Manual Control
 Describle how to control the catheter manually with the keyboard here.
 
 
