@@ -9,7 +9,7 @@
 2. [Installation](#installation)
 3. [Quickstart](#quickstart)
 4. [Training](#training)
-5. [Manual Control](#Control)
+5. [Manual Control](#manual_control)
 
 
 
