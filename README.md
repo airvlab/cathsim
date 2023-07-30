@@ -2,14 +2,14 @@
 ### [[Project Page](https://RobotVisionAI.github.io/cathsim/)] [[Paper](https://arxiv.org/abs/2208.01455)]
 
 
-![CathSim](./mics/cathsim_dn.png)
+![CathSim](./mics/cathsim_dn.gif)
 
 ## Contents
 1. [Requirements](#requirements)
 2. [Installation](#installation)
 3. [Quickstart](#quickstart)
 4. [Training](#training)
-5. [Manual Control](#Manual Control)
+5. [Manual Control](#Control)
 
 
 
