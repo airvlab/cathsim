@@ -20,6 +20,7 @@
 
 If `miniconda` is not installed run the following for a quick Installation. Note: the script assumes you use `bash`.
 
+**DO NOT USE latest version, https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh, specify version you used**
 ```bash
 # installing miniconda
 mkdir -p ~/.miniconda3
@@ -121,3 +122,14 @@ Describle how to control the catheter manually with the keyboard here.
 
 ## License
 Please feel free to copy, distribute, display, perform or remix our work but for non-commercial porposes only.
+
+
+## Citation
+If you find our paper useful in your research, please consider citing:
+
+	@article{jianu2022cathsim,
+	  title={CathSim: An Open-source Simulator for Endovascular Intervention},
+	  author={Jianu, Tudor and Huang, Baoru and Abdelaziz, Mohamed EMK and Vu, Minh Nhat and Fichera, Sebastiano and Lee, Chun-Yi and Berthet-Rayne, Pierre and Nguyen, Anh and others},
+	  journal={arXiv preprint arXiv:2208.01455},
+	  year={2022}
+	}
