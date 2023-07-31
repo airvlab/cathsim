@@ -162,6 +162,7 @@ def cmd_visualize_agent(args=None):
     # from scratch.bc.custom_networks import CustomPolicy
     parser = ap.ArgumentParser()
     parser.add_argument("--config", type=str, default="full")
+    parser.add_argument("--base-path", type=str, default="./results/experiments/")
     parser.add_argument("--phantom", type=str, default="phantom3")
     parser.add_argument("--target", type=str, default="bca")
     parser.add_argument("--seed", type=int, default=None)
@@ -178,7 +179,7 @@ def cmd_visualize_agent(args=None):
 
     path = Path(f"{args.phantom}/{args.target}/{args.config}")
     config = get_config(args.config)
-    model_path, log_path, eval_path = make_experiment(path)
+    model_path, log_path, eval_path = make_experiment(path, base_path=args.base_path)
 
     if args.seed is None:
         model_path = model_path / algo
@@ -208,7 +209,7 @@ def cmd_visualize_agent(args=None):
         env = make_gym_env(config=config)
         model = ALGOS[algo].load(model_path)
 
-    for episode in range(1):
+    for episode in range(10):
         obs = env.reset()
         done = False
         frames = []

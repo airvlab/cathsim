@@ -155,7 +155,6 @@ class TrajectoriesDataset(data.Dataset):
     def __getitem__(self, idx):
         trajectory = self.trajectories[idx]["head_pos"]
         trajectory = list(trajectory.values())[0]
-        print(trajectory.shape)
         start = trajectory[0]
         goal = trajectory[-1]
         trajectory = self.patch_trajectory(trajectory)
@@ -174,15 +173,15 @@ def generate_trajectory(
     obs = env.reset()
     done = False
     while not done:
-        act, _ = model.predict(obs)
+        act, _states = model.predict(obs)
         next_obs, reward, done, info = env.step(act)
         trajectory.add_transition(obs=obs, act=act, reward=reward, info=info)
+        obs = next_obs
     trajectory.add_transition(obs=obs)
-    print(trajectory)
     return trajectory
 
 
-def generate_trajectories(algorithm_path: Path, n_episodes: int = 20):
+def generate_trajectories(algorithm_path: Path, n_episodes: int = 10_000):
     from stable_baselines3 import SAC
     from rl.utils import get_config, make_experiment
     from cathsim.cathsim.env_utils import make_gym_env
@@ -199,21 +198,21 @@ def generate_trajectories(algorithm_path: Path, n_episodes: int = 20):
         config = get_config(algorithm_path.stem)
         config["task_kwargs"]["phantom"] = algorithm_path.parent.parent.stem
         config["task_kwargs"]["target"] = algorithm_path.parent.stem
-        algo_kwargs = config["algo_kwargs"]
+        # algo_kwargs = config["algo_kwargs"]
         env = make_gym_env(config)
         model = SAC.load(
             model_filename,
-            custom_objects={"policy_kwargs": algo_kwargs.get("policy_kwargs", {})},
+            # custom_objects={"policy_kwargs": algo_kwargs.get("policy_kwargs", {})},
         )
+
         for n in range(n_episodes):
             trajectory = generate_trajectory(model, env)
             print(trajectory)
             trajectory.save(Path(f"transitions/{n}"))
-        exit()
 
 
 if __name__ == "__main__":
-    # generate_trajectories(Path("phantom3/bca/full"))
+    generate_trajectories(Path("phantom3/bca/test_gen"))
     path = Path.cwd() / Path("transitions/")
     trajectories = list(path.iterdir())
     traj_1 = Trajectory.load(trajectories[0]).to_array()
