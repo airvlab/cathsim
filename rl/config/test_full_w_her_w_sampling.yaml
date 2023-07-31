@@ -2,9 +2,10 @@
 task_kwargs:
   use_pixels: True
   use_segment: True
-  sample_target: False
-  target_from_sites: True
+  sample_target: True
+  target_from_sites: False
   dense_reward: True
+  random_init_distance: 0.001
 
 wrapper_kwargs:
   use_obs:
