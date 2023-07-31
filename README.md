@@ -95,7 +95,11 @@ The script will create a results directory on the `cwd`. The script saves the da
 
 
 ## Manual Control
-Describle how to control the catheter manually with the keyboard here.
+For a quick visualisation of the environment run:
+```bash
+run_env
+```
+You will now see the guidewire and the aorta along with the two sites that represent the targets. You can interact with the environment using the keyboard arrows.
 
 
 ## TODO's
