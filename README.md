@@ -23,11 +23,10 @@
 
 If `miniconda` is not installed run the following for a quick Installation. Note: the script assumes you use `bash`.
 
-**DO NOT USE latest version, https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh, specify version you used**
 ```bash
 # installing miniconda
 mkdir -p ~/.miniconda3
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/.miniconda3/miniconda.sh
+wget https://repo.anaconda.com/miniconda/Miniconda3-py39_23.5.2-0-Linux-x86_64.sh -O ~/.miniconda3/miniconda.sh
 bash ~/.miniconda3/miniconda.sh -b -u -p ~/.miniconda3
 rm -rf ~/.miniconda3/miniconda.sh
 ~/.miniconda3/bin/conda init bash
