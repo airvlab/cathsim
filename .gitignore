@@ -8,6 +8,7 @@ experiments/
 # scripts/
 scratch/
 wandb/
+transitions/
 .sync*
 
 
