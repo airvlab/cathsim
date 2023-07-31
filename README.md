@@ -18,7 +18,7 @@
 
 ## Requirements
 1. Ubuntu (tested with Ubuntu 22.04 LTS)
-2. Miniconda (tested with **???**)
+2. Miniconda (tested with 23.5 but all versions should work)
 3. Python 3.9
 
 If `miniconda` is not installed run the following for a quick Installation. Note: the script assumes you use `bash`.
