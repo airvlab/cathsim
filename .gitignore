@@ -6,7 +6,7 @@ results/
 human/
 experiments/
 # scripts/
-scratch/
+# scratch/
 wandb/
 transitions/
 .sync*
