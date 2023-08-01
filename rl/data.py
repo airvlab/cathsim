@@ -3,18 +3,43 @@ import pickle
 import numpy as np
 import gym
 from stable_baselines3.common.base_class import BaseAlgorithm
+import matplotlib.pyplot as plt
 
 import torch
 from torch.utils import data
 import pprint
 from toolz.dicttoolz import itemmap
 from functools import reduce
-from cathsim.utils.common import flatten_dict, expand_dict, map_val
+from cathsim.utils.common import flatten_dict, expand_dict, map_val, CAMERA_MATRICES
+
+
+def plot_path(
+    ax: plt.Axes,
+    path: np.ndarray,
+    camera_matrix: np.ndarray = None,
+    scatter_kwargs: dict = {},
+):
+    from cathsim.cathsim.common import point2pixel
+
+    if camera_matrix is None:
+        camera_matrix = CAMERA_MATRICES["480"]
+    path = np.apply_along_axis(
+        point2pixel, axis=-1, arr=path, camera_matrix=camera_matrix
+    )
+    ax.scatter(path[:, 0], path[:, 1], **scatter_kwargs)
+    return ax
 
 
 class Trajectory:
-    def __init__(self, image_size=480, **kwargs):
+    def __init__(
+        self,
+        image_size: int = None,
+        camera_matrix: np.ndarray = None,
+        **kwargs,
+    ):
         self.data = kwargs or self._initialize(kwargs)
+        self.image_size = image_size
+        self.camera_matrix = camera_matrix
 
     def __str__(self):
         def fn(item):
@@ -138,9 +163,10 @@ class Trajectory:
 class TrajectoriesDataset(data.Dataset):
     def __init__(self, path: Path, transform_image=None, lazy_load=True):
         self.trajectories = list(path.iterdir())
+        self.lazy_load = lazy_load
         if not lazy_load:
             self.trajectories = [
-                Trajectory.load(p).to_array() for p in self.trajectories
+                Trajectory.load(p).to_array()["head_pos"] for p in self.trajectories
             ]
 
     def __len__(self):
@@ -153,8 +179,10 @@ class TrajectoriesDataset(data.Dataset):
         return np.concatenate([traj, np.zeros(shape=shape)], axis=0)
 
     def __getitem__(self, idx):
+        # TODO: fix the lazy loading
+        if self.lazy_load:
+            trajectory = Trajectory.load(self.trajectories[idx]).to_array()
         trajectory = self.trajectories[idx]["head_pos"]
-        trajectory = list(trajectory.values())[0]
         start = trajectory[0]
         goal = trajectory[-1]
         trajectory = self.patch_trajectory(trajectory)
@@ -207,8 +235,7 @@ def generate_trajectories(algorithm_path: Path, n_episodes: int = 10_000):
 
         for n in range(n_episodes):
             trajectory = generate_trajectory(model, env)
-            print(trajectory)
-            trajectory.save(Path(f"transitions/{n}"))
+            # trajectory.save(Path(f"transitions/{n}"))
 
 
 if __name__ == "__main__":
