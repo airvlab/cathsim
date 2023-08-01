@@ -9,6 +9,7 @@
 2. [Installation](#installation)
 3. [Quickstart](#quickstart)
 4. [Training](#training)
+5. [Mesh Processing](#mesh-processing)
 
 
 ## Requirements
