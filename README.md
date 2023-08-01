@@ -78,6 +78,16 @@ bash ./scripts/train.sh
 
 The evaluation data along with the tensorboard information and the models will then be placed in `./results/`.
 
+## Mesh Processing
+You can use a custom aorta by making use of V-HACD convex decomposition. To do so, you can use the following command, replacing `path-to-folder`:
+
+```bash
+process_stl --folder <path-to-folder>
+```
+
+The results will contain the folder containing the convex hull along with the `mjcf` file. These files can be then added to `cathsim/cathsim/assets`. The `xml` will go in that folder and the resultant meshes folder will go in `cathsim/cathsim/assets/meshes/`.
+Note: You will probably have to change the parameters of V-HACD for the best results. These can be seen using `process_stl --help`.
+
 ## Contributors
 - [Tudor Jianu](https://tudorjnu.github.io/)
 - [Baoru Huang](https://baoru.netlify.app)

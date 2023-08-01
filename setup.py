@@ -48,6 +48,7 @@ setup(
             "run_env=cathsim.cathsim.env:run_env",
             "record_traj=human.utils:cmd_record_traj",
             "visualize_agent=rl.utils:cmd_visualize_agent",
+            "process_stl=cathsim.utils.mesh:cmd_process_meshes",
         ],
     },
 )
