@@ -6,8 +6,6 @@ import trimesh
 from pathlib import Path
 import random
 
-# from typing import List,
-
 
 from dm_control import mjcf
 from dm_control import mujoco

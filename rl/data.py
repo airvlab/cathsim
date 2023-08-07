@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Union
 import pickle
 import numpy as np
 import gym
@@ -149,7 +150,7 @@ class Trajectory:
 
         return self
 
-    def save(self, file_path):
+    def save(self, file_path: Union[str, Path]):
         with open(file_path, "wb") as file:
             pickle.dump(self.data, file)
 
