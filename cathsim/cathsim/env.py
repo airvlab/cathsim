@@ -453,7 +453,9 @@ def run_env(args=None):
 
 
 if __name__ == "__main__":
-    phantom_name = "phantom4"
+    import matplotlib.pyplot as plt
+
+    phantom_name = "phantom3"
     phantom = Phantom(phantom_name + ".xml")
     tip = Tip()
     guidewire = Guidewire()
@@ -466,7 +468,7 @@ if __name__ == "__main__":
         use_segment=True,
         target="bca",
         image_size=80,
-        visualize_sites=True,
+        visualize_sites=False,
         sample_target=True,
         target_from_sites=False,
     )
@@ -485,9 +487,13 @@ if __name__ == "__main__":
     # loop 2 episodes of 2 steps
     for episode in range(2):
         time_step = env.reset()
-        print(env._task.target_pos)
-        print(env._task.get_head_pos(env._physics))
+        # print(env._task.target_pos)
+        # print(env._task.get_head_pos(env._physics))
+        print(env._task.get_camera_matrix(env.physics, 480))
+        print(env._task.get_camera_matrix(env.physics, 80))
+        exit()
         for step in range(2):
             action = random_policy(time_step)
             img = env.physics.render(height=480, width=480, camera_id=0)
+            plt.imsave("phantom_480.png", img)
             time_step = env.step(action)
