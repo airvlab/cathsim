@@ -104,11 +104,12 @@ class Trajectory:
                 return len(v) if acc is None else len(v) == acc
 
         valid = reduce(fn, self.data.items(), len(self))
+
         if not valid:
             print(
-                f"""Trajectory has uneven lengths. 
-        If a final obs is stored, please remove it or create a new obs using 
-        Trajectory.make_next_obs().
+                """Trajectory has uneven lengths.
+                If a final obs is stored, please remove it or create a new obs using
+                Trajectory.make_next_obs().
                    """
             )
             exit()

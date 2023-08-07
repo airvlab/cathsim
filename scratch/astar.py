@@ -62,9 +62,9 @@ class AStar:
             _, current = self.open_list.get()
 
             if np.linalg.norm(current - self.goal) < self.delta:
-                self.reconstruct_path(current)
+                path = self.reconstruct_path(current)
                 print("Goal reached!")
-                return
+                return path
 
             for neighbor in self.get_neighbors(current):
                 tentative_g_cost = self.g_cost[current] + np.linalg.norm(
@@ -94,7 +94,9 @@ class AStar:
         print("Path not found.")
 
     def reconstruct_path(self, current):
+        path = []
         while current in self.came_from:
+            path.append(current)
             prev = self.came_from[current]
             self.ax.plot(
                 [current[0], prev[0]],
@@ -104,6 +106,9 @@ class AStar:
                 linewidth=2,
             )
             current = prev
+        path.append(tuple(self.start))  # Append the start position as well
+        path.reverse()  # Reverse the path to start from the start position
+        return path
 
     def show_plot(self):
         plt.show()
@@ -115,8 +120,8 @@ if __name__ == "__main__":
     start = [0.00028165, 0.01593208, 0.00023918]
     goal = [-0.043272, 0.136586, 0.034102]
     astar = AStar(mesh, start, goal)
-    astar.build()
+    path = astar.build()
     astar.show_plot()
-    path = astar.get_path()
+    # path = astar.get_path()
     traj = Trajectory.from_dict({"head_pos": path})
     traj.save("./astar_path")

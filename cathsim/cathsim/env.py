@@ -400,8 +400,7 @@ class Navigate(composer.Task):
             site = np.random.choice(list(sites.keys()))
             target = sites[site]
             return target
-        mesh = trimesh.load_mesh(self._phantom.phantom_visual)
-        mesh = trimesh.convex.convex_hull(mesh)
+        mesh = trimesh.load_mesh(self._phantom.simplified)
         return sample_points(mesh, (0.0954, 0.1342))
 
 
@@ -493,5 +492,5 @@ if __name__ == "__main__":
         for step in range(2):
             action = random_policy(time_step)
             img = env.physics.render(height=480, width=480, camera_id=0)
-            plt.imsave("phantom_480.png", img)
+            # plt.imsave("phantom_480.png", img)
             time_step = env.step(action)

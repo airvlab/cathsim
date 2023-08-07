@@ -129,13 +129,12 @@ def train(
             for key, value in algo_kwargs.items():
                 __import__("pprint").pprint(f"{key}: {value}")
             model = ALGOS[algo](
-                algo_kwargs.get("policy", "MlpPolicy"),
-                env,
+                # algo_kwargs.get("policy", "MlpPolicy"),
+                env=env,
                 device=device,
                 verbose=1,
                 tensorboard_log=log_path,
-                policy_kwargs=algo_kwargs.get("policy_kwargs", {}),
-                **kwargs,
+                **algo_kwargs,
             )
 
             model.learn(
@@ -413,7 +412,7 @@ def get_config(config_name):
             "features_extractor_class"
         ] = CustomExtractor
 
-    if main_config["algo_kwargs"]["replay_buffer_class"] == "HerReplayBuffer":
+    if main_config["algo_kwargs"].get("replay_buffer_class", None) == "HerReplayBuffer":
         main_config["algo_kwargs"]["replay_buffer_class"] = HerReplayBuffer
     return main_config
 

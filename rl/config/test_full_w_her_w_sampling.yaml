@@ -15,4 +15,7 @@ wrapper_kwargs:
     - 'joint_vel'
 
 algo_kwargs:
-  replay_buffer_class: 'HerReplayBuffer'
+  buffer_size: 500000
+  # learning_starts: 1000
+  # replay_buffer_class: 'HerReplayBuffer'
+  # replay_buffer_kwargs:

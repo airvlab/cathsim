@@ -41,6 +41,9 @@ class Phantom(composer.Entity):
         self.phantom_visual = (
             model_dir / f'meshes/{phantom_xml.split(".")[0]}/visual.stl'
         )
+        self.simplified = (
+            model_dir / f'meshes/{phantom_xml.split(".")[0]}/simplified.stl'
+        )
 
     def set_rgba(self, rgba: list) -> None:
         self.rgba = rgba

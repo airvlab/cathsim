@@ -22,4 +22,3 @@ algo_kwargs:
   policy: MultiInputPolicy
   policy_kwargs:
     features_extractor_class: CustomExtractor
-  replay_buffer_class: None
