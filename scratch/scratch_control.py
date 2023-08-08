@@ -163,72 +163,41 @@ def test():
 
 
 if __name__ == "__main__":
-    from cathsim.cathsim.common import point2pixel
-
-    def plot_3D_to_2D(
-        ax,
-        data,
-        add_line: bool = True,
-        matrix: int = 80,
-        line_kwargs: dict = {},
-        scatter_kwargs: dict = {},
-    ) -> plt.Axes:
-        camera_matrix = {
-            480: np.array(
-                [
-                    [-5.79411255e02, 0.00000000e00, 2.39500000e02, -5.33073376e01],
-                    [0.00000000e00, 5.79411255e02, 2.39500000e02, -1.08351407e02],
-                    [0.00000000e00, 0.00000000e00, 1.00000000e00, -1.50000000e-01],
-                ]
-            ),
-            80: np.array(
-                [
-                    [-96.56854249, 0.0, 39.5, -8.82205627],
-                    [0.0, 96.56854249, 39.5, -17.99606781],
-                    [0.0, 0.0, 1.0, -0.15],
-                ]
-            ),
-        }
-        data = np.apply_along_axis(
-            point2pixel, 1, data, camera_matrix=camera_matrix[matrix]
-        )
-        data = [point for point in data if np.all((0 <= point) & (point <= matrix))]
-        data = np.array(data)  # Convert back to numpy array
-        data[:, 1] = matrix - data[:, 1]
-        ax.scatter(data[:, 0], data[:, 1], **scatter_kwargs)
-        if add_line:
-            ax.plot(data[:, 0], data[:, 1], **line_kwargs)
-        return ax
-
     # train()
     # test()
     traj = Trajectory.load("test")
     print(traj)
-    plan_next = list(traj["plan_next"].values())
-    head_pos = list(traj["head_pos"].values())
-    fig, ax = plt.subplots(1)
+    fig, ax = plt.subplots(1, figsize=(5.50 / 2, 5.50 / 2))
     image = plt.imread("phantom_480.png")
-    image = np.flipud(image)
-    plt.imshow(image)
-    image_size = image.shape[0]
-    ax.set_xlim(0, image_size)
-    ax.set_ylim(0, image_size)
-    scatter_kwargs = {"color": "blue"}
-    line_kwargs = {"color": "black"}
-    plot_3D_to_2D(
+    traj.plot_path(
         ax,
-        *plan_next,
-        matrix=image_size,
-        scatter_kwargs={"color": "red"},
-        line_kwargs=line_kwargs
+        "plan_next_pos",
+        plot_kwargs=dict(
+            base_image=image,
+            scatter_kwargs=dict(color="red", label="A* Plan"),
+        ),
     )
-    plot_3D_to_2D(
+    traj.plot_path(
         ax,
-        *head_pos,
-        matrix=image_size,
-        scatter_kwargs=scatter_kwargs,
-        line_kwargs=line_kwargs
+        "head_pos",
+        plot_kwargs=dict(
+            base_image=image,
+            scatter_kwargs=dict(color="blue", label="Actual"),
+        ),
     )
+    ax.legend(
+        loc="upper left",
+        bbox_to_anchor=(0, 0.95, 1, 0.2),
+        # bbox_to_anchor=(0.0, 1.02, 1.0, 0.102),
+        # loc="outside upper center",
+        # mode="expand",
+        borderaxespad=0,
+        frameon=False,
+        ncol=2,
+    )
+    fig.tight_layout()
+    plt.axis("off")
+    # plt.tight_layout()
     plt.show()
 
     # plot_3D_to_2D(ax, *plan_next, color="r")

@@ -15,10 +15,11 @@ from dm_control.composer import variation
 from dm_control.composer.variation import distributions, noises
 from dm_control.composer.observation import observable
 from cathsim.cathsim.phantom import Phantom
-from cathsim.cathsim.common import point2pixel
 from cathsim.cathsim.env_utils import distance
 from cathsim.cathsim.guidewire import Guidewire, Tip
 from cathsim.cathsim.observables import CameraObservable
+
+from cathsim.utils.common import filter_mask, point2pixel
 
 with open(Path(__file__).parent / "env_config.yaml", "r") as f:
     env_config = yaml.safe_load(f)
@@ -45,14 +46,6 @@ def make_scene(geom_groups: list):
     for geom_group in geom_groups:
         scene_option.geomgroup[geom_group] = True
     return scene_option
-
-
-def filter_mask(segment_image: np.ndarray):
-    geom_ids = segment_image[:, :, 0]
-    geom_ids = geom_ids.astype(np.float64) + 1
-    geom_ids = geom_ids / geom_ids.max()
-    segment_image = 255 * geom_ids
-    return segment_image
 
 
 def sample_points(mesh, y_bounds: tuple, n_points: int = 10) -> np.array:
@@ -366,6 +359,7 @@ class Navigate(composer.Task):
         camera = Camera(
             physics, height=image_size, width=image_size, camera_id=camera_id
         )
+        print(camera)
         return camera.matrix
 
     def get_phantom_mask(self, physics, image_size: int = None, camera_id=0):

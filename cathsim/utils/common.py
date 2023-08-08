@@ -1,23 +1,6 @@
 from toolz.dicttoolz import itemmap
 import numpy as np
 
-CAMERA_MATRICES = {
-    "80": np.array(
-        [
-            [-5.79411255e02, 0.00000000e00, 2.39500000e02, -5.33073376e01],
-            [0.00000000e00, 5.79411255e02, 2.39500000e02, -1.08351407e02],
-            [0.00000000e00, 0.00000000e00, 1.00000000e00, -1.50000000e-01],
-        ]
-    ),
-    "480": np.array(
-        [
-            [-5.79411255e02, 0.00000000e00, 2.39500000e02, -5.33073376e01],
-            [0.00000000e00, 5.79411255e02, 2.39500000e02, -1.08351407e02],
-            [0.00000000e00, 0.00000000e00, 1.00000000e00, -1.50000000e-01],
-        ],
-    ),
-}
-
 
 def flatten_dict(d: dict, parent_key: str = None) -> dict:
     acc = {}
@@ -52,3 +35,67 @@ def map_val(g: callable, d: dict):
             return (k, g(v))
 
     return itemmap(f, d)
+
+
+def normalize_rgba(rgba: list):
+    new_rgba = [c / 255.0 for c in rgba]
+    new_rgba[-1] = rgba[-1]
+    return new_rgba
+
+
+def point2pixel(point, camera_kwargs: dict = dict(image_size=80)):
+    """Transforms from world coordinates to pixel coordinates."""
+    camera_matrix = create_camera_matrix(**camera_kwargs)
+    x, y, z = point
+    xs, ys, s = camera_matrix.dot(np.array([x, y, z, 1.0]))
+
+    return np.array([round(xs / s), round(ys / s)]).astype(np.int32)
+
+
+def filter_mask(segment_image: np.ndarray):
+    geom_ids = segment_image[:, :, 0]
+    geom_ids = geom_ids.astype(np.float64) + 1
+    geom_ids = geom_ids / geom_ids.max()
+    segment_image = 255 * geom_ids
+    return segment_image
+
+
+def create_camera_matrix(
+    image_size, pos=np.array([-0.03, 0.125, 0.15]), euler=np.array([0, 0, 0]), fov=45
+):
+    def euler_to_rotation_matrix(euler_angles):
+        """Convert Euler angles to rotation matrix."""
+        rx, ry, rz = np.deg2rad(euler_angles)
+
+        Rx = np.array(
+            [[1, 0, 0], [0, np.cos(rx), -np.sin(rx)], [0, np.sin(rx), np.cos(rx)]]
+        )
+
+        Ry = np.array(
+            [[np.cos(ry), 0, np.sin(ry)], [0, 1, 0], [-np.sin(ry), 0, np.cos(ry)]]
+        )
+
+        Rz = np.array(
+            [[np.cos(rz), -np.sin(rz), 0], [np.sin(rz), np.cos(rz), 0], [0, 0, 1]]
+        )
+
+        R = Rz @ Ry @ Rx
+        return R
+
+    # Intrinsic Parameters
+    focal_scaling = (1.0 / np.tan(np.deg2rad(fov) / 2)) * image_size / 2.0
+    focal = np.diag([-focal_scaling, focal_scaling, 1.0, 0])[0:3, :]
+    image = np.eye(3)
+    image[0, 2] = (image_size - 1) / 2.0
+    image[1, 2] = (image_size - 1) / 2.0
+
+    # Extrinsic Parameters
+    rotation_matrix = euler_to_rotation_matrix(euler)
+    R = np.eye(4)
+    R[0:3, 0:3] = rotation_matrix
+    T = np.eye(4)
+    T[0:3, 3] = -pos
+
+    # Camera Matrix
+    camera_matrix = image @ focal @ R @ T
+    return camera_matrix

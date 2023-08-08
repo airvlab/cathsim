@@ -3,7 +3,8 @@ from pathlib import Path
 from dm_control import mjcf
 from dm_control import composer
 
-from cathsim.cathsim.common import env_config, normalize_rgba
+from cathsim.cathsim.common import env_config
+from cathsim.utils.common import normalize_rgba
 
 phantom_config = env_config["phantom"]
 phantom_config["rgba"] = normalize_rgba(phantom_config["rgba"])

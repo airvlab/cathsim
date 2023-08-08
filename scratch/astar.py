@@ -123,5 +123,5 @@ if __name__ == "__main__":
     path = astar.build()
     astar.show_plot()
     # path = astar.get_path()
-    traj = Trajectory.from_dict({"head_pos": path})
-    traj.save("./astar_path")
+    # traj = Trajectory.from_dict({"head_pos": path})
+    # traj.save("./astar_path")

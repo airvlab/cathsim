@@ -11,24 +11,37 @@ from torch.utils import data
 import pprint
 from toolz.dicttoolz import itemmap
 from functools import reduce
-from cathsim.utils.common import flatten_dict, expand_dict, map_val, CAMERA_MATRICES
+from cathsim.utils.common import flatten_dict, expand_dict, map_val, point2pixel
+import warnings
 
 
-def plot_path(
-    ax: plt.Axes,
-    path: np.ndarray,
-    camera_matrix: np.ndarray = None,
-    scatter_kwargs: dict = {},
-):
-    from cathsim.cathsim.common import point2pixel
+def plot_3D_to_2D(
+    ax,
+    data,
+    base_image: np.ndarray = None,
+    add_line: bool = True,
+    image_size: int = 80,
+    line_kwargs: dict = dict(color="black"),
+    scatter_kwargs: dict = dict(color="blue"),
+) -> plt.Axes:
+    if base_image is not None:
+        base_image = np.flipud(base_image)
+        plt.imshow(base_image)
+        image_size = base_image.shape[0]
+        warnings.warn("Image size overwritten by base_image")
 
-    if camera_matrix is None:
-        camera_matrix = CAMERA_MATRICES["480"]
-    path = np.apply_along_axis(
-        point2pixel, axis=-1, arr=path, camera_matrix=camera_matrix
-    )
-    ax.scatter(path[:, 0], path[:, 1], **scatter_kwargs)
-    return ax
+    ax.set_xlim(0, image_size)
+    ax.set_ylim(0, image_size)
+    if len(data[0]) == 3:
+        data = np.apply_along_axis(
+            point2pixel, 1, data, camera_kwargs=dict(image_size=image_size)
+        )
+        data = [point for point in data if np.all((0 <= point) & (point <= image_size))]
+        data = np.array(data)  # Convert back to numpy array
+        data[:, 1] = image_size - data[:, 1]
+    ax.scatter(data[:, 0], data[:, 1], **scatter_kwargs)
+    if add_line:
+        ax.plot(data[:, 0], data[:, 1], **line_kwargs)
 
 
 class Trajectory:
@@ -104,12 +117,11 @@ class Trajectory:
                 return len(v) if acc is None else len(v) == acc
 
         valid = reduce(fn, self.data.items(), len(self))
-
         if not valid:
             print(
-                """Trajectory has uneven lengths.
-                If a final obs is stored, please remove it or create a new obs using
-                Trajectory.make_next_obs().
+                f"""Trajectory has uneven lengths. 
+        If a final obs is stored, please remove it or create a new obs using 
+        Trajectory.make_next_obs().
                    """
             )
             exit()
@@ -160,6 +172,20 @@ class Trajectory:
         with open(file_path, "rb") as file:
             data = pickle.load(file)
         return Trajectory.from_dict(data)
+
+    def plot_path(
+        self,
+        ax,
+        key: str = None,
+        plot_kwargs: dict = dict(
+            base_image=None,
+            add_line=True,
+            line_kwargs={},
+            scatter_kwargs={},
+        ),
+    ):
+        data = list(self[key or "head_pos"].values())
+        plot_3D_to_2D(ax, *data, **plot_kwargs)
 
 
 class TrajectoriesDataset(data.Dataset):
