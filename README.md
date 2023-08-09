@@ -104,6 +104,9 @@ Note: You will probably have to change the parameters of V-HACD for the best res
 - [Ferdinando Rodriguez y Baena](https://www.imperial.ac.uk/people/f.rodriguez)
 - [Anh Nguyen](https://cgi.csc.liv.ac.uk/~anguyen/)
 
+## Terms of Use
+
+Please review our [Terms of Use](TERMS.md) before using this project.
 
 ## License
 Please feel free to copy, distribute, display, perform or remix our work but for non-commercial porposes only.
