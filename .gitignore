@@ -5,10 +5,14 @@ figures/
 results/
 human/
 experiments/
+astar*
 # scripts/
 # scratch/
 wandb/
 transitions/
+lightning_logs/
+meshes/
+results.zip
 .sync*
 
 
