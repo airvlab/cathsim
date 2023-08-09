@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
     print("Training a policy using Behavior Cloning")
     bc_trainer.train(n_epochs=500)
-    bc_trainer.save_policy(model_path / 'bc_baseline.zip')
+    bc_trainer.save_policy(model_path / "bc_baseline.zip")
 
     rewards, lengths = evaluate_policy(
         bc_trainer.policy,

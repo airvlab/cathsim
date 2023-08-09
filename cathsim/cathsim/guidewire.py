@@ -6,6 +6,8 @@ from dm_control import mjcf
 from dm_control import composer
 from cathsim.cathsim.observables import JointObservables
 
+from cathsim.utils.common import get_env_config
+
 
 SCALE = 1
 RGBA = [0.2, 0.2, 0.2, 1]
@@ -14,9 +16,7 @@ SPHERE_RADIUS = (BODY_DIAMETER / 2) * SCALE
 CYLINDER_HEIGHT = SPHERE_RADIUS * 1.5
 OFFSET = SPHERE_RADIUS + CYLINDER_HEIGHT * 2
 
-with open(Path(__file__).parent / "env_config.yaml", "r") as f:
-    env_config = yaml.safe_load(f)
-
+env_config = get_env_config()
 guidewire_config = env_config["guidewire"]
 
 
@@ -28,6 +28,14 @@ class BaseBody(composer.Entity):
         stiffness: float = None,  # the stiffness of the joint
         name: str = None,
     ):
+        """
+
+        :param n: int:  (Default value = 0)
+        :param parent: mjcf.Element:  (Default value = None)
+        :param # the parent bodystiffness: float:  (Default value = None)
+        :param # the stiffness of the jointname: str:  (Default value = None)
+
+        """
         child = parent.add("body", name=f"{name}_body_{n}", pos=[0, 0, OFFSET])
         child.add("geom", name=f"geom_{n}")
         j0 = child.add("joint", name=f"{name}_J0_{n}", axis=[1, 0, 0])
@@ -48,7 +56,14 @@ class BaseBody(composer.Entity):
 
 
 class Guidewire(BaseBody):
+    """Guidewire class"""
+
     def _build(self, n_bodies: int = 80):
+        """
+
+        :param n_bodies: int:  (Default value = 80)
+
+        """
         self._length = CYLINDER_HEIGHT * 2 + SPHERE_RADIUS * 2 + OFFSET * n_bodies
 
         self._mjcf_root = mjcf.RootElement(model="guidewire")
@@ -143,6 +158,11 @@ class Guidewire(BaseBody):
         return tuple(self._mjcf_root.find_all("joint"))
 
     def save_model(self, path: Path):
+        """Save the model to a path
+
+        :param path: Path:
+
+        """
         if path.suffix is None:
             path = path / "guidewire.xml"
         with open(path, "w") as file:
@@ -151,6 +171,12 @@ class Guidewire(BaseBody):
 
 class Tip(BaseBody):
     def _build(self, name=None, n_bodies=3):
+        """
+
+        :param name:  (Default value = None)
+        :param n_bodies:  (Default value = 3)
+
+        """
         if name is None:
             name = "tip"
         self._mjcf_root = mjcf.RootElement(model=name)

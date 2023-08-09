@@ -1,0 +1,46 @@
+---
+cone : 'pyramidal'  # pyramidal, elliptic
+default_time_limit: 2
+num_substeps : 3
+compiler:
+  autolimits: true
+  angle: 'radian'
+option:
+  timestep: .004
+  gravity: [0, 0, -9.81]
+  density: 1055
+  viscosity: 0.004
+  o_margin: 0.004
+  integrator: 'implicitfast'  # euler, implicit, rk4
+  cone: 'pyramidal'
+  jacobian: 'sparse'
+  solver: 'newton'  # cg, newton, pgs
+  flag:
+    frictionloss: 'enable'
+    multiccd: 'disable'
+    gravity: 'enable'
+size:
+  memory: 1G
+visual:
+  global:
+    offwidth: 480
+    offheight: 480
+guidewire:
+  scale: 1
+  rgba: [.1, .1, .1, 1]
+  diameter: 0.001
+  stiffness: 20
+  sphere_to_cylinder_ratio: 1.5
+  condim: 1
+  spring: 0.05
+  force: 300
+  stretch: false
+  twist: false
+  friction: [.1]  # default: [1, 0.005, 0.0001]
+  tip_n_bodies: 2
+  density: 6.72e+2  # nitiol density  # 7980,
+phantom:
+  scale: 1
+  rgba: [111, 18,0, 0.3]
+  condim: 1
+  friction: 1.

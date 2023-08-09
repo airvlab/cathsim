@@ -7,15 +7,25 @@ from dm_control.composer.observation import observable
 from dm_control import composer
 from dm_env import specs
 
-config_path = Path(__file__).parent / 'env_config.yaml'
-with open(config_path.as_posix()) as f:
-    env_config = yaml.safe_load(f)
+from cathsim.utils.common import get_env_config
+
+
+env_config = get_env_config()
 
 
 class CameraObservable(MujocoCamera):
-    def __init__(self, camera_name, height=128, width=128, corruptor=None,
-                 depth=False, preprocess=False, grayscale=False,
-                 segmentation=False, scene_option=None):
+    def __init__(
+        self,
+        camera_name,
+        height=128,
+        width=128,
+        corruptor=None,
+        depth=False,
+        preprocess=False,
+        grayscale=False,
+        segmentation=False,
+        scene_option=None,
+    ):
         super().__init__(camera_name, height, width)
         self._dtype = np.uint8
         self._n_channels = 1 if segmentation else 3
@@ -26,8 +36,13 @@ class CameraObservable(MujocoCamera):
     def _callable(self, physics):
         def get_image():
             image = physics.render(  # pylint: disable=g-long-lambda
-                self._height, self._width, self._camera_name, depth=self._depth,
-                scene_option=self.scene_option, segmentation=self.segmentation)
+                self._height,
+                self._width,
+                self._camera_name,
+                depth=self._depth,
+                scene_option=self.scene_option,
+                segmentation=self.segmentation,
+            )
             if self.segmentation:
                 geom_ids = image[:, :, 0]
                 if np.all(geom_ids == -1):
@@ -38,6 +53,7 @@ class CameraObservable(MujocoCamera):
                 image = np.expand_dims(image, axis=-1)
             image = image.astype(self._dtype)
             return image
+
         return get_image
 
     @property
@@ -51,13 +67,12 @@ class CameraObservable(MujocoCamera):
 
 
 class JointObservables(composer.Observables):
-
-    @ composer.observable
+    @composer.observable
     def joint_positions(self):
-        all_joints = self._entity.mjcf_model.find_all('joint')
-        return observable.MJCFFeature('qpos', all_joints)
+        all_joints = self._entity.mjcf_model.find_all("joint")
+        return observable.MJCFFeature("qpos", all_joints)
 
-    @ composer.observable
+    @composer.observable
     def joint_velocities(self):
-        all_joints = self._entity.mjcf_model.find_all('joint')
-        return observable.MJCFFeature('qvel', all_joints)
+        all_joints = self._entity.mjcf_model.find_all("joint")
+        return observable.MJCFFeature("qvel", all_joints)

@@ -14,10 +14,15 @@ from cathsim.wrappers import Dict2Array
 from stable_baselines3.common.vec_env import SubprocVecEnv, DummyVecEnv
 import gym
 from cathsim.cathsim.env_utils import make_gym_env
-from abc import ABC, abstractmethod
 
 
-def filter_mask(segment_image: np.ndarray):
+def filter_mask(segment_image: np.ndarray) -> np.ndarray:
+    """
+    Processes a segmentation image from simulation.
+
+    :param segment_image: np.ndarray:
+
+    """
     geom_ids = segment_image[:, :, 0]
     geom_ids = geom_ids.astype(np.float64) + 1
     geom_ids = geom_ids / geom_ids.max()
@@ -26,6 +31,10 @@ def filter_mask(segment_image: np.ndarray):
 
 
 class CnnPolicy(policies.ActorCriticCnnPolicy):
+    """
+    A CNN policy for behavioral clonning.
+    """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -42,17 +51,11 @@ EVALUATION_PATH = RESULTS_PATH / "evaluation"
 
 
 def make_experiment(experiment_path: Path = None, base_path: Path = None) -> tuple:
-    """Create experiment directory structure.
+    """Creates the maths for an experiment
 
-    experiment_path: Path to experiment directory
+    :param experiment_path: Path:  (Default value = None)
+    :param base_path: Path:  (Default value = None)
 
-    returns:
-        model_path: Path to save models
-        log_path: Path to save logs
-        eval_path: Path to save evaluation results
-
-    example:
-        model_path, log_path, eval_path = make_experiment('test')
     """
     assert experiment_path, "experiment_path must be specified"
     base_path = base_path or EXPERIMENT_PATH
@@ -65,7 +68,18 @@ def make_experiment(experiment_path: Path = None, base_path: Path = None) -> tup
     return model_path, log_path, eval_path
 
 
-def make_env(n_envs: int = 1, config: dict = {}, monitor_wrapper=True, **kwargs):
+def make_env(
+    n_envs: int = 1, config: dict = {}, monitor_wrapper: bool = True, **kwargs
+):
+    """Makes  gym environment given a configuration.
+
+    :param n_envs: int:  (Default value = 1)
+    :param config: dict:  (Default value = {})
+    :param monitor_wrapper: bool:  (Default value = True)
+    :param **kwargs:
+
+    """
+
     def _init() -> gym.Env:
         env = make_gym_env(config=config)
         return env
@@ -99,7 +113,22 @@ def train(
     vec_env: bool = True,
     config: dict = {},
     **kwargs,
-):
+) -> None:
+    """Starts the training for an algorithm
+
+    :param algo: str:
+    :param experiment: str:
+    :param experiment_path: Path:  (Default value = None)
+    :param n_runs: int:  (Default value = 4)
+    :param time_steps: int:  (Default value = 500_000)
+    :param evaluate: bool:  (Default value = False)
+    :param device: str:  (Default value = None)
+    :param n_envs: int:  (Default value = None)
+    :param vec_env: bool:  (Default value = True)
+    :param config: dict:  (Default value = {})
+    :param **kwargs:
+
+    """
     from rl.evaluation import evaluate_policy
 
     algo_kwargs = config.get("algo_kwargs", {})
@@ -129,7 +158,6 @@ def train(
             for key, value in algo_kwargs.items():
                 __import__("pprint").pprint(f"{key}: {value}")
             model = ALGOS[algo](
-                # algo_kwargs.get("policy", "MlpPolicy"),
                 env=env,
                 device=device,
                 verbose=1,
@@ -154,6 +182,11 @@ def train(
 
 
 def cmd_visualize_agent(args=None):
+    """Visualize a trained agent.
+
+    :param args:  (Default value = None)
+
+    """
     import cv2
     from cathsim.cathsim.env_utils import make_gym_env
     import argparse as ap
@@ -214,7 +247,6 @@ def cmd_visualize_agent(args=None):
         frames = []
         segment_frames = []
         rewards = []
-        # scene_option = make_scene(geom_groups=[1, 2])
         while not done:
             action, _states = model.predict(obs)
             obs, reward, done, info = env.step(action)
@@ -222,15 +254,9 @@ def cmd_visualize_agent(args=None):
             rewards.append(reward)
 
             image = env.render("rgb_array", image_size=480)
-            # segment_image = env.env.env.env.physics.render(480, 480, camera_id=0, scene_option=scene_option,
-            #                                                segmentation=True)
-            # segment_image = filter_mask(segment_image)
-            # segment_frames.append(segment_image)
-            # print(segment_image.shape)
             frames.append(image)
 
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-            # cv2.imshow('segment', segment_image)
             cv2.imshow("image", image)
             cv2.waitKey(1)
 
@@ -256,6 +282,8 @@ def cmd_visualize_agent(args=None):
 
 
 class Application(Application):
+    """Augmented interface that allows keyboard control"""
+
     def __init__(self, title, width, height, trial_path=None):
         super().__init__(title, width, height)
         from dm_control.viewer import user_input
@@ -280,6 +308,12 @@ class Application(Application):
         self._images_path.mkdir(parents=True, exist_ok=True)
 
     def _save_transition(self, observation, action):
+        """Saving a transition.
+
+        :param observation:
+        :param action:
+
+        """
         for key, value in observation.items():
             if key != "top_camera":
                 self._trajectory.setdefault(key, []).append(value)
@@ -337,11 +371,26 @@ def launch(
     height=768,
     trial_path=None,
 ):
+    """Launches the environment.
+
+    :param environment_loader:
+    :param policy:  (Default value = None)
+    :param title:  (Default value = "Explorer")
+    :param width:  (Default value = 1024)
+    :param height:  (Default value = 768)
+    :param trial_path:  (Default value = None)
+
+    """
     app = Application(title=title, width=width, height=height, trial_path=trial_path)
     app.launch(environment_loader=environment_loader, policy=policy)
 
 
 def record_expert_trajectories(trial_name: Path):
+    """
+
+    :param trial_name: Path:
+
+    """
     from cathsim.cathsim.env import Tip, Guidewire, Navigate
     from cathsim.cathsim.phantom import Phantom
     from dm_control import composer
@@ -385,6 +434,11 @@ def record_expert_trajectories(trial_name: Path):
 
 
 def cmd_record_traj(args=None):
+    """
+
+    :param args:  (Default value = None)
+
+    """
     import argparse
 
     parser = argparse.ArgumentParser()
@@ -393,7 +447,12 @@ def cmd_record_traj(args=None):
     record_expert_trajectories(Path(args.trial_name))
 
 
-def get_config(config_name):
+def get_config(config_name: str) -> dict:
+    """Parses a configuration file
+
+    :param config_name: str:
+
+    """
     import yaml
     from mergedeep import merge
     from rl.custom_extractor import CustomExtractor
@@ -417,7 +476,16 @@ def get_config(config_name):
     return main_config
 
 
-def process_human_trajectories(path: Path, flatten=False, mapping: dict = None):
+def process_human_trajectories(
+    path: Path, flatten: bool = False, mapping: dict = None
+) -> np.ndarray:
+    """Utility function that processes human trajectories.
+
+    :param path: Path:
+    :param flatten: bool:  (Default value = False)
+    :param mapping: dict:  (Default value = None)
+
+    """
     trajectories = {}
     for episode in path.iterdir():
         trajectory_path = episode / "trajectory.npz"

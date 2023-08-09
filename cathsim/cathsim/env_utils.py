@@ -5,14 +5,11 @@ import gym
 
 
 def distance(a: np.ndarray, b: np.ndarray) -> np.ndarray:
-    """Compute the distance between two array. This function is vectorized.
+    """Calculate the Euclidean distance
 
-    Args:
-        a (np.ndarray): First array.
-        b (np.ndarray): Second array.
+    :param a: np.ndarray:
+    :param b: np.ndarray:
 
-    Returns:
-        np.ndarray: The distance between the arrays.
     """
     assert a.shape == b.shape
     return np.linalg.norm(a - b, axis=-1)
@@ -29,15 +26,18 @@ def make_dm_env(
     image_size: int = 80,
     **kwargs,
 ) -> composer.Environment:
-    """
-    Makes a dm_control environment.
+    """Makes a dm environment
 
-    :param dense_reward: If True, the reward is the negative distance to the target.
-    :param success_reward: The reward when the target is reached.
-    :param delta: The distance to the target to be considered a success.
-    :param use_pixels: If True, an image of the scene is returned as part of the observation.
-    :param use_segment: If True, the guidewire segmentation is returned as part of the observation.
-    :param image_size: The size of the image to be returned or rendered.
+    :param phantom: str:  (Default value = "phantom3")
+    :param target: str:  (Default value = "bca")
+    :param use_pixels: bool:  (Default value = False)
+    :param dense_reward: bool:  (Default value = True)
+    :param success_reward: float:  (Default value = 10.0)
+    :param delta: float:  (Default value = 0.004)
+    :param use_segment: bool:  (Default value = False)
+    :param image_size: int:  (Default value = 80)
+    :param **kwargs:
+
     """
     from cathsim.cathsim import Phantom, Tip, Guidewire, Navigate
     from dm_control import composer
@@ -76,6 +76,14 @@ def make_gym_env(
         render_kwargs={},
     )
 ) -> gym.Env:
+    """Makes a gym environment.
+
+    :param config: dict:  (Default value = dict(task_kwargs={})
+    :param wrapper_kwargs:  (Default value = {})
+    :param render_kwargs:  (Default value = {})
+    :param ):
+
+    """
     wrapper_kwargs = config["wrapper_kwargs"]
     env_kwargs = config["env_kwargs"]
     task_kwargs = config["task_kwargs"]
@@ -200,6 +208,16 @@ def launch(
     height=768,
     trial_path=None,
 ):
+    """Launch the environment with a given policy
+
+    :param environment_loader:
+    :param policy:  (Default value = None)
+    :param title:  (Default value = "Explorer")
+    :param width:  (Default value = 1024)
+    :param height:  (Default value = 768)
+    :param trial_path:  (Default value = None)
+
+    """
     app = Application(title=title, width=width, height=height)
     app.launch(environment_loader=environment_loader, policy=policy)
 

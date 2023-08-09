@@ -2,7 +2,21 @@ import toolz
 
 
 def flatten_dict(d: dict) -> dict:
+    """
+
+    :param d: dict:
+
+    """
+
     def flatten_dict(d: dict, acc, parent_key: str = None, sep="-"):
+        """
+
+        :param d: dict:
+        :param acc:
+        :param parent_key: str:  (Default value = None)
+        :param sep:  (Default value = "-")
+
+        """
         for k, v in d.items():
             if parent_key:
                 k = parent_key + sep + k

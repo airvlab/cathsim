@@ -1,5 +1,7 @@
 from toolz.dicttoolz import itemmap
 import numpy as np
+import yaml
+from pathlib import Path
 
 
 def flatten_dict(d: dict, parent_key: str = None) -> dict:
@@ -62,8 +64,8 @@ def filter_mask(segment_image: np.ndarray):
 
 def create_camera_matrix(
     image_size, pos=np.array([-0.03, 0.125, 0.15]), euler=np.array([0, 0, 0]), fov=45
-):
-    def euler_to_rotation_matrix(euler_angles):
+) -> np.ndarray:
+    def euler_to_rotation_matrix(euler_angles: np.ndarray) -> np.ndarray:
         """Convert Euler angles to rotation matrix."""
         rx, ry, rz = np.deg2rad(euler_angles)
 
@@ -99,3 +101,11 @@ def create_camera_matrix(
     # Camera Matrix
     camera_matrix = image @ focal @ R @ T
     return camera_matrix
+
+
+def get_env_config(config_path: Path = None) -> dict:
+    if config_path is None:
+        config_path = Path(__file__).parent / "env_config.yaml"
+    with open(config_path, "r") as f:
+        env_config = yaml.safe_load(f)
+    return env_config

@@ -1,6 +1,6 @@
 import trimesh
-from pathlib import Path
 from lxml import etree
+import sys
 import os
 import shutil
 import argparse
@@ -11,15 +11,21 @@ def install_vhacd():
     response = input("ONLY PROCEED IF THE SIYSTEM IS LINUX\nProceed? (N/y):")
     if response != "y":
         exit()
-    cmd = """
-    set -xe;
-    rm -f testVHACD;
-    wget https://github.com/mikedh/v-hacd-1/raw/master/bin/linux/testVHACD;
-    echo "e1e79b2c1b274a39950ffc48807ecb0c81a2192e7d0993c686da90bd33985130  testVHACD" | sha256sum --check;
-    chmod +x testVHACD;
-    sudo mv testVHACD /usr/bin/;
-    """
+    cmd = "touch testing.md"
+    cmd = "set -xe"
+
+# remove any copies
+""rm -f testVHACD
+# grab the VHACD (convex segmenter) binary
+wget https://github.com/mikedh/v-hacd-1/raw/master/bin/linux/testVHACD
+# check the hash of the downloaded file
+echo "e1e79b2c1b274a39950ffc48807ecb0c81a2192e7d0993c686da90bd33985130  testVHACD" | sha256sum --check
+# make it executable
+chmod +x testVHACD
+# move it into PATH
+mv testVHACD /usr/bin/"
     os.system(cmd)
+    exit()
 
 
 def cmd_process_meshes(args=None):
@@ -167,7 +173,7 @@ def cmd_process_meshes(args=None):
         mesh_asset.set("name", f"{mesh_name}")
         mesh_asset.set("file", f"{mesh_name}/{mesh_name}.stl")
         asset.append(mesh_asset)
-        mesh.export(f"{output_folder_path}/visual.stl")
+        mesh.export(f"{output_folder_path}/{mesh_name}.stl")
 
         geom = etree.Element("geom")
         geom.set("type", "mesh")
@@ -194,8 +200,7 @@ def cmd_process_meshes(args=None):
 
         tree = etree.ElementTree(root)
         etree.indent(tree, space="  ", level=0)
-        xml_path = Path(args["folder"]) / f"{mesh_name}.xml"
-        with open(xml_path, "wb") as files:
+        with open(mesh_name + ".xml", "wb") as files:
             tree.write(files)
 
 

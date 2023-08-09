@@ -3,17 +3,25 @@ from pathlib import Path
 from dm_control import mjcf
 from dm_control import composer
 
-from cathsim.cathsim.common import env_config
-from cathsim.utils.common import normalize_rgba
+from cathsim.utils.common import normalize_rgba, get_env_config
 
+env_config = get_env_config()
 phantom_config = env_config["phantom"]
 phantom_config["rgba"] = normalize_rgba(phantom_config["rgba"])
 
 
 class Phantom(composer.Entity):
+    """ """
+
     def _build(
         self, phantom_xml: str = "phantom3.xml", assets_dir: Path = None, **kwargs
     ):
+        """
+
+        :param phantom_xml: str:  (Default value = "phantom3.xml")
+        :param assets_dir: Path:  (Default value = None)
+
+        """
         self.rgba = phantom_config["rgba"]
         self.scale = [phantom_config["scale"] for i in range(3)]
 
@@ -47,17 +55,32 @@ class Phantom(composer.Entity):
         )
 
     def set_rgba(self, rgba: list) -> None:
+        """Set the RGBA of the phantom.
+
+        :param rgba: list: [r, g, b, a]
+
+        """
         self.rgba = rgba
         self._mjcf_root.find("geom", "visual").rgba = self.rgba
         collision_rgba = rgba.copy()
         collision_rgba[-1] = 0
         self._mjcf_root.default.geom.set_attributes(rgba=collision_rgba)
 
-    def set_hulls_alpha(self, alpha) -> None:
+    def set_hulls_alpha(self, alpha: float) -> None:
+        """Set the transparency of the convex hulls
+
+        :param alpha: float:
+
+        """
         self.rgba[-1] = alpha
         self._mjcf_root.default.geom.set_attributes(rgba=self.rgba)
 
-    def set_scale(self, scale: list) -> None:
+    def set_scale(self, scale: tuple) -> None:
+        """Set the scale of the mesh.
+
+        :param scale: tuple: [x_scale, y_scale, z_scale]
+
+        """
         self._mjcf_root.default.mesh.set_attributes(scale=scale)
         self._mjcf_root.find("mesh", "visual").scale = [x * 1.005 for x in scale]
 
@@ -68,7 +91,8 @@ class Phantom(composer.Entity):
         return self.rgba
 
     @property
-    def sites(self):
+    def sites(self) -> dict:
+        """Gets the sites from the mesh. Useful for declaring navigation targets or areas of interest."""
         sites = self._mjcf_root.find_all("site")
         return {site.name: site.pos for site in sites}
 
