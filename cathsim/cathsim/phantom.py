@@ -11,8 +11,6 @@ phantom_config["rgba"] = normalize_rgba(phantom_config["rgba"])
 
 
 class Phantom(composer.Entity):
-    """ """
-
     def _build(
         self, phantom_xml: str = "phantom3.xml", assets_dir: Path = None, **kwargs
     ):
