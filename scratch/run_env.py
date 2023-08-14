@@ -52,7 +52,7 @@ def run_env(args=None):
 
     # Launch the viewer application.
     # if parsed_args.interact:
-    #     from cathsim.cathsim.env_utils import launch
+    #     from cathsim.utils import launch
     #     launch(env)
     # else:
     #     launch(env, policy=random_policy)

@@ -1,6 +1,6 @@
 import pytest
 from dm_control import mjcf
-from cathsim.cathsim.guidewire import Guidewire, BaseBody, Tip
+from cathsim.guidewire import Guidewire, BaseBody, Tip
 
 
 class TestBaseBody:

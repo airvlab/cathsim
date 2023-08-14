@@ -10,15 +10,11 @@ setup(
     url="cathsim.github.io",
     author="Tudor Jianu",
     author_email="tudorjnu@gmail.com",
-    packages=find_packages(
-        where="src",
-        include=[
-            "cathsim",
-            "rl",
-            "human",
-            "evaluation",
-        ],
-    ),
+    packages=find_packages(where="src"),
+    package_dir={"": "src"},
+    package_data={
+        "rl": ["config/*.yaml"],
+    },
     setup_requires=[
         "setuptools==58.0.0",
     ],
@@ -45,9 +41,10 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "run_env=cathsim.cathsim.env:run_env",
+            "run_env=cathsim.utils:cmd_run_env",
             "record_traj=human.utils:cmd_record_traj",
             "visualize_agent=rl.utils:cmd_visualize_agent",
+            "train=rl.utils:cmd_train",
         ],
     },
 )

@@ -5,6 +5,9 @@ figures/
 results/
 human/
 experiments/
+transitions/
+transitions_bodies-full/
+evaluation/
 astar*
 # scripts/
 # scratch/
@@ -12,6 +15,7 @@ wandb/
 transitions/
 lightning_logs/
 meshes/
+cathsim.backup/
 results.zip
 .sync*
 

@@ -1,7 +1,7 @@
 import pytest
 from dm_control import composer
 import numpy as np
-from cathsim.cathsim.env import Phantom, Guidewire, Tip, Navigate
+from cathsim.env import Phantom, Guidewire, Tip, Navigate
 from unittest.mock import Mock
 
 

@@ -8,7 +8,7 @@ from stable_baselines3.common.base_class import BaseAlgorithm
 from imitation.algorithms import bc
 
 from rl.utils import get_config
-from cathsim.cathsim.env_utils import make_gym_env
+from cathsim.utils import make_gym_env
 
 import pandas as pd
 import tqdm

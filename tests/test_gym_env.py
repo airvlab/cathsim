@@ -3,7 +3,7 @@
 # from dm_control import composer
 # from gym import spaces
 # from cathsim.wrappers import DMEnvToGymWrapper  # replace with the path to your module
-# from cathsim.cathsim.env_utils import make_dm_env
+# from cathsim.utils import make_dm_env
 #
 #
 # class TestDMEnv:

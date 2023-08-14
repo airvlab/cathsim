@@ -1,6 +1,6 @@
 import pytest
 from dm_control import mjcf
-from cathsim.cathsim.env import Scene
+from cathsim.env import Scene
 from unittest import mock
 
 

@@ -39,7 +39,7 @@ pip install -e .
 A quick way to have the enviromnent run with gym is to make use of the `make_dm_env` function and then wrap the resulting environment into a `DMEnvToGymWrapper` resulting in a `gym.Env`.
 
 ```python
-from cathsim.cathsim.env_utils import make_dm_env
+from cathsim.utils import make_dm_env
 from cathsim.wrappers.wrappers import DMEnvToGymWrapper
 
 env = make_dm_env(
@@ -86,7 +86,7 @@ You can use a custom aorta by making use of V-HACD convex decomposition. To do s
 pip install git+git@github.com:tudorjnu/stl2mjcf.git
 ```
 
-After the installation, you can use `stl2mjcf --help` to see the available commands. The resultant files can be then added to `cathsim/cathsim/assets`. The `xml` will go in that folder and the resultant meshes folder will go in `cathsim/cathsim/assets/meshes/`. 
+After the installation, you can use `stl2mjcf --help` to see the available commands. The resultant files can be then added to `cathsim/assets`. The `xml` will go in that folder and the resultant meshes folder will go in `cathsim/assets/meshes/`. 
 
 Note: You will probably have to change the parameters of V-HACD for the best results.
 

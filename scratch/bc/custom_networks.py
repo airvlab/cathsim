@@ -12,7 +12,7 @@ from rl.imitation.utils import filter
 from rl.sb3.sb3_utils import make_experiment, get_config
 from cathsim.wrappers import Dict2Array
 
-from cathsim.cathsim.env_utils import make_env
+from cathsim.utils import make_env
 
 from imitation.data.types import Transitions
 

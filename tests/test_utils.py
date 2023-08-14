@@ -1,5 +1,5 @@
 import pytest
-from cathsim.utils.common import expand_dict, flatten_dict
+from cathsim.utils import expand_dict, flatten_dict
 
 
 expand_dict_data = [

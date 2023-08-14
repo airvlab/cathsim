@@ -1,4 +1,4 @@
-from cathsim.cathsim.phantom import Phantom, phantom_config
+from cathsim.phantom import Phantom, phantom_config
 
 
 def test_phantom_build():

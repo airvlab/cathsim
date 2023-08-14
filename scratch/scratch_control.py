@@ -147,7 +147,7 @@ def test():
                 head_pos = info["head_pos"]
             traj.save("test")
 
-    from cathsim.cathsim.env_utils import make_gym_env
+    from cathsim.utils import make_gym_env
     from rl.utils import get_config
 
     ckpt_path = Path("lightning_logs/version_1/checkpoints/epoch=9-step=110080.ckpt")

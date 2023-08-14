@@ -1,7 +1,7 @@
 from rl.utils import get_config, make_experiment, EXPERIMENT_PATH
 from evaluation.common import get_paths, parse_tb_log
 from typing import Union, List, Callable, Dict
-from cathsim.cathsim.common import point2pixel
+from cathsim.common import point2pixel
 
 from collections import OrderedDict
 
