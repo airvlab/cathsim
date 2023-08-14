@@ -1,0 +1,10 @@
+---
+task_kwargs:
+  use_pixels: True
+
+wrapper_kwargs:
+  use_obs:
+    - 'joint_pos'
+    - 'joint_vel'
+    - 'pixels'
+
