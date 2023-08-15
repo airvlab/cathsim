@@ -563,8 +563,8 @@
     <mesh name="hull_555" file="low_tort/hull_555.stl" />
   </asset>
   <worldbody>
-    <site name="bca" pos="-0.03749576583504677 0.13645561039447784 0.044354524463415146" />
-    <site name="lcca" pos="-0.019787780940532684 0.13159991800785065 0.03783094510436058" />
+    <site name="bca" pos="-0.03759552910923958 0.1243072971701622 0.040043532848358154" />
+    <site name="lcca" pos="-0.02372954785823822 0.12248539179563522 0.027018999680876732" />
     <body name="phantom">
       <geom name="visual" mesh="visual" contype="0" conaffinity="0" />
       <geom mesh="hull_0" />

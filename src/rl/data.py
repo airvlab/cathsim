@@ -12,7 +12,7 @@ import pprint
 from toolz.dicttoolz import itemmap
 from functools import reduce
 from cathsim.utils import point2pixel
-from rl.utils import flatten_dict, expand_dict, map_val
+from utils import flatten_dict, expand_dict, map_val
 
 import warnings
 from tqdm import tqdm

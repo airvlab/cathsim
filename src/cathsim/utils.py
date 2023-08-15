@@ -1,7 +1,17 @@
 """
 Utilities module for the environment.
 """
+from cathsim.wrappers import (
+    DMEnvToGymWrapper,
+    GoalEnvWrapper,
+    MultiInputImageWrapper,
+    Dict2Array,
+)
+from gym import wrappers
 
+
+from stable_baselines3.common.monitor import Monitor
+from stable_baselines3.common.vec_env import VecMonitor, DummyVecEnv, SubprocVecEnv
 from pathlib import Path
 import yaml
 import numpy as np
@@ -162,79 +172,75 @@ def make_dm_env(
 
 
 def make_gym_env(
-    config: dict = dict(
-        task_kwargs={},
-        wrapper_kwargs={},
-        render_kwargs={},
-    )
+    config: dict = {}, n_envs: int = 1, monitor_wrapper: bool = True
 ) -> gym.Env:
-    """Makes a gym environment.
+    """Makes a gym environment given a configuration.
 
-    :param config: dict:  (Default value = dict(task_kwargs={})
-    :param wrapper_kwargs:  (Default value = {})
-    :param render_kwargs:  (Default value = {})
-    :param ):
-
+    :param n_envs: int: Number of environments to create
+    :param config: dict: Configuration dictionary for the environment
+    :param monitor_wrapper: bool: Whether to wrap the environment in a monitor
     """
-    wrapper_kwargs = config["wrapper_kwargs"]
-    env_kwargs = config["env_kwargs"]
-    task_kwargs = config["task_kwargs"]
 
-    from cathsim.wrappers import DMEnvToGymWrapper
-    from gym import wrappers
+    def _create_env() -> gym.Env:
+        # Extract parameters from the config dictionary.
+        wrapper_kwargs = config.get("wrapper_kwargs", {})
+        env_kwargs = config.get("env_kwargs", {})
+        task_kwargs = config.get("task_kwargs", {})
 
-    max_episode_steps = wrapper_kwargs.get("time_limit", 300)
-    filter_keys = wrapper_kwargs.get("use_obs", None)
-    flatten_observation = wrapper_kwargs.get("flatten_obs", False)
-    grayscale = wrapper_kwargs.get("grayscale", False)
-    normalize_obs = wrapper_kwargs.get("normalize_obs", False)
-    frame_stack = wrapper_kwargs.get("frame_stack", 1)
-    use_pixels = task_kwargs.get("use_pixels", False)
-    goal_env = wrapper_kwargs.get("goal_env", False)
+        # Environment creation and basic wrapping
+        env = make_dm_env(**task_kwargs)
+        env = DMEnvToGymWrapper(env=env, env_kwargs=env_kwargs)
 
-    if goal_env:
-        filter_keys = filter_keys + ["achieved_goal", "desired_goal"]
+        # Specific wrappers application based on config
+        if wrapper_kwargs.get("goal_env", False):
+            filter_keys = wrapper_kwargs.get("use_obs", []) + [
+                "achieved_goal",
+                "desired_goal",
+            ]
+            env = GoalEnvWrapper(env=env)
+        else:
+            filter_keys = wrapper_kwargs.get("use_obs", [])
 
-    env = make_dm_env(**task_kwargs)
-    env = DMEnvToGymWrapper(env=env, env_kwargs=env_kwargs)
+        if filter_keys:
+            env = wrappers.FilterObservation(env, filter_keys=filter_keys)
 
-    if goal_env:
-        from cathsim.wrappers import GoalEnvWrapper
-
-        env = GoalEnvWrapper(env=env)
-
-    env = wrappers.TimeLimit(env, max_episode_steps=max_episode_steps)
-
-    if filter_keys:
-        env = wrappers.FilterObservation(env, filter_keys=filter_keys)
-
-    if flatten_observation:
-        env = wrappers.FlattenObservation(env)
-
-    if use_pixels:
-        from cathsim.wrappers import MultiInputImageWrapper
-
-        env = MultiInputImageWrapper(
-            env,
-            grayscale=grayscale,
-            image_key=wrapper_kwargs.get("image_key", "pixels"),
-            keep_dim=wrapper_kwargs.get("keep_dim", True),
-            channel_first=wrapper_kwargs.get("channel_first", False),
+        env = wrappers.TimeLimit(
+            env, max_episode_steps=wrapper_kwargs.get("time_limit", 300)
         )
 
-    if wrapper_kwargs.get("dict2array", False):
-        assert (
-            len(env.observation_space.spaces) == 1
-        ), "Only one observation is allowed."
-        from cathsim.wrappers import Dict2Array
+        if wrapper_kwargs.get("flatten_obs", False):
+            env = wrappers.FlattenObservation(env)
 
-        env = Dict2Array(env)
+        if task_kwargs.get("use_pixels", False):
+            env = MultiInputImageWrapper(
+                env,
+                grayscale=wrapper_kwargs.get("grayscale", False),
+                image_key=wrapper_kwargs.get("image_key", "pixels"),
+                keep_dim=wrapper_kwargs.get("keep_dim", True),
+                channel_first=wrapper_kwargs.get("channel_first", False),
+            )
 
-    if normalize_obs:
-        env = wrappers.NormalizeObservation(env)
+        if wrapper_kwargs.get("dict2array", False):
+            assert (
+                len(env.observation_space.spaces) == 1
+            ), "Only one observation is allowed."
+            env = Dict2Array(env)
 
-    if frame_stack > 1:
-        env = wrappers.FrameStack(env, frame_stack)
+        if wrapper_kwargs.get("normalize_obs", False):
+            env = wrappers.NormalizeObservation(env)
+
+        if wrapper_kwargs.get("frame_stack", 1) > 1:
+            env = wrappers.FrameStack(env, wrapper_kwargs["frame_stack"])
+
+        return env
+
+    # Create a vectorized environment.
+    envs = [_create_env for _ in range(n_envs)]
+    env = DummyVecEnv(envs) if n_envs == 1 else SubprocVecEnv(envs)
+
+    # Apply monitoring.
+    if monitor_wrapper:
+        env = Monitor(env) if n_envs == 1 else VecMonitor(env)
 
     return env
 
@@ -346,54 +352,4 @@ def launch(
     app.launch(
         environment_loader=environment_loader,
         policy=policy,
-    )
-
-
-def cmd_run_env(args=None):
-    """
-    Runs the environment.
-
-    :param args:  (Default value = None)
-
-    """
-    from argparse import ArgumentParser
-    from dm_control import composer
-    from cathsim import Phantom, Guidewire, Tip, Navigate
-
-    parser = ArgumentParser()
-    parser.add_argument("--save-trajectories", default=None, type=bool)
-    parser.add_argument("--base-path", default=None, type=str)
-    parser.add_argument("--phantom", default="phantom3", type=str)
-    parser.add_argument("--target", default="bca", type=str)
-    parser.add_argument("--experiment-name", default="test", type=str)
-    args = parser.parse_args(args)
-
-    phantom = Phantom(args.phantom + ".xml")
-
-    tip = Tip()
-    guidewire = Guidewire()
-
-    task = Navigate(
-        phantom=phantom,
-        guidewire=guidewire,
-        tip=tip,
-        use_pixels=True,
-        use_segment=True,
-        target=args.target,
-        visualize_sites=True,
-    )
-
-    env = composer.Environment(
-        task=task,
-        time_limit=2000,
-        random_state=np.random.RandomState(42),
-        strip_singleton_obs_buffer_dim=True,
-    )
-
-    launch(
-        env,
-        save_trajectories=args.save_trajectories,
-        phantom=args.phantom,
-        target=args.target,
-        experiment_name=args.experiment_name,
     )

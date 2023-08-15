@@ -19,6 +19,7 @@ env_kwargs:
   gym_version: 'gym'
 
 algo_kwargs:
+  buffer_size: 500000
   policy: MultiInputPolicy
   policy_kwargs:
     features_extractor_class: CustomExtractor

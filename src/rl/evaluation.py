@@ -19,6 +19,43 @@ def calculate_total_distance(positions):
     return np.sum(distance(positions[1:], positions[:-1]))
 
 
+def process_human_trajectories(
+    path: Path, flatten: bool = False, mapping: dict = None
+) -> np.ndarray:
+    """Utility function that processes human trajectories.
+
+    :param path: Path:
+    :param flatten: bool:  (Default value = False)
+    :param mapping: dict:  (Default value = None)
+
+    """
+    trajectories = {}
+    for episode in path.iterdir():
+        trajectory_path = episode / "trajectory.npz"
+        if not trajectory_path.exists():
+            continue
+        episode_data = np.load(episode / "trajectory.npz", allow_pickle=True)
+        episode_data = dict(episode_data)
+        if flatten:
+            for key, value in episode_data.items():
+                if mapping is not None:
+                    if key in mapping:
+                        key = mapping[key]
+                if key == "time":
+                    continue
+                trajectories.setdefault(key, []).extend(value)
+        else:
+            if mapping is not None:
+                for key, value in mapping.items():
+                    episode_data[mapping[key]] = episode_data.pop(key)
+            trajectories[episode.name] = episode_data
+    if flatten:
+        for key, value in trajectories.items():
+            trajectories[key] = np.array(value)
+
+    return trajectories
+
+
 def load_human_trajectories(path: Path, flatten=False, mapping: dict = None):
     trajectories = {}
     for episode in path.iterdir():
@@ -324,11 +361,11 @@ def evaluate_policy(model: BaseAlgorithm, env: gym.Env, n_episodes: int = 10) ->
 
     Example:
     >>> from stable_baselines3 import SAC
-    >>> from cathsim.utils import make_env, get_config
+    >>> from cathsim.utils import make_gym_env, get_config
     >>>
     >>> algorithm = 'full'
     >>> config = get_config(algorithm)
-    >>> env = make_env(config)
+    >>> env = make_gym_env(config)
     >>> model = SAC.load(f'./models/{algorithm}/best_model.zip')
     >>> evaluation_data = evaluate_policy(model, env)
     """
