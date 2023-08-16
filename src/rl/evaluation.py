@@ -8,11 +8,14 @@ from typing import OrderedDict
 
 from cathsim.utils import distance
 from rl.utils import make_experiment
-from rl.utils import EXPERIMENT_PATH, EVALUATION_PATH
+from rl.utils import EXPERIMENT_PATH
+from rl.data import Trajectory
 
 from stable_baselines3.common.base_class import BaseAlgorithm
 
 from typing import List, Tuple
+
+RESULTS_SUMMARY = Path.cwd() / "results-summary"
 
 
 def calculate_total_distance(positions):
@@ -56,7 +59,14 @@ def process_human_trajectories(
     return trajectories
 
 
-def load_human_trajectories(path: Path, flatten=False, mapping: dict = None):
+def load_human_trajectories(path: Path, flatten: bool = False, mapping: dict = None):
+    """Loads the human trajectories from the given path.
+
+    Args:
+        path: The path to the human trajectories.
+        flatten: if True, flatten the trajectories into a single array.
+        mapping: A mapping from the keys in the trajectory to the keys in the collated array.
+    """
     trajectories = {}
     for episode in path.iterdir():
         trajectory_path = episode / "trajectory.npz"
@@ -152,7 +162,7 @@ def analyze_model(
 def aggregate_results(
     eval_path: Path = None, output_path: Path = None, verbose: bool = False
 ) -> pd.DataFrame:
-    eval_path = eval_path or EVALUATION_PATH
+    eval_path = eval_path or RESULTS_SUMMARY
 
     if verbose:
         print(
@@ -225,7 +235,7 @@ def plot_path(filename):
 
         return np.array([round(xs / s), round(ys / s)], np.int8)
 
-    data = np.load(EVALUATION_PATH / filename, allow_pickle=True)
+    data = np.load(RESULTS_SUMMARY / filename, allow_pickle=True)
     data = {key: value.item() for key, value in data.items()}
     paths = {}
     for episode, values in data.items():
@@ -280,7 +290,7 @@ def collate_human_trajectories(
         trajectories[str(i)] = episode_data
     trajectories = list(trajectories.values())
     if save_path is not None:
-        save_path = EVALUATION_PATH / save_path
+        save_path = RESULTS_SUMMARY / save_path
         np.savez(save_path, results=trajectories)
     return trajectories
 
@@ -318,7 +328,7 @@ def collate_results(
     if experiment_path is None:
         experiment_path = EXPERIMENT_PATH
     if evaluation_path is None:
-        evaluation_path = EVALUATION_PATH
+        evaluation_path = RESULTS_SUMMARY
     for phantom in experiment_path.iterdir():
         if phantom.is_dir() is False:
             continue
@@ -343,52 +353,38 @@ def collate_results(
                             experiment_results = collate_experiment_results(
                                 path / experiment.name
                             )
-                        (EVALUATION_PATH / path).mkdir(parents=True, exist_ok=True)
+                        (RESULTS_SUMMARY / path).mkdir(parents=True, exist_ok=True)
                         np.savez_compressed(
-                            EVALUATION_PATH / path / f"{experiment.name}.npz",
+                            RESULTS_SUMMARY / path / f"{experiment.name}.npz",
                             results=experiment_results,
                         )
 
 
-def evaluate_policy(model: BaseAlgorithm, env: gym.Env, n_episodes: int = 10) -> dict:
-    """
-    Evaluate the performance of a policy.
+def evaluate_policy(model: BaseAlgorithm, env: gym.Env) -> Trajectory:
+    """Evaluate a policy.
 
-    :param model  type_aliases.PolicyPredictor: The policy to evaluate.
-    :param env gym.Env: The environment to evaluate the policy in.
-    :param n_episodes int: The number of episodes to evaluate the policy for.
-    :return: dict: The evaluation data.
+    Args:
+        model: The model to evaluate.
+        env: Gym environment.
 
-    Example:
-    >>> from stable_baselines3 import SAC
-    >>> from cathsim.utils import make_gym_env, get_config
-    >>>
-    >>> algorithm = 'full'
-    >>> config = get_config(algorithm)
-    >>> env = make_gym_env(config)
-    >>> model = SAC.load(f'./models/{algorithm}/best_model.zip')
-    >>> evaluation_data = evaluate_policy(model, env)
+    Returns:
+        Trajectory: The trajectory of the evaluation.
     """
-    evaluation_data = {}
-    for episode in tqdm(range(n_episodes)):
-        observation = env.reset()
-        done = False
-        head_positions = []
-        forces = []
-        head_pos = env.head_pos.copy()
-        head_positions.append(head_pos)
-        while not done:
-            action, _ = model.predict(observation)
-            observation, reward, done, info = env.step(action)
-            head_pos_ = info["head_pos"]
-            forces.append(info["forces"])
-            head_positions.append(head_pos_)
-            head_pos = head_pos_
-        evaluation_data[str(episode)] = dict(
-            forces=np.array(forces),
-            head_positions=np.array(head_positions),
+    trajectory = Trajectory()
+    observation = env.reset()
+    done = False
+    while not done:
+        action, _ = model.predict(observation)
+        new_observation, reward, done, info = env.step(action)
+        trajectory.add_transition(
+            observation=observation,
+            action=action,
+            reward=reward,
+            next_observation=new_observation,
+            info=info,
         )
-    return evaluation_data
+        observation = new_observation
+    return trajectory
 
 
 def evaluate_models(
@@ -551,7 +547,7 @@ def plot_error_line_graph(
 
 
 def plot_human_line(ax, phantom, target, n_interpolations=30):
-    experiment_data = pd.read_csv(EVALUATION_PATH / "results_2.csv")
+    experiment_data = pd.read_csv(RESULTS_SUMMARY / "results_2.csv")
     human_data = experiment_data[
         (experiment_data["algorithm"] == "human")
         & (experiment_data["phantom"] == phantom)
@@ -577,7 +573,7 @@ if __name__ == "__main__":
     collate_results(verbose=True)
     dataframe = aggregate_results()
     print(dataframe)
-    dataframe.to_csv(EVALUATION_PATH / "results_4.csv", index=False)
+    dataframe.to_csv(RESULTS_SUMMARY / "results_4.csv", index=False)
     # make column names title case, without underscores
     dataframe.columns = [
         column.replace("_", " ").title() for column in dataframe.columns

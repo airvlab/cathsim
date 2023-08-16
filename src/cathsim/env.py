@@ -1,6 +1,7 @@
 import numpy as np
 import trimesh
 import random
+from typing import Union
 
 
 from dm_control import mjcf
@@ -36,6 +37,11 @@ random_state = np.random.RandomState(42)
 
 
 def make_scene(geom_groups: list):
+    """Make a scene option for the phantom. This is used to set the visibility of the different parts of the environment.
+
+    Args:
+        geom_groups: A list of geom groups to set visible
+    """
     scene_option = wrapper.MjvOption()
     scene_option.geomgroup = np.zeros_like(scene_option.geomgroup)
     for geom_group in geom_groups:
@@ -45,23 +51,22 @@ def make_scene(geom_groups: list):
 
 def sample_points(
     mesh: trimesh.Trimesh, y_bounds: tuple, n_points: int = 10
-) -> np.array:
-    """
-    Samples points within the mesh volume
+) -> np.ndarray:
+    """Sample points from a mesh.
 
-    :param mesh: trimesh.Trimesh
-    :param y_bounds: tuple:
-    :param n_points: int:  (Default value = 10)
+    This function samples points from a mesh and returns a point that is within the y_bounds.
 
+    Args:
+        mesh: A trimesh mesh
+        y_bounds: The bounds of the y axis
+        n_points: The number of points to sample ( default : 10 )
+
+    Returns:
+        np.ndarray: A point that is within the y_bounds
     """
 
     def is_within_limits(point: list) -> bool:
-        """
-        Check if a point is within limits.
-
-        :param point: list:
-
-        """
+        """Check if a point is within the y_bounds."""
         return y_bounds[0] < point[1] < y_bounds[1]
 
     while True:
@@ -78,8 +83,11 @@ def sample_points(
 
 
 class Scene(composer.Arena):
-    """
-    The main Scene of the environment. It sets the main properties such as the compiler settings.
+    """Sets up the scene for the environment.
+
+    Args:
+        name: Name of the scene ( default : "arena" )
+        render_site: If True, the sites will be rendered ( default : False )
     """
 
     def _build(
@@ -87,12 +95,6 @@ class Scene(composer.Arena):
         name: str = "arena",
         render_site: bool = False,
     ):
-        """
-
-        :param name: str:  (Default value = "arena")
-        :param render_site: bool:  (Default value = False)
-
-        """
         super()._build(name=name)
 
         self._mjcf_root.compiler.set_attributes(**compiler)
@@ -127,13 +129,15 @@ class Scene(composer.Arena):
     def add_light(
         self, pos: list = [0, 0, 0], dir: list = [0, 0, 0], castshadow: bool = False
     ) -> mjcf.Element:
-        """
-        Adds a light element
+        """Add a light object to the scene.
 
-        :param pos: list:  (Default value = [0, 0, 0])
-        :param dir: list:  (Default value = [0, 0, 0])
-        :param castshadow: bool:  (Default value = False)
+        Args:
+            pos: Position of the light ( default : [0, 0, 0] )
+            dir: Direction of the light ( default : [0, 0, 0] )
+            castshadow: If True, the light will cast shadows ( default : False )
 
+        Returns:
+            mjcf.Element: The light element
         """
         light = self._mjcf_root.worldbody.add(
             "light", pos=pos, dir=dir, castshadow=castshadow
@@ -143,13 +147,15 @@ class Scene(composer.Arena):
     def add_camera(
         self, name: str, pos: list = [0, 0, 0], euler: list = [0, 0, 0]
     ) -> mjcf.Element:
-        """
-        Adds a camera element
+        """Add a camera object to the scene.
 
-        :param name: str:
-        :param pos: list:  (Default value = [0, 0, 0])
-        :param euler: list:  (Default value = [0, 0, 0])
+        Args:
+            name: Name of the camera
+            pos: Position of the camera ( default : [0, 0, 0] )
+            euler: Euler angles of the camera ( default : [0, 0, 0] )
 
+        Returns:
+            mjcf.Element: The camera element
         """
         camera = self._mjcf_root.worldbody.add(
             "camera", name=name, pos=pos, euler=euler
@@ -157,18 +163,28 @@ class Scene(composer.Arena):
         return camera
 
     def add_site(self, name: str, pos: list = [0, 0, 0]) -> mjcf.Element:
-        """
-        Adds a site.
+        """Add a site object to the scene. This is used to visualize/set the target.
 
-        :param name: str:
-        :param pos: list:  (Default value = [0, 0, 0])
+        Args:
+            name: Name of the site
+            pos: position of the site ( default : [0, 0, 0] )
 
+        Returns:
+            mjcf.Element: The site element
         """
         site = self._mjcf_root.worldbody.add("site", name=name, pos=pos)
         return site
 
 
 class UniformCircle(variation.Variation):
+    """A uniform circle variation. Allows to sample a point from a uniform circle.
+
+    Args:
+        x_range: The range of the x axis ( default : (-0.001, 0.001) )
+        y_range: The range of the y axis ( default : (-0.001, 0.001) )
+        z_range: The range of the z axis ( default : (-0.001, 0.001) )
+    """
+
     def __init__(
         self,
         x_range: tuple[int] = (-0.001, 0.001),
@@ -187,8 +203,24 @@ class UniformCircle(variation.Variation):
 
 
 class Navigate(composer.Task):
-    """
-    The task class. It is responsible for adding all the elements (phantom, guidewire) together.
+    """The task for the navigation environment.
+
+    Args:
+        phantom: The phantom entity to use
+        guidewire: The guidewire entity to use
+        tip: The tip entity to use for the tip ( default : None )
+        delta: Minimum distance threshold for the success reward ( default : 0.004 )
+        dense_reward: If True, the reward is the distance to the target ( default : True )
+        success_reward: Success reward ( default : 10.0 )
+        use_pixels: Add pixels to the observation ( default : False )
+        use_segment: Add guidewire segmentation to the observation ( default : False )
+        use_phantom_segment: Add phantom segmentation to the observation ( default : False )
+        image_size: The size of the image ( default : 80 )
+        sample_target: Weather or not to sample the target ( default : False )
+        visualize_sites: If True, the sites will be rendered ( default : False )
+        target_from_sites: If True, the target will be sampled from sites ( default : True )
+        random_init_distance: The distance from the center to sample the initial pose ( default : 0.001 )
+        target: The target to use. Can be a string or a numpy array ( default : None )
     """
 
     def __init__(
@@ -196,7 +228,7 @@ class Navigate(composer.Task):
         phantom: composer.Entity = None,
         guidewire: composer.Entity = None,
         tip: composer.Entity = None,
-        delta: float = 0.004,  # distance threshold for success
+        delta: float = 0.004,
         dense_reward: bool = True,
         success_reward: float = 10.0,
         use_pixels: bool = False,
@@ -207,7 +239,7 @@ class Navigate(composer.Task):
         visualize_sites: bool = False,
         target_from_sites: bool = True,
         random_init_distance: float = 0.001,
-        target=None,
+        target: Union[str, np.ndarray] = None,
     ):
         self.delta = delta
         self.dense_reward = dense_reward
@@ -303,10 +335,12 @@ class Navigate(composer.Task):
 
     @property
     def root_entity(self):
+        """The root_entity property."""
         return self._arena
 
     @property
     def task_observables(self):
+        """The task_observables property."""
         return self._task_observables
 
     @property
@@ -315,14 +349,7 @@ class Navigate(composer.Task):
         return self._target_pos
 
     def set_target(self, target) -> None:
-        """target is one of:
-        - str: name of the site
-        - np.ndarray: target position
-
-        :param target:
-
-        """
-
+        """Set the target position."""
         if type(target) is str:
             sites = self._phantom.sites
             assert (
@@ -332,9 +359,11 @@ class Navigate(composer.Task):
         self._target_pos = target
 
     def initialize_episode_mjcf(self, random_state):
+        """Initialize the episode mjcf."""
         self._mjcf_variator.apply_variations(random_state)
 
     def initialize_episode(self, physics, random_state):
+        """Initialize the episode."""
         if self.camera_matrix is None:
             self.camera_matrix = self.get_camera_matrix(physics)
         self._physics_variator.apply_variations(physics, random_state)
@@ -347,17 +376,21 @@ class Navigate(composer.Task):
             self.set_target(self.get_random_target(physics))
 
     def get_reward(self, physics):
+        """Get the reward from the environment."""
         self.head_pos = self.get_head_pos(physics)
         reward = self.compute_reward(self.head_pos, self._target_pos)
         return reward
 
     def should_terminate_episode(self, physics):
+        """Check if the episode should terminate."""
         return self.success
 
     def get_head_pos(self, physics):
+        """Get the position of the head of the guidewire."""
         return physics.named.data.geom_xpos[-1]
 
     def compute_reward(self, achieved_goal, desired_goal):
+        """Compute the reward."""
         d = distance(achieved_goal, desired_goal)
         success = np.array(d < self.delta, dtype=bool)
 
@@ -369,29 +402,35 @@ class Navigate(composer.Task):
         return reward
 
     def get_joint_positions(self, physics):
+        """Get the joint positions."""
         positions = physics.named.data.qpos
         return positions
 
     def get_joint_velocities(self, physics):
+        """Get the joint velocities."""
         velocities = physics.named.data.qvel
         return velocities
 
     def get_force(self, physics):
+        """Get the force magnitude."""
         forces = physics.data.qfrc_constraint[0:3]
         forces = np.linalg.norm(forces)
         return forces
 
     def get_contact_forces(
-        self, physics, threshold=0.01, to_pixels=True, image_size=64
+        self,
+        physics,
+        threshold: float = 0.01,
+        to_pixels: bool = True,
+        image_size: int = 80,
     ):
-        """
-        Extracts the contact forces.
+        """Gets the contact forces for each contact point.
 
-        :param physics:
-        :param threshold:  (Default value = 0.01)
-        :param to_pixels:  (Default value = True)
-        :param image_size:  (Default value = 64)
-
+        Args:
+            physics: The physics object
+            threshold: The threshold for the force magnitude ( default : 0.01 )
+            to_pixels: If True, the contact points will be converted to pixels ( default : True )
+            image_size: The size of the image ( default : 80 )
         """
         if self.camera_matrix is None:
             self.camera_matrix = self.get_camera_matrix(physics, image_size)
@@ -411,14 +450,7 @@ class Navigate(composer.Task):
         return forces
 
     def get_camera_matrix(self, physics, image_size: int = None, camera_id=0):
-        """
-        Extracts the camera matrix.
-
-        :param physics:
-        :param image_size: int:  (Default value = None)
-        :param camera_id:  (Default value = 0)
-
-        """
+        """Get the camera matrix for the given camera."""
         from dm_control.mujoco.engine import Camera
 
         if image_size is None:
@@ -429,14 +461,7 @@ class Navigate(composer.Task):
         return camera.matrix
 
     def get_phantom_mask(self, physics, image_size: int = None, camera_id=0):
-        """
-        Extracts the phantom segmentation mask.
-
-        :param physics:
-        :param image_size: int:  (Default value = None)
-        :param camera_id:  (Default value = 0)
-
-        """
+        """Get the phantom mask."""
         scene_option = make_scene([0])
         if image_size is None:
             image_size = self.image_size
@@ -450,14 +475,7 @@ class Navigate(composer.Task):
         return mask
 
     def get_guidewire_mask(self, physics, image_size: int = None, camera_id=0):
-        """
-        Extracts the guidewire mask.
-
-        :param physics:
-        :param image_size: int:  (Default value = None)
-        :param camera_id:  (Default value = 0)
-
-        """
+        """Get the guidewire mask."""
         scene_option = make_scene([1, 2])
         if image_size is None:
             image_size = self.image_size
@@ -471,12 +489,7 @@ class Navigate(composer.Task):
         return mask
 
     def get_random_target(self, physics):
-        """
-        Samples a target.
-
-        :param physics:
-
-        """
+        """Get a random target."""
         if self.target_from_sites:
             sites = self._phantom.sites
             site = np.random.choice(list(sites.keys()))
@@ -486,6 +499,7 @@ class Navigate(composer.Task):
         return sample_points(mesh, (0.0954, 0.1342))
 
     def get_guidewire_geom_pos(self, physics):
+        """Get the guidewire geom positions."""
         model = physics.copy().model
         guidewire_geom_ids = [
             model.geom(i).id
@@ -497,14 +511,9 @@ class Navigate(composer.Task):
 
 
 def run_env(args=None):
-    """
-    Runs the environment.
-
-    :param args:  (Default value = None)
-
-    """
+    """Run the environment."""
     from argparse import ArgumentParser
-    from dm_control.viewer import launch
+    from cathsim.utils import launch
 
     parser = ArgumentParser()
     parser.add_argument("--interact", type=bool, default=True)
@@ -535,21 +544,7 @@ def run_env(args=None):
         strip_singleton_obs_buffer_dim=True,
     )
 
-    def random_policy(time_step):
-        """
-
-        :param time_step:
-
-        """
-        del time_step  # Unused
-        return [0, 0]
-
-    if parsed_args.interact:
-        from cathsim.utils import launch
-
-        launch(env)
-    else:
-        launch(env, policy=random_policy)
+    launch(env)
 
 
 if __name__ == "__main__":

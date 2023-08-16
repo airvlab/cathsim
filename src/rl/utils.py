@@ -1,6 +1,7 @@
 import os
 import torch as th
 from pathlib import Path
+from tqdm import tqdm
 
 import numpy as np
 
@@ -12,9 +13,7 @@ from cathsim.utils import make_gym_env
 
 
 class CnnPolicy(policies.ActorCriticCnnPolicy):
-    """
-    A CNN policy for behavioral clonning.
-    """
+    """A CNN policy for behavioral clonning."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -26,15 +25,20 @@ ALGOS = {
     "bc": bc,
 }
 
-RESULTS_PATH = Path(__file__).parent.parent / "results"
+RESULTS_PATH = Path.cwd() / "results"
 EXPERIMENT_PATH = RESULTS_PATH / "experiments"
 
 
 def make_experiment(experiment_path: Path = None, base_path: Path = None) -> tuple:
-    """Creates the maths for an experiment
+    """Creates the paths for an experiment
 
-    :param experiment_path: Path:  (Default value = None)
-    :param base_path: Path:  (Default value = None)
+    Args:
+      experiment_path: Path:  (Default value = None) An experiment path made of
+                                phantom/target/config
+      base_path: Path:  (Default value = None)
+
+    Returns:
+        tuple: The paths for the experiment
 
     """
     assert experiment_path, "experiment_path must be specified"
@@ -65,17 +69,22 @@ def train(
 ) -> None:
     """Starts the training for an algorithm
 
-    :param algo: str:
-    :param experiment: str:
-    :param experiment_path: Path:  (Default value = None)
-    :param n_runs: int:  (Default value = 4)
-    :param time_steps: int:  (Default value = 500_000)
-    :param evaluate: bool:  (Default value = False)
-    :param device: str:  (Default value = None)
-    :param n_envs: int:  (Default value = None)
-    :param vec_env: bool:  (Default value = True)
-    :param config: dict:  (Default value = {})
-    :param **kwargs:
+    Args:
+      algo: str: The algorithm to use
+      phantom: str:  (Default value = "phantom3")
+      target: str:  (Default value = "bca")
+      config_name: str:  (Default value = "test")
+      base_path: Path:  (Default value = RESULTS_PATH)
+      n_runs: int:  (Default value = 4)
+      time_steps: int:  (Default value = 500_000)
+      evaluate: bool:  (Default value = False)
+      device: str:  (Default value = None)
+      n_envs: int:  (Default value = None)
+      vec_env: bool:  (Default value = True)
+      config: dict:  (Default value = {})
+      **kwargs:
+
+    Returns:
 
     """
     from rl.evaluation import evaluate_policy
@@ -127,15 +136,21 @@ def train(
             model.save(model_path / f"{algo}_{seed}.zip")
 
             if evaluate:
-                results = evaluate_policy(model, env, 10)
-                np.savez_compressed(eval_path / f"{algo}_{seed}", **results)
+                env = make_gym_env(n_envs=1, config=config, monitor_wrapper=False)
+                for i in tqdm(range(10)):
+                    trajectory = evaluate_policy(model, env)
+                    trajectory.save(eval_path / f"{algo}_{seed}_{i}")
             th.cuda.empty_cache()
 
 
 def get_config(config_name: str) -> dict:
     """Parses a configuration file
 
-    :param config_name: str:
+    Args:
+      config_name: str: The name of the configuration file (see config folder)
+
+    Returns:
+        dict: The parsed configuration
 
     """
     import yaml

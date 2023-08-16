@@ -28,12 +28,16 @@ class BaseBody(composer.Entity):
         name: str = None,
     ):
         """
+        Add a body to the MJCF element. This is a convenience method for procedurally adding guidewire bodies.
 
-        :param n: int:  (Default value = 0)
-        :param parent: mjcf.Element:  (Default value = None)
-        :param # the parent bodystiffness: float:  (Default value = None)
-        :param # the stiffness of the jointname: str:  (Default value = None)
+        Args:
+            n: the index of the body to be added.
+            parent: the parent body element. If None the body stiffness is set to the value of the parent bodystiffness.
+            stiffness: body the stiffness of the joint.
+            name: the name of the joint. Default is None.
 
+        Returns:
+            The newly added body element.
         """
         child = parent.add("body", name=f"{name}_body_{n}", pos=[0, 0, OFFSET])
         child.add("geom", name=f"geom_{n}")
@@ -59,10 +63,12 @@ class Guidewire(BaseBody):
 
     def _build(self, n_bodies: int = 80):
         """
+        Build MJCF data and set attributes. This is called by __init__ to initialize the class.
 
-        :param n_bodies: int:  (Default value = 80)
-
+        Args:
+            n_bodies: Number of bodies to build ( default 80 )
         """
+
         self._length = CYLINDER_HEIGHT * 2 + SPHERE_RADIUS * 2 + OFFSET * n_bodies
 
         self._mjcf_root = mjcf.RootElement(model="guidewire")
@@ -157,24 +163,20 @@ class Guidewire(BaseBody):
         return tuple(self._mjcf_root.find_all("joint"))
 
     def save_model(self, path: Path):
-        """Save the model to a path
-
-        :param path: Path:
-
-        """
         if path.suffix is None:
             path = path / "guidewire.xml"
         with open(path, "w") as file:
-            file.write(guidewire.mjcf_model.to_xml_string("guidewire"))
+            file.write(self.mjcf_model.to_xml_string("guidewire"))
 
 
 class Tip(BaseBody):
     def _build(self, name=None, n_bodies=3):
         """
+        Build and return guidewire tip.
 
-        :param name:  (Default value = None)
-        :param n_bodies:  (Default value = 3)
-
+        Args:
+            name: ( Default value = None )
+            n_bodies: ( Default value = 3 )
         """
         if name is None:
             name = "tip"

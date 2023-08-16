@@ -15,10 +15,11 @@ class Phantom(composer.Entity):
         self, phantom_xml: str = "phantom3.xml", assets_dir: Path = None, **kwargs
     ):
         """
+        Build Phantom3. xml file and set default values.
 
-        :param phantom_xml: str:  (Default value = "phantom3.xml")
-        :param assets_dir: Path:  (Default value = None)
-
+        Args:
+            phantom_xml: Name of the XML file to use
+            assets_dir: Directory where assets are saved
         """
         self.rgba = phantom_config["rgba"]
         self.scale = [phantom_config["scale"] for i in range(3)]
@@ -53,11 +54,6 @@ class Phantom(composer.Entity):
         )
 
     def set_rgba(self, rgba: list) -> None:
-        """Set the RGBA of the phantom.
-
-        :param rgba: list: [r, g, b, a]
-
-        """
         self.rgba = rgba
         self._mjcf_root.find("geom", "visual").rgba = self.rgba
         collision_rgba = rgba.copy()
@@ -65,20 +61,10 @@ class Phantom(composer.Entity):
         self._mjcf_root.default.geom.set_attributes(rgba=collision_rgba)
 
     def set_hulls_alpha(self, alpha: float) -> None:
-        """Set the transparency of the convex hulls
-
-        :param alpha: float:
-
-        """
         self.rgba[-1] = alpha
         self._mjcf_root.default.geom.set_attributes(rgba=self.rgba)
 
     def set_scale(self, scale: tuple) -> None:
-        """Set the scale of the mesh.
-
-        :param scale: tuple: [x_scale, y_scale, z_scale]
-
-        """
         self._mjcf_root.default.mesh.set_attributes(scale=scale)
         self._mjcf_root.find("mesh", "visual").scale = [x * 1.005 for x in scale]
 
@@ -90,7 +76,9 @@ class Phantom(composer.Entity):
 
     @property
     def sites(self) -> dict:
-        """Gets the sites from the mesh. Useful for declaring navigation targets or areas of interest."""
+        """
+        Gets the sites from the mesh. Useful for declaring navigation targets or areas of interest.
+        """
         sites = self._mjcf_root.find_all("site")
         return {site.name: site.pos for site in sites}
 

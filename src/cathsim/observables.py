@@ -15,8 +15,8 @@ class CameraObservable(MujocoCamera):
     def __init__(
         self,
         camera_name,
-        height=128,
-        width=128,
+        height=80,
+        width=80,
         corruptor=None,
         depth=False,
         preprocess=False,
@@ -24,6 +24,20 @@ class CameraObservable(MujocoCamera):
         segmentation=False,
         scene_option=None,
     ):
+        """
+        Initialize a : class : ` MujocoCamera `.
+
+        Args:
+            camera_name: Name of the camera to use
+            height: Height of the camera in pixels
+            width: Width of the camera in pixels ( default 80 )
+            corruptor: Corruptor to use for the camera ( default None )
+            depth: True if the camera should be depth - corrected ( default False )
+            preprocess: True if the camera should be pre - processed ( default False )
+            grayscale: True if the camera should return a grayscale image ( default False )
+            segmentation: True if the camera should return a segmented image ( default False )
+            scene_option: set options for the MuJoCo scene.
+        """
         super().__init__(camera_name, height, width)
         self._dtype = np.uint8
         self._n_channels = 1 if segmentation else 3
@@ -32,8 +46,18 @@ class CameraObservable(MujocoCamera):
         self.segmentation = segmentation
 
     def _callable(self, physics):
+        """
+        Returns a callable that renders the image. This is used to implement : py : meth : ` render `
+
+        Args:
+            physics: The : py : class : ` Physics ` to render.
+
+        Returns:
+            A callable that renders the image and returns it as a 3D array of shape ( height width depth
+        """
+
         def get_image():
-            image = physics.render(  # pylint: disable=g-long-lambda
+            image = physics.render(
                 self._height,
                 self._width,
                 self._camera_name,
@@ -67,10 +91,24 @@ class CameraObservable(MujocoCamera):
 class JointObservables(composer.Observables):
     @composer.observable
     def joint_positions(self):
+        """
+        Returns a observable sequence of joint positions.
+
+
+        Returns:
+            observable sequence of joint positions
+        """
         all_joints = self._entity.mjcf_model.find_all("joint")
         return observable.MJCFFeature("qpos", all_joints)
 
     @composer.observable
     def joint_velocities(self):
+        """
+        Returns a observable sequence of joint positions..
+
+
+        Returns:
+            Observable sequence of joint velocities
+        """
         all_joints = self._entity.mjcf_model.find_all("joint")
         return observable.MJCFFeature("qvel", all_joints)

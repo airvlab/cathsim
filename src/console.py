@@ -4,17 +4,8 @@ from pathlib import Path
 
 from rl.utils import get_config, ALGOS, make_experiment
 
-from stable_baselines3.common import policies
 from cathsim.wrappers import Dict2Array
-
-
-class CnnPolicy(policies.ActorCriticCnnPolicy):
-    """
-    A CNN policy for behavioral clonning.
-    """
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+from rl.utils import CnnPolicy
 
 
 def cmd_visualize_agent(args=None):

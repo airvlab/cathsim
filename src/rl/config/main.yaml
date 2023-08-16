@@ -4,7 +4,7 @@ train_kwargs:
   n_runs: 2
   device: cuda
   time_steps: 600_000
-  evaluate: False
+  evaluate: True
   n_envs: null
 
 task_kwargs:

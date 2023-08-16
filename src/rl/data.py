@@ -167,13 +167,17 @@ class Trajectory:
         return self
 
     def save(self, file_path: Union[str, Path]):
-        if file_path.parent.exists() == False:
+        if not file_path.parent.exists():
             file_path.parent.mkdir()
+        if not file_path.suffix == ".pkl":
+            file_path = file_path.with_suffix(".pkl")
         with open(file_path, "wb") as file:
             pickle.dump(self.data, file)
 
     @staticmethod
     def load(file_path):
+        if not file_path.suffix == ".pkl":
+            file_path = file_path.with_suffix(".pkl")
         with open(file_path, "rb") as file:
             data = pickle.load(file)
         return Trajectory.from_dict(data)

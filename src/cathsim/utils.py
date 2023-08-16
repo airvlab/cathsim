@@ -17,21 +17,30 @@ import yaml
 import numpy as np
 import matplotlib.pyplot as plt
 
-from toolz.dicttoolz import itemmap
 
 import gym
 from dm_control.viewer.application import Application
 from dm_control import composer
 
 
-def normalize_rgba(rgba: list):
+def normalize_rgba(rgba: list) -> list:
     new_rgba = [c / 255.0 for c in rgba]
     new_rgba[-1] = rgba[-1]
     return new_rgba
 
 
-def point2pixel(point, camera_kwargs: dict = dict(image_size=80)):
-    """Transforms from world coordinates to pixel coordinates."""
+def point2pixel(
+    point: np.ndarray, camera_kwargs: dict = dict(image_size=80)
+) -> np.ndarray:
+    """Transforms from world coordinates to pixel coordinates.
+
+    Args:
+      point: np.ndarray: the point to be transformed.
+      camera_kwargs: dict:  (Default value = dict(image_size=80))
+
+    Returns:
+        np.ndarray : the pixel coordinates of the point.
+    """
     camera_matrix = create_camera_matrix(**camera_kwargs)
     x, y, z = point
     xs, ys, s = camera_matrix.dot(np.array([x, y, z, 1.0]))
@@ -40,6 +49,15 @@ def point2pixel(point, camera_kwargs: dict = dict(image_size=80)):
 
 
 def filter_mask(segment_image: np.ndarray):
+    """
+    Convert the segment image to a mask
+
+    Args:
+      segment_image: np.ndarray: The segment image
+
+    Returns:
+        np.ndarray: The mask
+    """
     geom_ids = segment_image[:, :, 0]
     geom_ids = geom_ids.astype(np.float64) + 1
     geom_ids = geom_ids / geom_ids.max()
@@ -50,19 +68,48 @@ def filter_mask(segment_image: np.ndarray):
 def distance(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     """Calculate the Euclidean distance
 
-    :param a: np.ndarray:
-    :param b: np.ndarray:
+    Args:
+      a: np.ndarray: The first point
+      b: np.ndarray: The second point
 
+    Returns:
+        np.ndarray: The distance between the two points
     """
     assert a.shape == b.shape
     return np.linalg.norm(a - b, axis=-1)
 
 
 def create_camera_matrix(
-    image_size, pos=np.array([-0.03, 0.125, 0.15]), euler=np.array([0, 0, 0]), fov=45
+    image_size: int,
+    pos=np.array([-0.03, 0.125, 0.15]),
+    euler=np.array([0, 0, 0]),
+    fov=45,
 ) -> np.ndarray:
+    """
+    Generate a camera matrix given the parameters
+
+    Args:
+      image_size: int:
+      pos:  (Default value = np.array([-0.03, 0.125, 0.15]):
+      euler:  (Default value = np.array([0, 0, 0]):
+      fov:  (Default value = 45)
+
+    Returns:
+        np.ndarray: The camera matrix
+
+    """
+
     def euler_to_rotation_matrix(euler_angles: np.ndarray) -> np.ndarray:
-        """Convert Euler angles to rotation matrix."""
+        """
+        Make a rotation matrix from euler angles
+
+        Args:
+            euler_angles: np.ndarray: The euler angles
+
+        Returns:
+            np.ndarray: The rotation matrix
+
+        """
         rx, ry, rz = np.deg2rad(euler_angles)
 
         Rx = np.array(
@@ -100,6 +147,15 @@ def create_camera_matrix(
 
 
 def get_env_config(config_path: Path = None) -> dict:
+    """Read and parse `env_config` yaml file.
+
+    Args:
+      config_path: Path:  (Default value = None)
+
+    Returns:
+        dict: The configuration dictionary
+
+    """
     if config_path is None:
         config_path = Path(__file__).parent / "env_config.yaml"
     with open(config_path, "r") as f:
@@ -108,6 +164,15 @@ def get_env_config(config_path: Path = None) -> dict:
 
 
 def plot_w_mesh(mesh, points: np.ndarray, **kwargs):
+    """
+    Plot a mesh with points
+
+    Args:
+        mesh: The mesh to plot
+        points: The points to plot
+        **kwargs: The keyword arguments to pass to the scatter function
+
+    """
     fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d")
     ax.set_xlim(mesh.bounds[0][0], mesh.bounds[1][0])
@@ -128,17 +193,21 @@ def make_dm_env(
     image_size: int = 80,
     **kwargs,
 ) -> composer.Environment:
-    """Makes a dm environment
+    """Makes a dm_control environment given a configuration.
 
-    :param phantom: str:  (Default value = "phantom3")
-    :param target: str:  (Default value = "bca")
-    :param use_pixels: bool:  (Default value = False)
-    :param dense_reward: bool:  (Default value = True)
-    :param success_reward: float:  (Default value = 10.0)
-    :param delta: float:  (Default value = 0.004)
-    :param use_segment: bool:  (Default value = False)
-    :param image_size: int:  (Default value = 80)
-    :param **kwargs:
+    Args:
+      phantom: str:  (Default value = "phantom3") The phantom to use
+      target: str:  (Default value = "bca") The target to use
+      use_pixels: bool:  (Default value = False) Whether or not to use pixels
+      dense_reward: bool:  (Default value = True) Whether or not to use dense reward
+      success_reward: float:  (Default value = 10.0) The reward for success
+      delta: float:  (Default value = 0.004) The delta for the reward
+      use_segment: bool:  (Default value = False) Whether or not to use the segment image
+      image_size: int:  (Default value = 80) The size of the image
+      **kwargs:
+
+    Returns:
+        composer.Environment: The environment
 
     """
 
@@ -174,14 +243,25 @@ def make_dm_env(
 def make_gym_env(
     config: dict = {}, n_envs: int = 1, monitor_wrapper: bool = True
 ) -> gym.Env:
-    """Makes a gym environment given a configuration.
+    """Makes a gym environment given a configuration. This is a wrapper for the creation of environment and basic wrappers
 
-    :param n_envs: int: Number of environments to create
-    :param config: dict: Configuration dictionary for the environment
-    :param monitor_wrapper: bool: Whether to wrap the environment in a monitor
+    Args:
+        config: dict:  (Default value = {}) The configuration dictionary
+        n_envs: int:  (Default value = 1) The number of environments to create
+        monitor_wrapper: bool:  (Default value = True) Whether or not to use the monitor wrapper
+
+    Returns:
+        gym.Env: The environment
+
     """
 
     def _create_env() -> gym.Env:
+        """Create and return environment based on config. This is a wrapper for the creation of environment and basic wrappers
+
+        Returns:
+            gym.Env: The environment
+
+        """
         # Extract parameters from the config dictionary.
         wrapper_kwargs = config.get("wrapper_kwargs", {})
         env_kwargs = config.get("env_kwargs", {})
@@ -191,7 +271,7 @@ def make_gym_env(
         env = make_dm_env(**task_kwargs)
         env = DMEnvToGymWrapper(env=env, env_kwargs=env_kwargs)
 
-        # Specific wrappers application based on config
+        # If goal_env is set to True then the goal is used to determine the desired goal.
         if wrapper_kwargs.get("goal_env", False):
             filter_keys = wrapper_kwargs.get("use_obs", []) + [
                 "achieved_goal",
@@ -201,6 +281,7 @@ def make_gym_env(
         else:
             filter_keys = wrapper_kwargs.get("use_obs", [])
 
+        # FilterObservation for the filter_keys.
         if filter_keys:
             env = wrappers.FilterObservation(env, filter_keys=filter_keys)
 
@@ -220,12 +301,14 @@ def make_gym_env(
                 channel_first=wrapper_kwargs.get("channel_first", False),
             )
 
+        # If the observation dict has a single key, flatten the observation.
         if wrapper_kwargs.get("dict2array", False):
             assert (
                 len(env.observation_space.spaces) == 1
             ), "Only one observation is allowed."
             env = Dict2Array(env)
 
+        # NormalizeObservation if normalize_obs is True.
         if wrapper_kwargs.get("normalize_obs", False):
             env = wrappers.NormalizeObservation(env)
 
@@ -234,11 +317,12 @@ def make_gym_env(
 
         return env
 
-    # Create a vectorized environment.
-    envs = [_create_env for _ in range(n_envs)]
-    env = DummyVecEnv(envs) if n_envs == 1 else SubprocVecEnv(envs)
+    if n_envs > 1:
+        envs = [_create_env for _ in range(n_envs)]
+        env = SubprocVecEnv(envs)
+    else:
+        env = _create_env()
 
-    # Apply monitoring.
     if monitor_wrapper:
         env = Monitor(env) if n_envs == 1 else VecMonitor(env)
 
@@ -260,6 +344,20 @@ class Application(Application):
         base_path: Path = "results-test",
         resume: bool = True,
     ):
+        """
+        Initialize the Application.
+
+        Args:
+            title: Title of the window.
+            width: Width of the window in pixels. Must be greater than 0.
+            height: Height of the window in pixels. Must be greater than 0.
+            save_trajectories: If True ( default ) trajectories will be saved to a file for use with : py : meth : ` open `.
+            phantom: Specifies the type of phantom to use.
+            target: Specifies the target to use.
+            experiment_name: If specified the experiment will be used as base for the path to the file.
+            base_path: The base path to save the data to.
+            resume: Resume the experiment after this call. Defaults to
+        """
         super().__init__(title, width, height)
         from dm_control.viewer import user_input
         from rl.data import Trajectory
@@ -283,6 +381,7 @@ class Application(Application):
         self._policy = None
 
     def _initialize_episode(self):
+        """ """
         from rl.data import Trajectory
 
         if self.save_trajectories:
@@ -294,6 +393,7 @@ class Application(Application):
         self._restart_runtime()
 
     def perform_action(self):
+        """ """
         time_step = self._runtime._time_step
         if not time_step.last():
             self._advance_simulation()
@@ -307,18 +407,22 @@ class Application(Application):
             self._initialize_episode()
 
     def _move_forward(self):
+        """ """
         self._runtime._default_action = [1, 0]
         self.perform_action()
 
     def _move_back(self):
+        """ """
         self._runtime._default_action = [-1, 0]
         self.perform_action()
 
     def _move_left(self):
+        """ """
         self._runtime._default_action = [0, -1]
         self.perform_action()
 
     def _move_right(self):
+        """ """
         self._runtime._default_action = [0, 1]
         self.perform_action()
 
@@ -332,16 +436,20 @@ def launch(
     save_trajectories: bool = False,
     **kwargs,
 ):
-    """Launches the environment.
+    """Launches the environment. This is to be used for manual control of for visualizing a dm_env policy.
 
-    :param environment_loader:
-    :param policy:  (Default value = None)
-    :param title:  (Default value = "Explorer")
-    :param width:  (Default value = 1024)
-    :param height:  (Default value = 768)
-    :param trial_path:  (Default value = None)
+    Args:
+      environment_loader: The environment to use.
+      policy: The policy to use. Defaults to None which means no policy is used.
+      title: The title of the application.
+      width: The width of the application in pixels.
+      height: The height of the application in pixels.
+      save_trajectories: Whether or not to save trajectories
+      save_trajectories: bool: (Default value = False) Whether or not to save trajectories
+      **kwargs:
 
     """
+
     app = Application(
         title=title,
         width=width,
