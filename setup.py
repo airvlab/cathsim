@@ -37,14 +37,24 @@ setup(
         "toolz",
     ],
     extras_require={
+        "docs": [
+            "sphinx>=5.3,<7.0",
+            "sphinx-autobuild",
+            "sphinx-rtd-theme",
+            # For spelling
+            "sphinxcontrib.spelling",
+            # Type hints support
+            "sphinx-autodoc-typehints",
+            # Copy button for code snippets
+            "sphinx_copybutton",
+        ],
         "dev": extra_dev,
     },
     entry_points={
         "console_scripts": [
-            "run_env=cathsim.utils:cmd_run_env",
-            "record_traj=human.utils:cmd_record_traj",
-            "visualize_agent=rl.utils:cmd_visualize_agent",
-            "train=rl.utils:cmd_train",
+            "run_env=console:cmd_run_env",
+            "visualize_agent=console:cmd_visualize_agent",
+            "train=console:cmd_train",
         ],
     },
 )

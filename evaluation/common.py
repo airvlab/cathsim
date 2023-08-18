@@ -7,7 +7,7 @@ from stable_baselines3 import SAC
 from stable_baselines3.common.base_class import BaseAlgorithm
 from imitation.algorithms import bc
 
-from rl.utils import get_config
+from rl.utils import Config
 from cathsim.utils import make_gym_env
 
 import pandas as pd
@@ -154,7 +154,7 @@ def should_evaluate(model_path: Path, eval_path: Path) -> bool:
 
 
 def configure_algorithm(algorithm_path: Path) -> dict:
-    config = get_config(algorithm_path.stem)
+    config = Config(algorithm_path.stem)
     config["task_kwargs"]["phantom"] = algorithm_path.parent.parent.stem
     config["task_kwargs"]["target"] = algorithm_path.parent.stem
     if "bc" in algorithm_path.stem:
