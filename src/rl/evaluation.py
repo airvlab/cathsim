@@ -5,158 +5,90 @@ import numpy as np
 import gym
 from tqdm import tqdm
 from typing import OrderedDict
+from pprint import pprint
 
-from cathsim.utils import distance
-from rl.utils import make_experiment
-from rl.utils import EXPERIMENT_PATH
+from rl.utils import generate_experiment_paths
 from rl.data import Trajectory
+from rl.metrics import AGGREGATE_METRICS, INDIVIDUAL_METRICS
 
 from stable_baselines3.common.base_class import BaseAlgorithm
 
 from typing import List, Tuple
 
-RESULTS_SUMMARY = Path.cwd() / "results-summary"
+RESULTS_SUMMARY = Path.cwd() / "results-summary-test"
 
 
-def calculate_total_distance(positions):
-    return np.sum(distance(positions[1:], positions[:-1]))
+def get_paths(path: Path) -> List[Path]:
+    if not path.exists():
+        raise FileNotFoundError(f"{path} does not exist.")
+    paths = list(path.rglob("*"))
+
+    return paths
 
 
-def process_human_trajectories(
-    path: Path, flatten: bool = False, mapping: dict = None
-) -> np.ndarray:
-    """Utility function that processes human trajectories.
+def collate_evaluation_data(path: Path) -> dict:
+    def f(path: Path) -> bool:
+        return path.suffix == ".pkl"
 
-    :param path: Path:
-    :param flatten: bool:  (Default value = False)
-    :param mapping: dict:  (Default value = None)
+    paths = list(filter(f, get_paths(path)))
 
-    """
-    trajectories = {}
-    for episode in path.iterdir():
-        trajectory_path = episode / "trajectory.npz"
-        if not trajectory_path.exists():
-            continue
-        episode_data = np.load(episode / "trajectory.npz", allow_pickle=True)
-        episode_data = dict(episode_data)
-        if flatten:
-            for key, value in episode_data.items():
-                if mapping is not None:
-                    if key in mapping:
-                        key = mapping[key]
-                if key == "time":
-                    continue
-                trajectories.setdefault(key, []).extend(value)
-        else:
-            if mapping is not None:
-                for key, value in mapping.items():
-                    episode_data[mapping[key]] = episode_data.pop(key)
-            trajectories[episode.name] = episode_data
-    if flatten:
-        for key, value in trajectories.items():
-            trajectories[key] = np.array(value)
+    evaluation_data = {}
 
-    return trajectories
-
-
-def load_human_trajectories(path: Path, flatten: bool = False, mapping: dict = None):
-    """Loads the human trajectories from the given path.
-
-    Args:
-        path: The path to the human trajectories.
-        flatten: if True, flatten the trajectories into a single array.
-        mapping: A mapping from the keys in the trajectory to the keys in the collated array.
-    """
-    trajectories = {}
-    for episode in path.iterdir():
-        trajectory_path = episode / "trajectory.npz"
-        if not trajectory_path.exists():
-            continue
-        episode_data = np.load(episode / "trajectory.npz", allow_pickle=True)
-        episode_data = dict(episode_data)
-        if flatten:
-            for key, value in episode_data.items():
-                if mapping is not None:
-                    if key in mapping:
-                        key = mapping[key]
-                if key == "time":
-                    continue
-                trajectories.setdefault(key, []).extend(value)
-        else:
-            if mapping is not None:
-                for key, value in mapping.items():
-                    episode_data[mapping[key]] = episode_data.pop(key)
-            trajectories[episode.name] = episode_data
-    if flatten:
-        for key, value in trajectories.items():
-            trajectories[key] = np.array(value)
-
-    return trajectories
-
-
-def human_data_loader(path: Path) -> list:
-    trajectories = load_human_trajectories(
-        path, flatten=False, mapping={"force": "forces"}
-    )
-    return list(trajectories.values())
-
-
-def analyze_model(
-    result_path: Path,
-    optimal_path_length: float = 15.73,
-    human: bool = False,
-    human_data_fn: callable = None,
-) -> OrderedDict:
-    if not human:
-        data = np.load(result_path, allow_pickle=True)
-        if "results" not in data:
-            episodes = data
-        else:
-            episodes = data["results"]
-        if len(episodes) == 0:
-            return None
-    else:
-        episodes = human_data_fn(result_path)
-
-    algo_results = []
-    for episode in episodes:
-        episode_forces = episode["forces"]
-        episode_head_positions = episode["head_positions"]
-        episode_length = len(episode_head_positions)
-        total_distance = calculate_total_distance(episode_head_positions)
-
-        algo_results.append(
-            [
-                episode_forces.mean(),
-                total_distance * 100,
-                episode_length,
-                1 - np.sum(np.where(episode_forces > 2, 1, 0)) / episode_length,
-                get_curvature(episode_head_positions),
-                np.sum(np.where(episode_length <= 300, 1, 0)),
-            ]
+    for path in paths:
+        trajectory = Trajectory.load(path)
+        phantom = path.parents[4].stem
+        target = path.parents[3].stem
+        config = path.parents[2].stem
+        algorithm = path.parent.stem.split("_")[0]
+        seed = path.parent.stem.split("_")[1]
+        print(f"Collating {phantom}/{target}/{config}/{algorithm}/{seed}")
+        evaluation_data.setdefault(config, {})
+        evaluation_data[config].setdefault(phantom, {})
+        evaluation_data[config][phantom].setdefault(target, {})
+        evaluation_data[config][phantom][target].setdefault(seed, [])
+        evaluation_data[config][phantom][target][seed].append(
+            trajectory.flatten().to_array()
         )
 
-    algo_results = np.array(algo_results)
-    mean, std = algo_results.mean(axis=0), algo_results.std(axis=0)
-    spl = optimal_path_length / np.maximum(algo_results[:, 1], optimal_path_length)
-    mean_spl = np.mean(spl).round(2)
+    return evaluation_data
 
-    summary_results = OrderedDict(
-        force=mean[0].round(2),
-        force_std=std[0].round(2),
-        path_length=mean[1].round(2),
-        path_length_std=std[1].round(2),
-        episode_length=mean[2].round(2),
-        episode_length_std=std[2].round(2),
-        safety=mean[3].round(2),
-        safety_std=std[3].round(2),
-        curv=mean[4].round(2),
-        curv_std=std[4].round(2),
-        success=mean[5].round(2),
-        success_std=std[5].round(2),
-        spl=mean_spl,
-    )
-    return summary_results
+
+def analyze_and_aggregate(trajectories: List[Trajectory]) -> dict:
+    # Apply individual metrics to each trajectory
+    individual_metric_values = {metric.__name__: [] for metric in INDIVIDUAL_METRICS}
+
+    for traj in trajectories:
+        for metric in INDIVIDUAL_METRICS:
+            individual_metric_values[metric.__name__].append(metric(traj))
+
+    results = {}
+    for metric, values in individual_metric_values.items():
+        results[metric] = dict(mean=np.mean(values), std=np.std(values))
+
+    for func in AGGREGATE_METRICS:
+        results[func.__name__] = func(trajectories)
+
+    return results
+
+
+def analyze_evaluation_data(evaluation_data: dict) -> dict:
+    analysis_data = {}
+
+    for config, config_data in evaluation_data.items():
+        analysis_data[config] = {}
+        for phantom, phantom_data in config_data.items():
+            analysis_data[config][phantom] = {}
+            for target, target_data in phantom_data.items():
+                all_trajectories = [
+                    trajectory.data
+                    for seed, trajectories in target_data.items()
+                    for trajectory in trajectories
+                ]
+                analysis_data[config][phantom][target] = analyze_and_aggregate(
+                    all_trajectories
+                )
+
+    return analysis_data
 
 
 def aggregate_results(
@@ -201,271 +133,62 @@ def aggregate_results(
     return dataframe
 
 
-def get_curvature(points: np.ndarray) -> np.ndarray:
-    # Calculate the first and second derivatives of the points
-    first_deriv = np.gradient(points)
-    second_deriv = np.gradient(first_deriv)
+def evaluate_policy(
+    model: BaseAlgorithm,
+    env: gym.Env,
+    n_episodes: int = 1,
+) -> Trajectory:
+    """Evaluate a policy.
 
-    # Calculate the norm of the first derivative
-    norm_first_deriv = np.linalg.norm(first_deriv, axis=0)
+    This function evaluates a policy by running it in the environment until the
+    episode is done.
 
-    # Calculate the curvature
-    curvature = np.linalg.norm(np.cross(first_deriv, second_deriv), axis=0) / np.power(
-        norm_first_deriv, 3
-    )
+    Args:
+        model (BaseAlgorithm): A model that can predict actions given an observation.
+        env (gym.Env): A gym environment.
+        n_episodes (int): The number of episodes to evaluate the policy for.
 
-    # Return the curvature
-    return curvature.mean()
-
-
-# TODO: refactor
-def plot_path(filename):
-    def point2pixel(point, camera_matrix: np.ndarray = None):
-        """Transforms from world coordinates to pixel coordinates for a
-        480 by 480 image"""
-        camera_matrix = np.array(
-            [
-                [-5.79411255e02, 0.00000000e00, 2.39500000e02, -5.33073376e01],
-                [0.00000000e00, 5.79411255e02, 2.39500000e02, -1.08351407e02],
-                [0.00000000e00, 0.00000000e00, 1.00000000e00, -1.50000000e-01],
-            ]
-        )
-        x, y, z = point
-        xs, ys, s = camera_matrix.dot(np.array([x, y, z, 1.0]))
-
-        return np.array([round(xs / s), round(ys / s)], np.int8)
-
-    data = np.load(RESULTS_SUMMARY / filename, allow_pickle=True)
-    data = {key: value.item() for key, value in data.items()}
-    paths = {}
-    for episode, values in data.items():
-        episode_head_positions = np.apply_along_axis(
-            point2pixel, 1, values["head_positions"]
-        )
-        paths[episode] = episode_head_positions
-        break
-
-    import matplotlib.pyplot as plt
-    import cv2
-
-    curv = get_curvature(paths["0"])
-    # drop nan values
-    curv = curv[~np.isnan(curv)]
-    mean_curv = np.round(np.mean(curv), 2)
-    std_curv = np.round(np.std(curv), 2)
-
-    print(mean_curv, std_curv)
-    exit()
-    image = cv2.imread("./figures/phantom.png", 0)
-    fig, ax = plt.subplots()
-    ax.imshow(image, cmap=plt.cm.gray)
-    for episode, path in paths.items():
-        ax.plot(path[:, 0], path[:, 1], label=f"Episode {episode}")
-    # image_size = 80
-    ax.set_ylim(480, None)
-    # ax.legend()
-    ax.axis("off")
-    plt.show()
-
-
-def collate_human_trajectories(
-    path: Path, mapping: dict = None, save_path: Path = None
-):
-    """Collate the human trajectories into a single numpy array.
-
-    path: (Path) The path to the human trajectories.
-    mapping: (dict) A mapping from the keys in the trajectory to the keys in the collated array.
+    Returns:
+        Trajectory: The trajectory of the episode.
     """
-    mapping = mapping or {"force": "forces"}
-    trajectories = {}
-    for i, episode in enumerate(path.iterdir()):
-        trajectory_path = episode / "trajectory.npz"
-        if not trajectory_path.exists():
-            continue
-        episode_data = np.load(episode / "trajectory.npz", allow_pickle=True)
-        episode_data = dict(episode_data)
-        if mapping is not None:
-            for key, value in mapping.items():
-                episode_data[mapping[key]] = episode_data.pop(key)
-        trajectories[str(i)] = episode_data
-    trajectories = list(trajectories.values())
-    if save_path is not None:
-        save_path = RESULTS_SUMMARY / save_path
-        np.savez(save_path, results=trajectories)
+    trajectories = []
+    for i in tqdm(range(n_episodes)):
+        trajectory = Trajectory()
+        observation = env.reset()
+        done = False
+        while not done:
+            action, _ = model.predict(observation)
+            new_observation, reward, done, info = env.step(action)
+            trajectory.add_transition(
+                observation=observation,
+                action=action,
+                reward=reward,
+                next_observation=new_observation,
+                info=info,
+            )
+            observation = new_observation
+        trajectories.append(trajectory)
+    if n_episodes == 1:
+        return trajectories[0]
     return trajectories
 
 
-def collate_experiment_results(experiment_path: Path) -> list:
-    """
-    Collate the results of all the runs of an experiment into a single numpy array.
-
-    :param experiment_name: (str) The name of the experiment.
-    :return: (np.ndarray) The collated results.
-    """
-    experiment_path = EXPERIMENT_PATH / experiment_path
-
-    _, _, eval_path = make_experiment(experiment_path)
-    collated_results = []
-    for seed_evaluation in eval_path.iterdir():
-        if seed_evaluation.suffix != ".npz":
-            continue
-        else:
-            evaluation_results = np.load(seed_evaluation, allow_pickle=True)
-            evaluation_results = [value.item() for value in evaluation_results.values()]
-            collated_results.extend(evaluation_results)
-    return collated_results
-
-
-def collate_results(
-    experiment_path: Path = None, evaluation_path: Path = None, verbose: bool = False
-) -> None:
-    """
-    Check the results of all the seeds of all the experiments and collate them into a single numpy array.
-
-    :param experiment_path: (Path) The path to the experiments.
-    :param evaluation_path: (Path) The path to the evaluation results.
-    """
-    if experiment_path is None:
-        experiment_path = EXPERIMENT_PATH
-    if evaluation_path is None:
-        evaluation_path = RESULTS_SUMMARY
-    for phantom in experiment_path.iterdir():
-        if phantom.is_dir() is False:
-            continue
-        for target in phantom.iterdir():
-            if target.is_dir() is False:
-                continue
-            else:
-                for experiment in target.iterdir():
-                    if experiment.is_dir() is False:
-                        continue
-                    else:
-                        if verbose:
-                            print(
-                                f"Collating results for {phantom.name}/{target.name}/{experiment.name}"
-                            )
-                        path = Path(f"{phantom.name}/{target.name}")
-                        if experiment.name == "human":
-                            experiment_results = collate_human_trajectories(
-                                path / experiment.name
-                            )
-                        else:
-                            experiment_results = collate_experiment_results(
-                                path / experiment.name
-                            )
-                        (RESULTS_SUMMARY / path).mkdir(parents=True, exist_ok=True)
-                        np.savez_compressed(
-                            RESULTS_SUMMARY / path / f"{experiment.name}.npz",
-                            results=experiment_results,
-                        )
-
-
-def evaluate_policy(model: BaseAlgorithm, env: gym.Env) -> Trajectory:
-    """Evaluate a policy.
+def save_trajectories(
+    trajectories: List[Trajectory], path: Path, file_prefix: str = None
+):
+    """Save trajectories to a path.
 
     Args:
-        model: The model to evaluate.
-        env: Gym environment.
-
-    Returns:
-        Trajectory: The trajectory of the evaluation.
+        trajectories (List[Trajectory]): A list of trajectories.
+        path (Path): The path to save the trajectories to.
+        file_prefix (str): A prefix to add to the filename.
     """
-    trajectory = Trajectory()
-    observation = env.reset()
-    done = False
-    while not done:
-        action, _ = model.predict(observation)
-        new_observation, reward, done, info = env.step(action)
-        trajectory.add_transition(
-            observation=observation,
-            action=action,
-            reward=reward,
-            next_observation=new_observation,
-            info=info,
-        )
-        observation = new_observation
-    return trajectory
-
-
-def evaluate_models(
-    experiments_path: Path = None,
-    n_episodes=10,
-    phantom_name: str = None,
-    target_name: str = None,
-    algorithm_name: str = None,
-):
-    """
-    Evaluate the performance of all the models in the experiments directory.
-
-    :param experiments_path Path: The path to the experiments directory.
-    :param n_episodes int: The number of episodes to evaluate the policy for.
-    """
-    if not experiments_path:
-        experiments_path = EXPERIMENT_PATH
-
-    phantoms = [
-        phantom
-        for phantom in experiments_path.iterdir()
-        if (phantom.is_dir() and (phantom_name is None or phantom.name == phantom_name))
-    ]
-    for phantom in phantoms:
-        targets = [
-            target
-            for target in phantom.iterdir()
-            if (target.is_dir() and (target_name is None or target.name == target_name))
-        ]
-        for target in targets:
-            algorithms = [
-                algorithm
-                for algorithm in target.iterdir()
-                if ((algorithm_name is None or algorithm.name == algorithm_name))
-                and algorithm.is_dir()
-            ]
-            for algorithm in algorithms:
-                evaluate_model(algorithm, n_episodes)
-
-
-def evaluate_model(algorithm_path, n_episodes=10):
-    """
-    Evaluate the performance of a model.
-
-    :param model_name str: The name of the model to evaluate.
-    :param n_episodes int: The number of episodes to evaluate the policy for.
-    """
-    from stable_baselines3 import SAC
-    from rl.utils import get_config, make_experiment
-    from cathsim.utils import make_gym_env
-
-    model_path, _, eval_path = make_experiment(algorithm_path)
-
-    for model_filename in model_path.iterdir():
-        model_name = model_filename.stem
-        if (eval_path / (model_name + ".npz")).exists():
-            continue
-        print(f"Evaluating {model_name} in {algorithm_path} for {n_episodes} episodes.")
-        config = get_config(algorithm_path.stem)
-        config["task_kwargs"]["phantom"] = algorithm_path.parent.parent.stem
-        config["task_kwargs"]["target"] = algorithm_path.parent.stem
-        if "bc" in algorithm_path.stem:
-            config["wrapper_kwargs"]["channel_first"] = True
-
-        env = make_gym_env(config)
-        if "bc" in algorithm_path.stem:
-            from scratch.bc.custom_networks import CnnPolicy, CustomPolicy
-            from cathsim.wrappers import Dict2Array
-            import torch as th
-
-            env = Dict2Array(env)
-
-            model = CustomPolicy(
-                observation_space=env.observation_space,
-                action_space=env.action_space,
-                lr_schedule=lambda _: th.finfo(th.float32).max,
-            ).load(model_path / "bc")
-        else:
-            model = SAC.load(model_filename)
-        evaluation_data = evaluate_policy(model, env, n_episodes=n_episodes)
-        np.savez_compressed(eval_path / f"{model_name}.npz", **evaluation_data)
+    path.mkdir(parents=True, exist_ok=True)
+    for i, trajectory in enumerate(trajectories):
+        filename = f"{file_prefix}_{i}.npz" if file_prefix else f"{i}.npz"
+        if (path / filename).exists():
+            raise FileExistsError(f"{path / filename} already exists.")
+        trajectory.save(path / filename)
 
 
 def parse_tensorboard_log(path: Path):
@@ -499,7 +222,7 @@ def get_experiment_tensorboard_logs(
     :return List[pd.DataFrame]: A list of dataframes containing the tensorboard logs.
     """
 
-    _, log_path, _ = make_experiment(path)
+    _, log_path, _ = generate_experiment_paths(path)
     logs = []
     log_paths = [log for log in log_path.iterdir() if log.is_dir()]
     for log in log_paths:
@@ -567,11 +290,17 @@ def plot_human_line(ax, phantom, target, n_interpolations=30):
 
 if __name__ == "__main__":
     # evaluate_model(EXPERIMENT_PATH / 'low_tort' / 'bca' / 'full', n_episodes=10)
-    evaluate_models()
+    # evaluate_models()
     # lcca_evaluation.mkdir(exist_ok=True)
 
-    collate_results(verbose=True)
+    # collate_results(verbose=True)
+    eval_data = collate_evaluation_data(Path.cwd() / "test-base" / "test-trial")
+    analysis = analyze_evaluation_data(eval_data)
+    pprint(analysis)
+
+    exit()
     dataframe = aggregate_results()
+    exit()
     print(dataframe)
     dataframe.to_csv(RESULTS_SUMMARY / "results_4.csv", index=False)
     # make column names title case, without underscores

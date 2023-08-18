@@ -1,11 +1,12 @@
 import os
 import torch as th
 from pathlib import Path
+import argparse as ap
 
-from rl.utils import get_config, ALGOS, make_experiment
+from rl.utils import Config, ALGOS, generate_experiment_paths
 
 from cathsim.wrappers import Dict2Array
-from rl.utils import CnnPolicy
+from stable_baselines3.common.policies import ActorCriticCnnPolicy
 
 
 def cmd_visualize_agent(args=None):
@@ -39,8 +40,8 @@ def cmd_visualize_agent(args=None):
         import moviepy.editor as mpy
 
     path = Path(f"{args.phantom}/{args.target}/{args.config}")
-    config = get_config(args.config)
-    model_path, log_path, eval_path = make_experiment(
+    config = Config(args.config)
+    model_path, log_path, eval_path = generate_experiment_paths(
         path, base_path=Path.cwd() / args.base_path / args.trial
     )
 
@@ -61,7 +62,7 @@ def cmd_visualize_agent(args=None):
         config["wrapper_kwargs"]["channel_first"] = True
         env = make_gym_env(config=config)
         env = Dict2Array(env)
-        model = CnnPolicy(
+        model = ActorCriticCnnPolicy(
             observation_space=env.observation_space,
             action_space=env.action_space,
             lr_schedule=lambda _: th.finfo(th.float32).max,
@@ -169,41 +170,28 @@ def cmd_run_env(args=None):
 
 
 def cmd_train(args=None):
-    from rl.utils import train, get_config
-    from pathlib import Path
-    import argparse
-    import mergedeep
+    from rl.utils import train
 
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument("--config", type=str, default="test")
-    argparser.add_argument("--phantom", type=str, default="phantom3")
-    argparser.add_argument("--target", type=str, default="bca")
-    argparser.add_argument("--base-path", type=str, default="results")
-    argparser.add_argument("--trial", type=str, default="1")
-    argparser.add_argument("--n-runs", type=int, default=1)
-    argparser.add_argument("--n-timesteps", type=int, default=int(6 * 10e4))
-    args = argparser.parse_args()
+    parser = ap.ArgumentParser()
+    parser.add_argument("-a", "--algo", type=str, default="sac")
+    parser.add_argument("-c", "--config", type=str, default="test")
+    parser.add_argument("-t", "--target", type=str, default="bca")
+    parser.add_argument("-p", "--phantom", type=str, default="phantom3")
+    parser.add_argument("--trial-name", type=str, default="test-trial")
+    parser.add_argument("--base-path", type=Path, default=Path.cwd() / "test-base")
+    parser.add_argument("--n-runs", type=int, default=1)
+    parser.add_argument("--n-timesteps", type=int, default=int(6e5))
+    parser.add_argument("-e", action="store_true")
+    args = parser.parse_args()
 
-    config_name = args.config
-    config = get_config(config_name)
-
-    mergedeep.merge(
-        config,
-        dict(
-            task_kwargs=dict(target=args.target, phantom=args.phantom),
-            train_kwargs=dict(time_steps=args.n_timesteps),
-        ),
-    )
-
-    experiment_path = Path(f"{args.phantom}/{args.target}/{args.config}")
-    print(f"Training {config_name} for {args.n_runs} runs with config:")
-    __import__("pprint").pprint(config)
     train(
-        experiment_path=experiment_path,
+        algo=args.algo,
+        config_name=args.config,
         target=args.target,
         phantom=args.phantom,
-        config_name=args.config,
-        base_path=Path.cwd() / args.base_path / args.trial,
-        config=config,
-        **config["train_kwargs"],
+        trial_name=args.trial_name,
+        base_path=args.base_path,
+        n_timesteps=args.n_timesteps,
+        n_runs=args.n_runs,
+        evaluate=args.e,
     )

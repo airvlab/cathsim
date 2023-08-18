@@ -255,6 +255,9 @@ def make_gym_env(
 
     """
 
+    wrapper_kwargs = config.wrapper_kwargs or {}
+    task_kwargs = config.task_kwargs or {}
+
     def _create_env() -> gym.Env:
         """Create and return environment based on config. This is a wrapper for the creation of environment and basic wrappers
 
@@ -262,14 +265,10 @@ def make_gym_env(
             gym.Env: The environment
 
         """
-        # Extract parameters from the config dictionary.
-        wrapper_kwargs = config.get("wrapper_kwargs", {})
-        env_kwargs = config.get("env_kwargs", {})
-        task_kwargs = config.get("task_kwargs", {})
 
         # Environment creation and basic wrapping
-        env = make_dm_env(**task_kwargs)
-        env = DMEnvToGymWrapper(env=env, env_kwargs=env_kwargs)
+        dm_env = make_dm_env(**task_kwargs)
+        env = DMEnvToGymWrapper(env=dm_env)
 
         # If goal_env is set to True then the goal is used to determine the desired goal.
         if wrapper_kwargs.get("goal_env", False):

@@ -1,23 +1,17 @@
 import os
 import torch as th
+import yaml
 from pathlib import Path
-from tqdm import tqdm
 
-import numpy as np
+from stable_baselines3.common.base_class import BaseAlgorithm
+from mergedeep import merge
 
-from stable_baselines3 import PPO, SAC, HerReplayBuffer
+from stable_baselines3 import PPO, SAC
 
 from imitation.algorithms import bc
-from stable_baselines3.common import policies
 from cathsim.utils import make_gym_env
 
-
-class CnnPolicy(policies.ActorCriticCnnPolicy):
-    """A CNN policy for behavioral clonning."""
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
+import pprint
 
 ALGOS = {
     "ppo": PPO,
@@ -26,151 +20,192 @@ ALGOS = {
 }
 
 RESULTS_PATH = Path.cwd() / "results"
-EXPERIMENT_PATH = RESULTS_PATH / "experiments"
 
 
-def make_experiment(experiment_path: Path = None, base_path: Path = None) -> tuple:
-    """Creates the paths for an experiment
+class Config:
+    def __init__(
+        self,
+        config_name: str = None,
+        target: str = "bca",
+        phantom: str = "phantom3",
+        trial_name: str = "test",
+        base_path: Path = RESULTS_PATH,
+        task_kwargs: dict = {},
+        wrapper_kwargs: dict = {},
+        algo_kwargs: dict = {},
+    ):
+        from rl.custom_extractor import CustomExtractor
 
-    Args:
-      experiment_path: Path:  (Default value = None) An experiment path made of
-                                phantom/target/config
-      base_path: Path:  (Default value = None)
+        self.base_path = base_path
+        self.trial_name = trial_name
 
-    Returns:
-        tuple: The paths for the experiment
+        self.config_name = config_name
+        self.task_kwargs = task_kwargs
 
-    """
-    assert experiment_path, "experiment_path must be specified"
-    base_path = base_path or EXPERIMENT_PATH
-    experiment_path = base_path / experiment_path
+        self.task_kwargs = dict(
+            image_size=80,
+            phantom=phantom,
+            target=target,
+        )
+        merge(self.task_kwargs, task_kwargs)
+
+        self.wrapper_kwargs = dict(
+            time_limit=300,
+            grayscale=True,
+            channels_first=True,
+        )
+        merge(self.wrapper_kwargs, wrapper_kwargs)
+
+        self.algo_kwargs = dict(
+            buffer_size=int(5e5),
+            policy="MultiInputPolicy",
+            policy_kwargs=dict(
+                features_extractor_class=CustomExtractor,
+            ),
+            device="cuda" if th.cuda.is_available() else "cpu",
+        )
+        merge(self.algo_kwargs, algo_kwargs)
+
+        if config_name:
+            self.load(config_name)
+
+    def __str__(self):
+        return pprint.pformat(self.__dict__)
+
+    def __add__(self, other):
+        new_config = Config(None)
+        new_config.__dict__ = merge(self.__dict__, other.__dict__)
+        return new_config
+
+    def load(self, config_name: str):
+        with open(Path(__file__).parent / "config" / (config_name + ".yaml"), "r") as f:
+            config = yaml.safe_load(f)
+        merge(self.__dict__, config)
+
+    def update(self, config: dict):
+        merge(self.__dict__, config)
+
+    def get_env_path(self):
+        return (
+            self.base_path
+            / self.trial_name
+            / Path(
+                f"{self.task_kwargs['phantom']}/{self.task_kwargs['target']}/{self.config_name}"
+            )
+        )
+
+
+def make_path(
+    config_name: str,
+    phantom: str,
+    target: str,
+    trial_name: str = None,
+    base_path: Path = None,
+):
+    pass
+
+
+def generate_experiment_paths(experiment_path: Path = None) -> tuple:
+    if experiment_path.is_absolute() is False:
+        experiment_path = RESULTS_PATH / experiment_path
+
     model_path = experiment_path / "models"
     eval_path = experiment_path / "eval"
     log_path = experiment_path / "logs"
-    for dir in [experiment_path, model_path, log_path, eval_path]:
-        dir.mkdir(parents=True, exist_ok=True)
+    for directory_path in [experiment_path, model_path, log_path, eval_path]:
+        directory_path.mkdir(parents=True, exist_ok=True)
     return model_path, log_path, eval_path
 
 
 def train(
     algo: str,
-    phantom: str = "phantom3",
-    target: str = "bca",
     config_name: str = "test",
+    target: str = "bca",
+    phantom: str = "phantom3",
+    trial_name: str = "test",
     base_path: Path = RESULTS_PATH,
+    n_timesteps: int = 600_000,
     n_runs: int = 4,
-    time_steps: int = 500_000,
     evaluate: bool = False,
-    device: str = None,
     n_envs: int = None,
-    vec_env: bool = True,
-    config: dict = {},
     **kwargs,
 ) -> None:
-    """Starts the training for an algorithm
+    """Train a model.
+
+    This function trains a model using the specified algorithm and configuration.
 
     Args:
-      algo: str: The algorithm to use
-      phantom: str:  (Default value = "phantom3")
-      target: str:  (Default value = "bca")
-      config_name: str:  (Default value = "test")
-      base_path: Path:  (Default value = RESULTS_PATH)
-      n_runs: int:  (Default value = 4)
-      time_steps: int:  (Default value = 500_000)
-      evaluate: bool:  (Default value = False)
-      device: str:  (Default value = None)
-      n_envs: int:  (Default value = None)
-      vec_env: bool:  (Default value = True)
-      config: dict:  (Default value = {})
-      **kwargs:
-
-    Returns:
-
+        algo (str): Algorithm to use. Currently supported: ppo, sac
+        config_name (str): The name of the configuration file (see config folder)
+        target (str): The target to use. Currently supported: bca, lcca
+        phantom (str): The phantom to use.
+        trial_name (str): The trial name to use. Used to separate different runs.
+        base_path (Path): The base path to use for saving the results.
+        n_timesteps (int): Number of timesteps to train for.
+        n_runs (int): Number of runs to train.
+        evaluate (bool): Flag to evaluate the model after training.
+        n_envs (int): Number of environments to use for training. Defaults to half the number of CPU cores.
     """
-    from rl.evaluation import evaluate_policy
+    from rl.evaluation import evaluate_policy, save_trajectories
 
-    algo_kwargs = config.get("algo_kwargs", {})
+    config = Config(config_name, target, phantom, trial_name, base_path)
+    print(config)
 
-    if not device:
-        device = "cuda" if th.cuda.is_available() else "cpu"
-    n_envs = n_envs or os.cpu_count() // 2
+    experiment_path = config.get_env_path()
+    model_path, log_path, eval_path = generate_experiment_paths(experiment_path)
 
-    assert algo in ALGOS.keys(), f"algo must be one of {ALGOS.keys()}"
-    assert n_runs > 0, "n_runs must be greater than 0"
-    assert time_steps > 0, "time_steps must be greater than 0"
-    assert device in ["cpu", "cuda"], "device must be one of [cpu, cuda]"
-    assert n_envs > 0, "n_envs must be greater than 0"
-
-    experiment_path = Path(f"{phantom}/{target}/{config_name}")
-    model_path, log_path, eval_path = make_experiment(
-        experiment_path, base_path=base_path
-    )
-
-    n_envs = n_envs or os.cpu_count() // 2
-
-    env = make_gym_env(n_envs=n_envs, config=config)
+    env = make_gym_env(config=config, n_envs=n_envs or os.cpu_count() // 2)
 
     for seed in range(n_runs):
         if (model_path / f"{algo}_{seed}.zip").exists():
-            print(f"Model {algo} {seed} already exists, skipping")
-            pass
-        else:
-            for key, value in algo_kwargs.items():
-                __import__("pprint").pprint(f"{key}: {value}")
-            model = ALGOS[algo](
-                env=env,
-                device=device,
-                verbose=1,
-                tensorboard_log=log_path,
-                **algo_kwargs,
-            )
+            print(f"Model {algo}_{seed} already exists, skipping")
+            continue
 
-            model.learn(
-                total_timesteps=time_steps,
-                log_interval=10,
-                tb_log_name=f"{algo}_{seed}",
-                progress_bar=True,
-                reset_num_timesteps=False,
-            )
+        model = ALGOS[algo](
+            env=env,
+            verbose=1,
+            tensorboard_log=log_path,
+            **config.algo_kwargs,
+        )
 
-            model.save(model_path / f"{algo}_{seed}.zip")
+        model.learn(
+            total_timesteps=n_timesteps,
+            progress_bar=True,
+            reset_num_timesteps=False,
+            tb_log_name=f"{algo}_{seed}",
+            log_interval=10,
+        )
 
-            if evaluate:
-                env = make_gym_env(n_envs=1, config=config, monitor_wrapper=False)
-                for i in tqdm(range(10)):
-                    trajectory = evaluate_policy(model, env)
-                    trajectory.save(eval_path / f"{algo}_{seed}_{i}")
-            th.cuda.empty_cache()
+        model.save(model_path / f"{algo}_{seed}.zip")
+
+        if evaluate:
+            env = make_gym_env(config=config, monitor_wrapper=False)
+            trajectories = evaluate_policy(model, env, n_episodes=2)
+            save_trajectories(trajectories, eval_path / f"{algo}_{seed}")
+        th.cuda.empty_cache()
 
 
-def get_config(config_name: str) -> dict:
-    """Parses a configuration file
+def load_sb3_model(path: Path, config_name: str = None) -> BaseAlgorithm:
+    """Load the model with custom policy objects if needed.
 
     Args:
-      config_name: str: The name of the configuration file (see config folder)
+        model_filename (Path): Path to the model file.
+        config_name (str): Name of the algorithm for configuration retrieval.
 
     Returns:
-        dict: The parsed configuration
-
+        BaseAlgorithm: Loaded model.
     """
-    import yaml
-    from mergedeep import merge
-    from rl.custom_extractor import CustomExtractor
+    config = Config(config_name)
+    algo_kwargs = config.get("algo_kwargs", {})
 
-    configs_path = Path(__file__).parent / "config"
-    main_config_path = configs_path / "main.yaml"
-    config_path = configs_path / (config_name + ".yaml")
-    main_config = yaml.safe_load(open(main_config_path, "r"))
-    config = yaml.safe_load(open(config_path, "r"))
-    config = merge(main_config, config)
+    # Load the model with custom policy if required
+    model = SAC.load(
+        path,
+        custom_objects={"policy_kwargs": algo_kwargs.get("policy_kwargs", {})},
+    )
+    return model
 
-    policy_kwargs = main_config["algo_kwargs"].get("policy_kwargs", {})
-    feature_extractor_class = policy_kwargs.get("features_extractor_class", None)
-    if feature_extractor_class == "CustomExtractor":
-        main_config["algo_kwargs"]["policy_kwargs"][
-            "features_extractor_class"
-        ] = CustomExtractor
 
-    if main_config["algo_kwargs"].get("replay_buffer_class", None) == "HerReplayBuffer":
-        main_config["algo_kwargs"]["replay_buffer_class"] = HerReplayBuffer
-    return main_config
+if __name__ == "__main__":
+    config = Config("pixels")
+    print(config)
