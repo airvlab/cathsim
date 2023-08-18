@@ -149,7 +149,6 @@ def train(
     from rl.evaluation import evaluate_policy, save_trajectories
 
     config = Config(config_name, target, phantom, trial_name, base_path)
-    print(config)
 
     experiment_path = config.get_env_path()
     model_path, log_path, eval_path = generate_experiment_paths(experiment_path)
@@ -180,7 +179,7 @@ def train(
 
         if evaluate:
             env = make_gym_env(config=config, monitor_wrapper=False)
-            trajectories = evaluate_policy(model, env, n_episodes=2)
+            trajectories = evaluate_policy(model, env, n_episodes=10)
             save_trajectories(trajectories, eval_path / f"{algo}_{seed}")
         th.cuda.empty_cache()
 

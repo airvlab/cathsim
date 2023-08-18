@@ -30,8 +30,8 @@ def convert_dm_control_to_gym_space(dm_control_space: dm_env.specs) -> gym.space
             else (dm_control_space.minimum, dm_control_space.maximum)
         )
         return spaces.Box(
-            low=low,
-            high=high,
+            low=np.float32(low),
+            high=np.float32(high),
             shape=dm_control_space.shape,
             dtype=dm_control_space.dtype
             if len(dm_control_space.shape) > 1
@@ -65,15 +65,14 @@ class DMEnvToGymWrapper(gym.Env):
     spec = EnvSpec("CathSim-v0", max_episode_steps=300)
 
     def __init__(self, env: composer.Environment, env_kwargs: dict = {}) -> gym.Env:
-        """
-        Initialize the environment.
+        """Initialize the wrapper.
 
         Args:
-                env: The dm_env to initialize. Must be a : class : ` composer. Environment ` instance.
-                env_kwargs: Keyword arguments to pass to the environment.
+            env (composer.Environment): DM control environment.
+            env_kwargs (dict): Additional arguments to pass to the environment.
 
         Returns:
-                The newly created gym.Env instance
+            gym.Env: [TODO:description]
         """
         self._env = env
         self.metadata = {

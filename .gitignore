@@ -7,7 +7,7 @@ human/
 experiments/
 transitions/
 transitions_bodies-full/
-evaluation/
+# evaluation/
 astar*
 # scripts/
 # scratch/

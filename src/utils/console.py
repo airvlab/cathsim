@@ -178,7 +178,7 @@ def cmd_train(args=None):
     parser.add_argument("-t", "--target", type=str, default="bca")
     parser.add_argument("-p", "--phantom", type=str, default="phantom3")
     parser.add_argument("--trial-name", type=str, default="test-trial")
-    parser.add_argument("--base-path", type=Path, default=Path.cwd() / "test-base")
+    parser.add_argument("--base-path", type=Path, default=Path.cwd() / "results")
     parser.add_argument("--n-runs", type=int, default=1)
     parser.add_argument("--n-timesteps", type=int, default=int(6e5))
     parser.add_argument("-e", action="store_true")
@@ -190,7 +190,7 @@ def cmd_train(args=None):
         target=args.target,
         phantom=args.phantom,
         trial_name=args.trial_name,
-        base_path=args.base_path,
+        base_path=Path.cwd() / args.base_path,
         n_timesteps=args.n_timesteps,
         n_runs=args.n_runs,
         evaluate=args.e,
