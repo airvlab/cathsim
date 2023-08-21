@@ -10,7 +10,7 @@ transitions_bodies-full/
 # evaluation/
 astar*
 # scripts/
-# scratch/
+scratch/
 wandb/
 transitions/
 lightning_logs/
