@@ -14,7 +14,7 @@ astar*
 wandb/
 transitions/
 lightning_logs/
-meshes/
+# meshes/
 cathsim.backup/
 results.zip
 .sync*
