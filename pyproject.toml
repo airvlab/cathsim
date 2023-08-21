@@ -38,7 +38,8 @@ dependencies = [
   "toolz"
 ]
 
-
+[tool.setuptools.packages.find]
+where = ["src"]
 
 
 [project.optional-dependencies]
@@ -53,6 +54,6 @@ docs = [
 dev = ["pytest"]
 
 [project.scripts]
-run_env = "utils.console:cmd_run_env"
-visualize_agent = "utils.console:cmd_visualize_agent"
-train = "utils.console:cmd_train"
+run_env = "cathsim.console:cmd_run_env"
+visualize_agent = "cathsim.console:cmd_visualize_agent"
+train = "cathsim.console:cmd_train"
