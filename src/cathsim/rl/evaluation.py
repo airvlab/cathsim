@@ -4,12 +4,11 @@ import pandas as pd
 import numpy as np
 import gym
 from tqdm import tqdm
-from typing import OrderedDict
 from pprint import pprint
 
-from rl.utils import generate_experiment_paths
-from rl.data import Trajectory
-from rl.metrics import AGGREGATE_METRICS, INDIVIDUAL_METRICS
+from cathsim.rl.utils import generate_experiment_paths
+from cathsim.rl.data import Trajectory
+from cathsim.rl.metrics import AGGREGATE_METRICS, INDIVIDUAL_METRICS
 
 from stable_baselines3.common.base_class import BaseAlgorithm
 
@@ -19,6 +18,19 @@ RESULTS_SUMMARY = Path.cwd() / "results-summary-test"
 
 
 def get_paths(path: Path) -> List[Path]:
+    """Get all paths in a directory.
+
+    This function recursively gets all paths in a directory.
+
+    Args:
+        path (Path): Path to the directory.
+
+    Returns:
+        List[Path]: List of paths in the directory.
+
+    Raises:
+        FileNotFoundError: If the path does not exist.
+    """
     if not path.exists():
         raise FileNotFoundError(f"{path} does not exist.")
     paths = list(path.rglob("*"))
@@ -27,6 +39,19 @@ def get_paths(path: Path) -> List[Path]:
 
 
 def collate_evaluation_data(path: Path) -> dict:
+    """Helper function to collate evaluation data.
+
+    This function collates evaluation data from a directory. The directory
+    structure should be as follows:
+        ``<phantom>/<target>/<config>/<algorithm>_<seed>/<trajectory>.pkl``
+
+    Args:
+        path (Path): The path to the directory containing the evaluation data. (this is the trial directory)
+
+    Returns:
+        dict: A dictionary containing the paths to the evaluation data.
+    """
+
     def f(path: Path) -> bool:
         return path.suffix == ".pkl"
 
@@ -54,7 +79,17 @@ def collate_evaluation_data(path: Path) -> dict:
 
 
 def analyze_and_aggregate(trajectories: List[Trajectory]) -> dict:
-    # Apply individual metrics to each trajectory
+    """Helper function to analyze and aggregate trajectories.
+
+    This function analyzes and aggregates a list of trajectories. It returns a
+    dictionary containing the results of the analysis.
+
+    Args:
+        trajectories (List[Trajectory]): The trajectories to analyze and aggregate. The trajectories should be flattened. See Trajectory.flatten().
+
+    Returns:
+        dict: A dictionary containing the results of the analysis.
+    """
     individual_metric_values = {metric.__name__: [] for metric in INDIVIDUAL_METRICS}
 
     for traj in trajectories:
@@ -72,6 +107,17 @@ def analyze_and_aggregate(trajectories: List[Trajectory]) -> dict:
 
 
 def analyze_evaluation_data(evaluation_data: dict) -> dict:
+    """Analyze evaluation data.
+
+    Analyzes evaluation data and returns a dictionary containing the results of
+    the analysis.
+
+    Args:
+        evaluation_data (dict): The evaluation data to analyze. Results from collate_evaluation_data().
+
+    Returns:
+        dict: A dictionary containing the results of the analysis.
+    """
     analysis_data = {}
 
     for config, config_data in evaluation_data.items():
@@ -89,48 +135,6 @@ def analyze_evaluation_data(evaluation_data: dict) -> dict:
                 )
 
     return analysis_data
-
-
-def aggregate_results(
-    eval_path: Path = None, output_path: Path = None, verbose: bool = False
-) -> pd.DataFrame:
-    eval_path = eval_path or RESULTS_SUMMARY
-
-    if verbose:
-        print(
-            f'Analyzing {"experiment".ljust(30)} {"phantom".ljust(30)} {"target".ljust(30)}'
-        )
-
-    dataframe = pd.DataFrame()
-
-    phantoms = [p for p in eval_path.iterdir() if p.is_dir()]
-    for phantom in phantoms:
-        targets = [t for t in phantom.iterdir() if t.is_dir()]
-        for target in targets:
-            files = [f for f in target.iterdir() if f.suffix == ".npz"]
-            for file in files:
-                print(
-                    f"Analyzing {file.stem.ljust(30)} {phantom.stem.ljust(30)} {target.stem.ljust(30)}"
-                )
-                results = analyze_model(file)
-                if results is not None:
-                    if dataframe.empty:
-                        dataframe = pd.DataFrame(
-                            columns=["phantom", "target", "algorithm", *results.keys()]
-                        )
-                    results_dataframe = pd.DataFrame(
-                        {
-                            "phantom": phantom.stem,
-                            "target": target.stem,
-                            "algorithm": file.stem,
-                            **results,
-                        },
-                        index=[0],
-                    )
-                    dataframe = pd.concat(
-                        [dataframe, results_dataframe], ignore_index=True
-                    )
-    return dataframe
 
 
 def evaluate_policy(

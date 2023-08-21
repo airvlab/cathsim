@@ -16,7 +16,8 @@ from cathsim.utils import distance
 from cathsim.guidewire import Guidewire, Tip
 from cathsim.observables import CameraObservable
 
-from cathsim.utils import filter_mask, point2pixel, get_env_config
+from cathsim.utils import filter_mask, get_env_config
+from cathsim.visualization import point2pixel
 
 env_config = get_env_config()
 

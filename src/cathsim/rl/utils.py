@@ -34,7 +34,7 @@ class Config:
         wrapper_kwargs: dict = {},
         algo_kwargs: dict = {},
     ):
-        from rl.custom_extractor import CustomExtractor
+        from cathsim.rl.custom_extractor import CustomExtractor
 
         self.base_path = base_path
         self.trial_name = trial_name
@@ -146,7 +146,7 @@ def train(
         evaluate (bool): Flag to evaluate the model after training.
         n_envs (int): Number of environments to use for training. Defaults to half the number of CPU cores.
     """
-    from rl.evaluation import evaluate_policy, save_trajectories
+    from cathsim.rl.evaluation import evaluate_policy, save_trajectories
 
     config = Config(config_name, target, phantom, trial_name, base_path)
 
@@ -179,7 +179,7 @@ def train(
 
         if evaluate:
             env = make_gym_env(config=config, monitor_wrapper=False)
-            trajectories = evaluate_policy(model, env, n_episodes=10)
+            trajectories = evaluate_policy(model, env, n_episodes=2)
             save_trajectories(trajectories, eval_path / f"{algo}_{seed}")
         th.cuda.empty_cache()
 
@@ -203,6 +203,35 @@ def load_sb3_model(path: Path, config_name: str = None) -> BaseAlgorithm:
         custom_objects={"policy_kwargs": algo_kwargs.get("policy_kwargs", {})},
     )
     return model
+
+
+def cmd_train(args=None):
+    from cathsim.rl.utils import train
+    import argparse as ap
+
+    parser = ap.ArgumentParser()
+    parser.add_argument("-a", "--algo", type=str, default="sac")
+    parser.add_argument("-c", "--config", type=str, default="test")
+    parser.add_argument("-t", "--target", type=str, default="bca")
+    parser.add_argument("-p", "--phantom", type=str, default="phantom3")
+    parser.add_argument("--trial-name", type=str, default="test-trial")
+    parser.add_argument("--base-path", type=Path, default=Path.cwd() / "results")
+    parser.add_argument("--n-runs", type=int, default=1)
+    parser.add_argument("--n-timesteps", type=int, default=int(6e5))
+    parser.add_argument("-e", action="store_true")
+    args = parser.parse_args()
+
+    train(
+        algo=args.algo,
+        config_name=args.config,
+        target=args.target,
+        phantom=args.phantom,
+        trial_name=args.trial_name,
+        base_path=Path.cwd() / args.base_path,
+        n_timesteps=args.n_timesteps,
+        n_runs=args.n_runs,
+        evaluate=args.e,
+    )
 
 
 if __name__ == "__main__":

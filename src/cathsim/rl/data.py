@@ -4,58 +4,17 @@ import pickle
 import numpy as np
 import gym
 from stable_baselines3.common.base_class import BaseAlgorithm
-import matplotlib.pyplot as plt
 
 import torch
 from torch.utils import data
 import pprint
 from toolz.dicttoolz import itemmap
 from functools import reduce
-from cathsim.utils import point2pixel
-from utils.common import flatten_dict, expand_dict, map_val
+from cathsim.visualization import plot_3D_to_2D
+from cathsim.utils import flatten_dict, expand_dict, map_val
 
-import warnings
+import matplotlib.pyplot as plt
 from tqdm import tqdm
-
-
-def plot_3D_to_2D(
-    ax: plt.Axes,
-    data: np.ndarray,
-    base_image: np.ndarray = None,
-    add_line: bool = True,
-    image_size: int = 80,
-    line_kwargs: dict = dict(color="black"),
-    scatter_kwargs: dict = dict(color="blue"),
-) -> plt.Axes:
-    """Plot 3D data to 2D image
-
-    Args:
-        ax (plt.Axes): The axes to plot on
-        data (np.ndarray): The data to plot
-        base_image (np.ndarray): An image to plot behind the data
-        add_line (bool): If True, add a line between the points
-        image_size (int): Size of the image. If base_image is provided, this is overwritten
-        line_kwargs (dict): Keyword arguments for the line. See plt.plot
-        scatter_kwargs (dict): Keyword arguments for the scatter. See plt.scatter
-    """
-    if base_image is not None:
-        base_image = np.flipud(base_image)
-        plt.imshow(base_image)
-        image_size = base_image.shape[0]
-        warnings.warn("Image size overwritten by base_image")
-
-    ax.set_xlim(0, image_size)
-    ax.set_ylim(0, image_size)
-    if len(data[0]) == 3:
-        data = np.apply_along_axis(
-            point2pixel, 1, data, camera_kwargs=dict(image_size=image_size)
-        )
-        data = [point for point in data if np.all((0 <= point) & (point <= image_size))]
-        data = np.array(data)  # Convert back to numpy array
-        data[:, 1] = image_size - data[:, 1]
-    ax.scatter(data[:, 0], data[:, 1], **scatter_kwargs)
-    if add_line:
-        ax.plot(data[:, 0], data[:, 1], **line_kwargs)
 
 
 class Trajectory:
@@ -94,6 +53,8 @@ class Trajectory:
         self.image_size = image_size
 
     def __str__(self):
+        """Returns a string representation of the trajectory"""
+
         def fn(item):
             k, v = item
             if isinstance(v, dict):
@@ -104,6 +65,8 @@ class Trajectory:
         return pprint.pformat(itemmap(fn, self.data))
 
     def __len__(self):
+        """Returns the length of the trajectory"""
+
         def fn(d: dict):
             for k, v in d.items():
                 if isinstance(v, dict):
@@ -113,7 +76,26 @@ class Trajectory:
 
         return fn(self.data)
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: Union[int, str]):
+        """Gets either a transition or a key from the trajectory
+
+        Args:
+            index (Union[int, str]): The index or key to get
+
+        Raises:
+            TypeError: If the index is not an int or a string
+
+        Returns:
+            Union[dict, np.ndarray]: The transition or key
+
+        Example:
+            >>> traj = Trajectory()
+            >>> traj.add_transition(obs=obs, act=act, next_obs=next_obs, reward=reward, info=info)
+            >>> traj[0]
+            {'obs': array([0.1, 0.2, 0.3]), 'act': array([0.1, 0.2, 0.3]), 'next_obs': array([0.1, 0.2, 0.3]), 'reward': 0.1, 'info': {'success': True}}
+            >>> traj["obs"]
+            array([[0.1, 0.2, 0.3],
+        """
         if isinstance(index, int):
             return map_val(lambda x: x[index], self.data)
         elif isinstance(index, str):
@@ -133,6 +115,20 @@ class Trajectory:
             raise TypeError("Invalid Argument Type")
 
     def get_k_len(self, key: str = None):
+        """Gets the length of a key in the trajectory
+
+        Gets the length of a key in the trajectory. This is useful for checking if
+        the trajectory has uneven lengths. For example, if the trajectory has a
+        final observation stored, it will have a different length than the other
+        keys.
+
+        Args:
+            key (str): The key to get the length of
+
+        Returns:
+            int: The length of the key
+        """
+
         def fn(d: dict):
             for k, v in d.items():
                 if isinstance(v, dict):
@@ -144,9 +140,20 @@ class Trajectory:
         return fn(self.data)
 
     def _initialize(self, d: dict):
+        """Initializes the trajectory
+
+        Args:
+            d (dict): The dictionary to initialize the trajectory with
+        """
         self.data = map_val(lambda x: [], d)
 
     def _validate(self):
+        """Validates the trajectory
+
+        Checks if the trajectory has uneven lengths. If a final observation is stored,
+        it will have a different length than the other keys. This is not allowed.
+        """
+
         def fn(acc, item):
             k, v = item
             if isinstance(v, dict):
@@ -166,27 +173,54 @@ class Trajectory:
         return self
 
     @staticmethod
-    def from_dict(data):
+    def from_dict(data: dict):
+        """Creates a trajectory from a dictionary
+
+        Args:
+            data (dict): The dictionary to create the trajectory from
+        """
         obj = Trajectory()
         obj.data = data
         return obj
 
     def to_array(self):
+        """Makes all values in the trajectory numpy array"""
         self.data = map_val(
             lambda x: x if isinstance(x, np.ndarray) else np.array(x), self.data
         )
         return self
 
     def add_transition(self, **kwargs):
+        """Adds a transition to the trajectory
+
+        Adds a transition to the trajectory. The transition is added to all keys
+        in the trajectory. If a key is not provided, it is initialized to an empty
+        list.
+        """
         if self.data is None:
             self._initialize(kwargs)
         self.data = expand_dict(self.data, kwargs)
 
     def flatten(self):
+        """Flattens the trajectory
+
+        Flattens the trajectory. This simplifies the trajectory by removing the
+        nested structure. This is useful for preforming operations on the trajectory.
+        """
         self.data = flatten_dict(self.data)
         return self
 
     def apply(self, fn: callable, key: str = None):
+        """High order function to apply a function to all values in the trajectory
+
+        This function applies a function to all values in the trajectory. If a key
+        is provided, the function is only applied to that key.
+
+        Args:
+            fn (callable): The function to apply
+            key (str): The key to apply the function to
+        """
+
         def gn(item):
             k, v = item
             if isinstance(v, dict):
@@ -202,6 +236,13 @@ class Trajectory:
         return self
 
     def save(self, file_path: Union[str, Path]):
+        """Saves the trajectory to a file
+
+        Saves the trajectory to a file. The file is saved as a pickle file.
+
+        Args:
+            file_path (Union[str, Path]): The path to save the file to or the file name
+        """
         if not file_path.parent.exists():
             file_path.parent.mkdir()
         if not file_path.suffix == ".pkl":
@@ -210,7 +251,14 @@ class Trajectory:
             pickle.dump(self.data, file)
 
     @staticmethod
-    def load(file_path):
+    def load(file_path: Union[str, Path]):
+        """Loads a trajectory from a file
+
+        Loads a trajectory from a file. The file is loaded as a pickle file.
+
+        Args:
+            file_path (Union[str, Path]): The path to load the file from or the file name
+        """
         if not file_path.suffix == ".pkl":
             file_path = file_path.with_suffix(".pkl")
         with open(file_path, "rb") as file:
@@ -219,7 +267,7 @@ class Trajectory:
 
     def plot_path(
         self,
-        ax,
+        ax: plt.Axes = None,
         key: str = None,
         plot_kwargs: dict = dict(
             base_image=None,
@@ -228,6 +276,16 @@ class Trajectory:
             scatter_kwargs={},
         ),
     ):
+        """Plots a path from the trajectory
+
+        Plots a path from the trajectory. The path is plotted on a 2D image. The
+        image size is determined by the image_size attribute of the trajectory.
+
+        Args:
+            ax (plt.Axes): The axes to plot on
+            key (str): Key to plot. If None, the head_pos key is used
+            plot_kwargs (dict): Additional keyword arguments to pass to the plot function
+        """
         data = list(self[key or "head_pos"].values())
         plot_3D_to_2D(ax, *data, **plot_kwargs)
 
@@ -298,7 +356,7 @@ def generate_trajectories(algorithm_path: Path, n_episodes: int = 10_000):
         n_episodes (int): number of episodes to generate
     """
     from stable_baselines3 import SAC
-    from rl.utils import Config, generate_experiment_paths
+    from cathsim.rl.utils import Config, generate_experiment_paths
     from cathsim.utils import make_gym_env
 
     model_path, _, eval_path = generate_experiment_paths(

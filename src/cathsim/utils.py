@@ -15,37 +15,53 @@ from stable_baselines3.common.vec_env import VecMonitor, DummyVecEnv, SubprocVec
 from pathlib import Path
 import yaml
 import numpy as np
-import matplotlib.pyplot as plt
 
 
 import gym
 from dm_control.viewer.application import Application
 from dm_control import composer
+from toolz.dicttoolz import itemmap
+
+
+def flatten_dict(d: dict, parent_key: str = None) -> dict:
+    acc = {}
+    for k, v in d.items():
+        if parent_key:
+            k = parent_key + "-" + k
+        if isinstance(v, dict):
+            acc = acc | flatten_dict(v, k)
+        else:
+            acc[k] = v
+    return acc
+
+
+def expand_dict(xd: dict, yd: dict) -> dict:
+    zd = xd.copy()
+    for k, v in yd.items():
+        if k not in xd:
+            zd[k] = [v]
+        elif isinstance(v, dict) and isinstance(xd[k], dict):
+            zd[k] = expand_dict(xd[k], v)
+        else:
+            zd[k] = xd[k] + [v]
+    return zd
+
+
+def map_val(g: callable, d: dict):
+    def f(item):
+        k, v = item
+        if isinstance(v, dict):
+            return (k, itemmap(f, v))
+        else:
+            return (k, g(v))
+
+    return itemmap(f, d)
 
 
 def normalize_rgba(rgba: list) -> list:
     new_rgba = [c / 255.0 for c in rgba]
     new_rgba[-1] = rgba[-1]
     return new_rgba
-
-
-def point2pixel(
-    point: np.ndarray, camera_kwargs: dict = dict(image_size=80)
-) -> np.ndarray:
-    """Transforms from world coordinates to pixel coordinates.
-
-    Args:
-      point: np.ndarray: the point to be transformed.
-      camera_kwargs: dict:  (Default value = dict(image_size=80))
-
-    Returns:
-        np.ndarray : the pixel coordinates of the point.
-    """
-    camera_matrix = create_camera_matrix(**camera_kwargs)
-    x, y, z = point
-    xs, ys, s = camera_matrix.dot(np.array([x, y, z, 1.0]))
-
-    return np.array([round(xs / s), round(ys / s)]).astype(np.int32)
 
 
 def filter_mask(segment_image: np.ndarray):
@@ -79,73 +95,6 @@ def distance(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     return np.linalg.norm(a - b, axis=-1)
 
 
-def create_camera_matrix(
-    image_size: int,
-    pos=np.array([-0.03, 0.125, 0.15]),
-    euler=np.array([0, 0, 0]),
-    fov=45,
-) -> np.ndarray:
-    """
-    Generate a camera matrix given the parameters
-
-    Args:
-      image_size: int:
-      pos:  (Default value = np.array([-0.03, 0.125, 0.15]):
-      euler:  (Default value = np.array([0, 0, 0]):
-      fov:  (Default value = 45)
-
-    Returns:
-        np.ndarray: The camera matrix
-
-    """
-
-    def euler_to_rotation_matrix(euler_angles: np.ndarray) -> np.ndarray:
-        """
-        Make a rotation matrix from euler angles
-
-        Args:
-            euler_angles: np.ndarray: The euler angles
-
-        Returns:
-            np.ndarray: The rotation matrix
-
-        """
-        rx, ry, rz = np.deg2rad(euler_angles)
-
-        Rx = np.array(
-            [[1, 0, 0], [0, np.cos(rx), -np.sin(rx)], [0, np.sin(rx), np.cos(rx)]]
-        )
-
-        Ry = np.array(
-            [[np.cos(ry), 0, np.sin(ry)], [0, 1, 0], [-np.sin(ry), 0, np.cos(ry)]]
-        )
-
-        Rz = np.array(
-            [[np.cos(rz), -np.sin(rz), 0], [np.sin(rz), np.cos(rz), 0], [0, 0, 1]]
-        )
-
-        R = Rz @ Ry @ Rx
-        return R
-
-    # Intrinsic Parameters
-    focal_scaling = (1.0 / np.tan(np.deg2rad(fov) / 2)) * image_size / 2.0
-    focal = np.diag([-focal_scaling, focal_scaling, 1.0, 0])[0:3, :]
-    image = np.eye(3)
-    image[0, 2] = (image_size - 1) / 2.0
-    image[1, 2] = (image_size - 1) / 2.0
-
-    # Extrinsic Parameters
-    rotation_matrix = euler_to_rotation_matrix(euler)
-    R = np.eye(4)
-    R[0:3, 0:3] = rotation_matrix
-    T = np.eye(4)
-    T[0:3, 3] = -pos
-
-    # Camera Matrix
-    camera_matrix = image @ focal @ R @ T
-    return camera_matrix
-
-
 def get_env_config(config_path: Path = None) -> dict:
     """Read and parse `env_config` yaml file.
 
@@ -161,25 +110,6 @@ def get_env_config(config_path: Path = None) -> dict:
     with open(config_path, "r") as f:
         env_config = yaml.safe_load(f)
     return env_config
-
-
-def plot_w_mesh(mesh, points: np.ndarray, **kwargs):
-    """
-    Plot a mesh with points
-
-    Args:
-        mesh: The mesh to plot
-        points: The points to plot
-        **kwargs: The keyword arguments to pass to the scatter function
-
-    """
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection="3d")
-    ax.set_xlim(mesh.bounds[0][0], mesh.bounds[1][0])
-    ax.set_ylim(mesh.bounds[0][1], mesh.bounds[1][1])
-    ax.set_zlim(mesh.bounds[0][2], mesh.bounds[1][2])
-    ax.scatter(points[:, 0], points[:, 0], points[:, 0], **kwargs)
-    plt.show()
 
 
 def make_dm_env(
@@ -359,7 +289,7 @@ class Application(Application):
         """
         super().__init__(title, width, height)
         from dm_control.viewer import user_input
-        from rl.data import Trajectory
+        from cathsim.rl.data import Trajectory
 
         self._input_map.bind(self._move_forward, user_input.KEY_UP)
         self._input_map.bind(self._move_back, user_input.KEY_DOWN)
@@ -381,7 +311,7 @@ class Application(Application):
 
     def _initialize_episode(self):
         """ """
-        from rl.data import Trajectory
+        from cathsim.rl.data import Trajectory
 
         if self.save_trajectories:
             self.trajectory.save(self.path / str(self._episode))

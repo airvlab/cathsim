@@ -1,5 +1,5 @@
 import numpy as np
-from rl.data import Trajectory
+from cathsim.rl.data import Trajectory
 from typing import List
 
 from cathsim.utils import distance
