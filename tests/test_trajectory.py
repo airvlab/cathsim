@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from gym import spaces
-from rl.data import Trajectory
+from cathsim.rl.data import Trajectory
 from toolz.dicttoolz import get_in
 
 obs_cases = [

@@ -43,6 +43,3 @@ def test_phantom_get_scale():
 def test_phantom_get_rgba():
     phantom = Phantom()
     assert phantom.get_rgba() == phantom_config["rgba"]
-
-
-# additional tests could be written for the sites and mjcf_model properties

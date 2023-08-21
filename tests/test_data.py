@@ -1,5 +1,5 @@
 import gym
-from rl.data import Trajectory, TrajectoriesDataset
+from cathsim.rl.data import Trajectory, TrajectoriesDataset
 from torch.utils import data
 
 

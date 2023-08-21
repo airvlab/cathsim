@@ -57,7 +57,7 @@ A quick way to have the enviromnent run with gym is to make use of the `make_dm_
 
 ```python
 from cathsim.utils import make_dm_env
-from cathsim.wrappers.wrappers import DMEnvToGymWrapper
+from cathsim.wrappers import DMEnvToGymWrapper
 
 env = make_dm_env(
     dense_reward=True,
@@ -66,8 +66,8 @@ env = make_dm_env(
     use_pixels=False,
     use_segment=False,
     image_size=64,
-    phantom='phantom3',
-    target='bca',
+    phantom="phantom3",
+    target="bca",
 )
 
 env = DMEnvToGymWrapper(env)
@@ -104,6 +104,7 @@ run_env
 You will now see the guidewire and the aorta along with the two sites that represent the targets. You can interact with the environment using the keyboard arrows.
 
 ## Mesh Processing
+
 You can use a custom aorta by making use of V-HACD convex decomposition. To do so, you can use stl2mjcf, available [here](https://github.com/tudorjnu/stl2mjcf). You can quickly install the tool with:
 
 ```bash
@@ -115,6 +116,7 @@ After the installation, you can use `stl2mjcf --help` to see the available comma
 Note: You will probably have to change the parameters of V-HACD for the best results.
 
 ## TODO's
+
 - [x] Code refactoring
 - [x] Add fluid simulation
 - [x] Add VR/AR interface through Unity
@@ -122,6 +124,7 @@ Note: You will probably have to change the parameters of V-HACD for the best res
 - [ ] Add guidewire representation
 
 ## Contributors
+
 - [Tudor Jianu](https://tudorjnu.github.io/)
 - [Baoru Huang](https://baoru.netlify.app)
 - Jingxuan Kang
@@ -136,12 +139,15 @@ Note: You will probably have to change the parameters of V-HACD for the best res
 - [Anh Nguyen](https://cgi.csc.liv.ac.uk/~anguyen/)
 
 ## Terms of Use
+
 Please review our [Terms of Use](TERMS.md) before using this project.
 
 ## License
+
 Please feel free to copy, distribute, display, perform or remix our work but for non-commercial porposes only.
 
 ## Citation
+
 If you find our paper useful in your research, please consider citing:
 
 ``` bibtex
