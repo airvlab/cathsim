@@ -1,0 +1,21 @@
+---
+task_kwargs:
+  use_pixels: True
+  use_segment: True
+  sample_target: True
+  target_from_sites: False
+  dense_reward: True
+  random_init_distance: 0.001
+
+wrapper_kwargs:
+  goal_env: True
+  use_obs:
+    - 'pixels'
+    - 'guidewire'
+    - 'joint_pos'
+    - 'joint_vel'
+
+algo_kwargs:
+  buffer_size: 500000
+  learning_starts: 1000
+  replay_buffer_class: 'HerReplayBuffer'

@@ -1,7 +1,7 @@
 import pytest
 from dm_control import composer
-from cathsim.cathsim.env_utils import make_dm_env
-from cathsim.cathsim import Phantom
+from cathsim.utils import make_dm_env
+from cathsim import Phantom
 
 
 class TestDMEnv:
