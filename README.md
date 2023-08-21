@@ -3,7 +3,7 @@
 
 
 <div align="center">
-    <a href="https://"><img height="auto" src="/mics/cathsim_dn.gif"></a>
+    <a href="https://"><img height="auto" src="/misc/cathsim_dn.gif"></a>
 </div>
 
 ![CathSim](./cathsim.png)
