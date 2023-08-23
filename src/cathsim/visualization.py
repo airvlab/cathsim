@@ -71,18 +71,22 @@ def create_camera_matrix(
 
 
 def point2pixel(
-    point: np.ndarray, camera_kwargs: dict = dict(image_size=80)
+    point: np.ndarray,
+    camera_matrix: np.ndarray = None,
+    camera_kwargs: dict = dict(image_size=80),
 ) -> np.ndarray:
     """Transforms from world coordinates to pixel coordinates.
 
     Args:
       point: np.ndarray: the point to be transformed.
+      camera_matrix: np.ndarray: the camera matrix. If None, it is generated from the camera_kwargs.
       camera_kwargs: dict:  (Default value = dict(image_size=80))
 
     Returns:
         np.ndarray : the pixel coordinates of the point.
     """
-    camera_matrix = create_camera_matrix(**camera_kwargs)
+    if camera_matrix is None:
+        camera_matrix = create_camera_matrix(**camera_kwargs)
     x, y, z = point
     xs, ys, s = camera_matrix.dot(np.array([x, y, z, 1.0]))
 

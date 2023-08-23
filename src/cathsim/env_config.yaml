@@ -1,10 +1,13 @@
 ---
+
 cone : 'pyramidal'  # pyramidal, elliptic
 default_time_limit: 2
 num_substeps : 3
+
 compiler:
   autolimits: true
   angle: 'radian'
+
 option:
   timestep: .004
   gravity: [0, 0, -9.81]
@@ -19,12 +22,15 @@ option:
     frictionloss: 'enable'
     multiccd: 'disable'
     gravity: 'enable'
+
 size:
   memory: 1G
+
 visual:
   global:
     offwidth: 480
     offheight: 480
+
 guidewire:
   scale: 1
   rgba: [.1, .1, .1, 1]
@@ -39,8 +45,23 @@ guidewire:
   friction: [.1]  # default: [1, 0.005, 0.0001]
   tip_n_bodies: 2
   density: 6.72e+2  # nitiol density  # 7980,
+
 phantom:
   scale: 1
   rgba: [111, 18,0, 0.3]
   condim: 1
   friction: 1.
+
+default:
+  default_site_attributes: 
+      "type": "sphere"
+      "size": [0.002]
+      "rgba": [0.8, 0.8, 0.8, 0]
+
+skybox_texture: 
+    "type": "skybox"
+    "builtin": "gradient"
+    "rgb1": [1, 1, 1]
+    "rgb2": [1, 1, 1]
+    "width": 256
+    "height": 256

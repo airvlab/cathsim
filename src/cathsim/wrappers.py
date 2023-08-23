@@ -186,7 +186,7 @@ class DMEnvToGymWrapper(gym.Env):
     @property
     def force(self) -> np.ndarray:
         """The magnitude of the force applied to the aorta."""
-        return self._env._task.get_force(self.physics)
+        return self._env._task.get_total_force(self.physics)
 
     @property
     def contact_forces(self) -> np.ndarray:

@@ -130,27 +130,24 @@ def cmd_run_env(args=None):
     from cathsim.utils import launch
     import numpy as np
 
-    parser = ArgumentParser()
-    parser.add_argument("--save-trajectories", default=None, type=bool)
-    parser.add_argument("--base-path", default=None, type=str)
-    parser.add_argument("--phantom", default="phantom3", type=str)
-    parser.add_argument("--target", default="bca", type=str)
-    parser.add_argument("--experiment-name", default="test", type=str)
-    args = parser.parse_args(args)
+    ap = ArgumentParser()
+    ap.add_argument("--interact", type=bool, default=True)
+    ap.add_argument("--phantom", default="phantom3", type=str)
+    ap.add_argument("--target", default="bca", type=str)
+    ap.add_argument("--image_size", default=80, type=int)
+    ap.add_argument("--visualize-target", action="store_true")
 
-    phantom = Phantom(args.phantom + ".xml")
-
-    tip = Tip()
-    guidewire = Guidewire()
+    args = ap.parse_args(args)
 
     task = Navigate(
-        phantom=phantom,
-        guidewire=guidewire,
-        tip=tip,
+        phantom=Phantom(args.phantom + ".xml"),
+        guidewire=Guidewire(),
+        tip=Tip(),
         use_pixels=True,
         use_segment=True,
         target=args.target,
-        visualize_sites=True,
+        visualize_sites=False,
+        visualize_target=args.visualize_target,
     )
 
     env = composer.Environment(
@@ -160,13 +157,7 @@ def cmd_run_env(args=None):
         strip_singleton_obs_buffer_dim=True,
     )
 
-    launch(
-        env,
-        save_trajectories=args.save_trajectories,
-        phantom=args.phantom,
-        target=args.target,
-        experiment_name=args.experiment_name,
-    )
+    launch(env)
 
 
 def cmd_train(args=None):
