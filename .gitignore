@@ -1,22 +1,9 @@
 # Folders
-rl/imitation/
-rl/expert/
-figures/
-results/
-human/
-experiments/
-transitions/
-transitions_bodies-full/
-# evaluation/
-astar*
-# scripts/
-# scratch/
+logs/
 wandb/
 transitions/
 lightning_logs/
-# meshes/
-cathsim.backup/
-results.zip
+data/
 .sync*
 
 
