@@ -457,7 +457,18 @@ class Navigate(composer.Task):
         """Get the position of the head of the guidewire."""
         return physics.named.data.geom_xpos[-1]
 
-    def compute_reward(self, achieved_goal, desired_goal):
+    def get_target_pos(self, physics):
+        """Get the position of the target."""
+        return self.target_pos
+
+    def compute_reward(
+        self,
+        achieved_goal,
+        desired_goal,
+        fn: callable = lambda achieved_goal, desired_goal: -distance(
+            achieved_goal, desired_goal
+        ),
+    ):
         """Compute the reward based on the distance between achieved and desired goals."""
 
         d = distance(achieved_goal, desired_goal)
@@ -465,7 +476,11 @@ class Navigate(composer.Task):
 
         # Calculate reward based on success and reward type
         if self.dense_reward:
-            reward = self.success_reward if is_successful else -d
+            reward = (
+                self.success_reward
+                if is_successful
+                else fn(achieved_goal, desired_goal)
+            )
         else:
             reward = self.success_reward if is_successful else -1.0
 

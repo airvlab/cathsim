@@ -11,18 +11,19 @@ from dm_control import composer
 from dm_env import specs
 import dm_env
 
+from typing import Optional, Dict
+
 
 def convert_dm_control_to_gym_space(dm_control_space: dm_env.specs) -> gym.spaces:
-    """Convert DM control space to gym space. This is a helper function to convert DM control space to env.Gym space.
+    """Convert DM control space to Gym space.
 
     Args:
-      dm_control_space: The DM control space to convert.
+        dm_control_space (dm_env.specs): The DM control space.
 
     Returns:
-      gym.spaces: The converted gym space.
-
+        gym.spaces: The Gym space.
     """
-    # dm_control_space is a space. Box or a space. Box object.
+    # If dm_control_space is an instance of BoundedArray.
     if isinstance(dm_control_space, specs.BoundedArray):
         low, high = (
             (0, 255)
@@ -38,10 +39,8 @@ def convert_dm_control_to_gym_space(dm_control_space: dm_env.specs) -> gym.space
             else np.float32,
         )
 
-    # Return a space. Box object representing the dm_control_space.
-    if isinstance(dm_control_space, specs.Array) and not isinstance(
-        dm_control_space, specs.BoundedArray
-    ):
+    # If dm_control_space is an instance of Array (but not BoundedArray).
+    elif isinstance(dm_control_space, specs.Array):
         return spaces.Box(
             low=-float("inf"),
             high=float("inf"),
@@ -49,8 +48,8 @@ def convert_dm_control_to_gym_space(dm_control_space: dm_env.specs) -> gym.space
             dtype=np.float32,
         )
 
-    # Return a spaces. Dict object with dm_control_space as a dictionary.
-    if isinstance(dm_control_space, dict):
+    # If dm_control_space is a dictionary.
+    elif isinstance(dm_control_space, dict):
         return spaces.Dict(
             {
                 key: convert_dm_control_to_gym_space(value)
@@ -58,21 +57,30 @@ def convert_dm_control_to_gym_space(dm_control_space: dm_env.specs) -> gym.space
             }
         )
 
+    # Consider raising an error if none of the types match for clearer error handling.
+    else:
+        raise ValueError(f"Unsupported DM control space type: {type(dm_control_space)}")
+
 
 class DMEnvToGymWrapper(gym.Env):
     """Wrapper for dm_control environments to be used with OpenAI gym."""
 
     spec = EnvSpec("CathSim-v0", max_episode_steps=300)
 
-    def __init__(self, env: composer.Environment, env_kwargs: dict = {}) -> gym.Env:
+    def __init__(
+        self,
+        env: composer.Environment,
+        use_contact_forces: bool = False,
+        use_force: bool = True,
+        use_geom_pos: bool = False,
+    ):
         """Initialize the wrapper.
 
         Args:
             env (composer.Environment): DM control environment.
-            env_kwargs (dict): Additional arguments to pass to the environment.
-
-        Returns:
-            gym.Env: [TODO:description]
+            use_contact_forces (bool): Use contact forces or not. Defaults to False.
+            use_force (bool): Use force or not. Defaults to True.
+            use_geom_pos (bool): Use geometry position or not. Defaults to False.
         """
         self._env = env
         self.metadata = {
@@ -80,7 +88,6 @@ class DMEnvToGymWrapper(gym.Env):
             "video.frames_per_second": round(1.0 / self._env.control_timestep()),
         }
 
-        self.env_kwargs = env_kwargs
         self.image_size = self._env.task.image_size
 
         self.action_space = convert_dm_control_to_gym_space(
@@ -91,10 +98,9 @@ class DMEnvToGymWrapper(gym.Env):
         )
 
         self.viewer = None
-        self.use_contact_forces = False
-        self.use_force = True
-        self.use_geom_pos = False
-        # self.goal = np.array([0.0, 0.0, 0.0])
+        self.use_contact_forces = use_contact_forces
+        self.use_force = use_force
+        self.use_geom_pos = use_geom_pos
 
     def seed(self, seed: int):
         """Environment seed. This is used to seed the environment to get reproducible results."""
@@ -175,12 +181,7 @@ class DMEnvToGymWrapper(gym.Env):
 
     @property
     def head_pos(self) -> np.ndarray:
-        """Get the position of the guidewire tip.
-
-        Returns:
-            np.ndarray: The position of the guidewire tip.
-        """
-
+        """Get the position of the guidewire tip."""
         return self._env._task.get_head_pos(self.physics)
 
     @property
