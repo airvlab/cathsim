@@ -446,7 +446,17 @@ class Navigate(composer.Task):
     def get_reward(self, physics):
         """Get the reward from the environment."""
         self.head_pos = self.get_head_pos(physics)
-        reward = self.compute_reward(self.head_pos, self.target_pos)
+
+        d = distance(self.head_pos, self.target_pos)
+        is_successful = d < self.delta
+
+        # Calculate reward based on success and reward type
+        if self.dense_reward:
+            reward = self.success_reward if is_successful else -d
+        else:
+            reward = self.success_reward if is_successful else -1.0
+
+        self.success = is_successful
         return reward
 
     def should_terminate_episode(self, physics):
@@ -460,32 +470,6 @@ class Navigate(composer.Task):
     def get_target_pos(self, physics):
         """Get the position of the target."""
         return self.target_pos
-
-    def compute_reward(
-        self,
-        achieved_goal,
-        desired_goal,
-        fn: callable = lambda achieved_goal, desired_goal: -distance(
-            achieved_goal, desired_goal
-        ),
-    ):
-        """Compute the reward based on the distance between achieved and desired goals."""
-
-        d = distance(achieved_goal, desired_goal)
-        is_successful = d < self.delta
-
-        # Calculate reward based on success and reward type
-        if self.dense_reward:
-            reward = (
-                self.success_reward
-                if is_successful
-                else fn(achieved_goal, desired_goal)
-            )
-        else:
-            reward = self.success_reward if is_successful else -1.0
-
-        self.success = is_successful
-        return reward
 
     def get_joint_positions(self, physics):
         """Get the joint positions."""
@@ -684,5 +668,6 @@ if __name__ == "__main__":
             print(contact_forces)
             print(env._task.get_head_pos(env._physics))
             print(env._task.target_pos)
+            print(time_step.reward)
             # plt.imsave("phantom_480.png", img)
             time_step = env.step(action)

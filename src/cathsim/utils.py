@@ -121,6 +121,7 @@ def make_dm_env(
     delta: float = 0.004,
     use_segment: bool = False,
     image_size: int = 80,
+    random_state: np.random = None,
     **kwargs,
 ) -> composer.Environment:
     """Makes a dm_control environment given a configuration.
@@ -163,7 +164,7 @@ def make_dm_env(
     )
     env = composer.Environment(
         task=task,
-        random_state=np.random.RandomState(42),
+        random_state=random_state,
         strip_singleton_obs_buffer_dim=True,
     )
 
