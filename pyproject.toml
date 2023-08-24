@@ -20,19 +20,16 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-  "gym==0.21.*",
+  "gymnasium",
+  "stable-baselines3",
   "dm-control",
-  "pyyaml",
   "opencv-python",
   "matplotlib",
-  "stable-baselines3==1.8.0",
   "torch",
   "imitation",
   "tqdm",
   "rich",
   "mergedeep",
-  "progressbar2",
-  "progress",
   "trimesh",
   "rtree",
   "toolz"

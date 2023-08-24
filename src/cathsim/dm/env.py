@@ -2,23 +2,22 @@ import math
 import numpy as np
 import trimesh
 import random
-from typing import Union
+from typing import Union, Optional
 
 
 from dm_control import mjcf
-from dm_control.mujoco import wrapper
+from dm_control.mujoco import wrapper, engine
 from dm_control import composer
 from dm_control.composer import variation
 from dm_control.composer.variation import distributions, noises
 from dm_control.composer.observation import observable
 
-from cathsim.phantom import Phantom
-from cathsim.utils import distance
-from cathsim.guidewire import Guidewire, Tip
-from cathsim.observables import CameraObservable
-
-from cathsim.utils import filter_mask, get_env_config
-from cathsim.visualization import point2pixel
+from cathsim.dm.components import Phantom
+from cathsim.dm.components import Guidewire, Tip
+from cathsim.dm.utils import distance
+from cathsim.dm.observables import CameraObservable
+from cathsim.dm.utils import filter_mask, get_env_config
+from cathsim.dm.visualization import point2pixel, create_camera_matrix
 
 env_config = get_env_config()
 
@@ -44,8 +43,19 @@ random_state = np.random.RandomState(42)
 def make_scene(geom_groups: list):
     """Make a scene option for the phantom. This is used to set the visibility of the different parts of the environment.
 
+    1. Phantom
+    2. Guidewire
+    3. Tip
+
     Args:
         geom_groups: A list of geom groups to set visible
+
+    Returns:
+        A scene option
+
+    Examples:
+        >>> make_scene([1, 2])
+        >>> make_scene([0, 1, 2])
     """
     scene_option = wrapper.MjvOption()
     scene_option.geomgroup = np.zeros_like(scene_option.geomgroup)
@@ -257,6 +267,7 @@ class Navigate(composer.Task):
         image_size: int = 80,
         sample_target: bool = False,
         visualize_sites: bool = False,
+        visualize_target: bool = False,
         target_from_sites: bool = True,
         random_init_distance: float = 0.001,
         target: Union[str, np.ndarray] = None,
@@ -268,29 +279,63 @@ class Navigate(composer.Task):
         self.use_segment = use_segment
         self.use_phantom_segment = use_phantom_segment
         self.image_size = image_size
-        self.sample_target = sample_target
         self.visualize_sites = visualize_sites
+        self.visualize_target = visualize_target
+        self.sample_target = sample_target
         self.target_from_sites = target_from_sites
+        self.sampling_bounds = (0.0954, 0.1342)
         self.random_init_distance = random_init_distance
 
+        # Setup arena and attachments
+        self._setup_arena_and_attachments(phantom, guidewire, tip)
+
+        # Configure initial poses and variators
+        self._configure_poses_and_variators()
+
+        # Setup observables
+        self._setup_observables()
+
+        # Visualization
+        self._setup_visualizations()
+
+        self.control_timestep = env_config["num_substeps"] * self.physics_timestep
+        self.success = False
+        self.camera_matrix = self.get_camera_matrix(
+            image_size=self.image_size, camera_name="top_camera"
+        )
+        self.set_target(target)
+
+    def _setup_arena_and_attachments(
+        self, phantom: composer.Entity, guidewire: composer.Entity, tip: composer.Entity
+    ):
+        """Setup the arena and attachments.
+
+        This method is responsible for setting up the arena and attaching the entities.
+
+        Args:
+            phantom (composer.Entity): The phantom entity to use
+            guidewire (composer.Entity): The guidewire entity to use
+            tip (composer.Entity): The tip entity to use for the tip
+        """
         self._arena = Scene("arena")
-        if phantom is not None:
-            self._phantom = phantom
-            self._arena.attach(self._phantom)
+        self._phantom = phantom or composer.Entity()
+        self._arena.attach(self._phantom)
+
         if guidewire is not None:
             self._guidewire = guidewire
+            self._arena.attach(self._guidewire)
             if tip is not None:
                 self._tip = tip
                 self._guidewire.attach(self._tip)
-            self._arena.attach(self._guidewire)
 
-        # Configure initial poses
+    def _configure_poses_and_variators(self):
+        """Setup the initial poses and variators."""
         self._guidewire_initial_pose = UniformSphere(radius=self.random_init_distance)
-
-        # Configure variators
         self._mjcf_variator = variation.MJCFVariator()
         self._physics_variator = variation.PhysicsVariator()
 
+    def _setup_observables(self):
+        """Setup task observables."""
         pos_corrptor = noises.Additive(distributions.Normal(scale=0.0001))
         vel_corruptor = noises.Multiplicative(distributions.LogNormal(sigma=0.0001))
 
@@ -299,8 +344,8 @@ class Navigate(composer.Task):
         if self.use_pixels:
             self._task_observables["pixels"] = CameraObservable(
                 camera_name="top_camera",
-                width=image_size,
-                height=image_size,
+                width=self.image_size,
+                height=self.image_size,
             )
 
         if self.use_segment:
@@ -308,8 +353,8 @@ class Navigate(composer.Task):
 
             self._task_observables["guidewire"] = CameraObservable(
                 camera_name="top_camera",
-                height=image_size,
-                width=image_size,
+                height=self.image_size,
+                width=self.image_size,
                 scene_option=guidewire_option,
                 segmentation=True,
             )
@@ -318,8 +363,8 @@ class Navigate(composer.Task):
             phantom_option = make_scene([0])
             self._task_observables["phantom"] = CameraObservable(
                 camera_name="top_camera",
-                height=image_size,
-                width=image_size,
+                height=self.image_size,
+                width=self.image_size,
                 scene_option=phantom_option,
                 segmentation=True,
             )
@@ -330,20 +375,15 @@ class Navigate(composer.Task):
         self._task_observables["joint_vel"] = observable.Generic(
             self.get_joint_velocities
         )
-
         self._task_observables["joint_pos"].corruptor = pos_corrptor
+
         self._task_observables["joint_vel"].corruptor = vel_corruptor
 
         for obs in self._task_observables.values():
             obs.enabled = True
 
-        self.control_timestep = env_config["num_substeps"] * self.physics_timestep
-
-        self.success = False
-
-        self.set_target(target)
-        self.camera_matrix = None
-
+    def _setup_visualizations(self):
+        """Setup visual elements for the task."""
         if self.visualize_sites:
             sites = self._phantom._mjcf_root.find_all("site")
             for site in sites:
@@ -359,20 +399,27 @@ class Navigate(composer.Task):
         """The task_observables property."""
         return self._task_observables
 
-    @property
-    def target_pos(self):
-        """The target_pos property."""
-        return self._target_pos
-
     def set_target(self, target) -> None:
         """Set the target position."""
-        if type(target) is str:
+        if isinstance(target, str):
             sites = self._phantom.sites
             assert (
                 target in sites
             ), f"Target site not found. Valid sites are: {sites.keys()}"
             target = sites[target]
-        self._target_pos = target
+
+        if self.visualize_target:
+            if not hasattr(self, "target_site"):
+                self.target_site = self._arena.add_site(
+                    "target",
+                    pos=target,
+                    size=[0.003],
+                    rgba=[1, 0, 0, 1],
+                )
+            else:
+                self.target_site.pos = target
+
+        self.target_pos = target
 
     def initialize_episode_mjcf(self, random_state):
         """Initialize the episode mjcf."""
@@ -380,13 +427,17 @@ class Navigate(composer.Task):
 
     def initialize_episode(self, physics, random_state):
         """Initialize the episode."""
-        if self.camera_matrix is None:
-            self.camera_matrix = self.get_camera_matrix(physics)
+
+        # Apply physics variations for the episode
         self._physics_variator.apply_variations(physics, random_state)
+
+        # Set initial guidewire pose
         guidewire_pose = variation.evaluate(
             self._guidewire_initial_pose, random_state=random_state
         )
         self._guidewire.set_pose(physics, position=guidewire_pose)
+
+        # Reset success condition and sample a new target if needed
         self.success = False
         if self.sample_target:
             self.set_target(self.get_random_target(physics))
@@ -394,7 +445,17 @@ class Navigate(composer.Task):
     def get_reward(self, physics):
         """Get the reward from the environment."""
         self.head_pos = self.get_head_pos(physics)
-        reward = self.compute_reward(self.head_pos, self._target_pos)
+
+        d = distance(self.head_pos, self.target_pos)
+        is_successful = d < self.delta
+
+        # Calculate reward based on success and reward type
+        if self.dense_reward:
+            reward = self.success_reward if is_successful else -d
+        else:
+            reward = self.success_reward if is_successful else -1.0
+
+        self.success = is_successful
         return reward
 
     def should_terminate_episode(self, physics):
@@ -405,17 +466,9 @@ class Navigate(composer.Task):
         """Get the position of the head of the guidewire."""
         return physics.named.data.geom_xpos[-1]
 
-    def compute_reward(self, achieved_goal, desired_goal):
-        """Compute the reward."""
-        d = distance(achieved_goal, desired_goal)
-        success = np.array(d < self.delta, dtype=bool)
-
-        if self.dense_reward:
-            reward = np.where(success, self.success_reward, -d)
-        else:
-            reward = np.where(success, self.success_reward, -1.0)
-        self.success = success
-        return reward
+    def get_target_pos(self, physics):
+        """Get the position of the target."""
+        return self.target_pos
 
     def get_joint_positions(self, physics):
         """Get the joint positions."""
@@ -427,7 +480,7 @@ class Navigate(composer.Task):
         velocities = physics.named.data.qvel
         return velocities
 
-    def get_force(self, physics):
+    def get_total_force(self, physics):
         """Get the force magnitude."""
         forces = physics.data.qfrc_constraint[0:3]
         forces = np.linalg.norm(forces)
@@ -435,46 +488,72 @@ class Navigate(composer.Task):
 
     def get_contact_forces(
         self,
-        physics,
-        threshold: float = 0.01,
+        physics: engine.Physics,
+        threshold: float = 0.001,
         to_pixels: bool = True,
         image_size: int = 80,
-    ):
-        """Gets the contact forces for each contact point.
+    ) -> dict:
+        """Get the contact forces for each contact.
+
+        Get the contact forces for each contact. The contact forces are filtered
+        by a threshold and converted to pixels if needed.
 
         Args:
-            physics: The physics object
-            threshold: The threshold for the force magnitude ( default : 0.01 )
-            to_pixels: If True, the contact points will be converted to pixels ( default : True )
-            image_size: The size of the image ( default : 80 )
+            physics (engine.Physics): A dm_control physics object
+            threshold (float): The threshold to filter the forces ( default : 0.01 )
+            to_pixels (bool): Convert the forces to pixels ( default : True )
+            image_size (int): The size of the image ( default : 80 )
+
+        Returns:
+            dict: A dictionary containing the positions and forces
         """
-        if self.camera_matrix is None:
-            self.camera_matrix = self.get_camera_matrix(physics, image_size)
         data = physics.data
         forces = {"pos": [], "force": []}
+
         for i in range(data.ncon):
             if data.contact[i].dist < 0.002:
                 force = data.contact_force(i)[0][0]
                 if abs(force) > threshold:
-                    pass
-                else:
                     forces["force"].append(force)
                     pos = data.contact[i].pos
-                    if to_pixels is not None:
+                    if to_pixels:
                         pos = point2pixel(pos, self.camera_matrix)
                     forces["pos"].append(pos)
+
         return forces
 
-    def get_camera_matrix(self, physics, image_size: int = None, camera_id=0):
-        """Get the camera matrix for the given camera."""
-        from dm_control.mujoco.engine import Camera
+    def get_camera_matrix(
+        self,
+        image_size: Optional[int] = None,
+        camera_name: str = "top_camera",
+    ) -> np.ndarray:
+        """
+        Get the camera matrix for the given camera.
 
-        if image_size is None:
-            image_size = self.image_size
-        camera = Camera(
-            physics, height=image_size, width=image_size, camera_id=camera_id
+        Args:
+            image_size (Optional[int]): The size of the image. If not provided, uses the class's default image size.
+            camera_name (str): The name of the camera for which the matrix is to be generated. Default is "top_camera".
+
+        Returns:
+            np.ndarray: The camera matrix corresponding to the specified camera.
+
+        Raises:
+            ValueError: If the specified camera_name doesn't exist in the arena.
+        """
+
+        cameras = self._arena.mjcf_model.find_all("camera")
+        camera = next((cam for cam in cameras if cam.name == camera_name), None)
+
+        if camera is None:
+            raise ValueError(f"No camera found with the name: {camera_name}")
+
+        image_size = image_size or self.image_size
+
+        camera_matrix = create_camera_matrix(
+            image_size=image_size, pos=camera.pos, euler=camera.euler
         )
-        return camera.matrix
+
+        return camera_matrix
 
     def get_phantom_mask(self, physics, image_size: int = None, camera_id=0):
         """Get the phantom mask."""
@@ -505,99 +584,95 @@ class Navigate(composer.Task):
         return mask
 
     def get_random_target(self, physics):
-        """Get a random target."""
+        """Get a random target based on conditions."""
+
+        # If targets are fetched from predefined sites
         if self.target_from_sites:
             sites = self._phantom.sites
             site = np.random.choice(list(sites.keys()))
-            target = sites[site]
-            return target
-        mesh = trimesh.load_mesh(self._phantom.simplified, scale=0.9)
-        return sample_points(mesh, (0.0954, 0.1342))
+            return sites[site]
 
-    def get_guidewire_geom_pos(self, physics):
-        """Get the guidewire geom positions."""
+        # Else, get targets from a mesh
+        mesh = trimesh.load_mesh(self._phantom.simplified, scale=0.9)
+        return sample_points(mesh, self.sampling_bounds)
+
+    def get_guidewire_geom_pos(self, physics: engine.Physics) -> list[np.ndarray]:
+        """Get the guidewire geometry positions.
+
+        Args:
+            physics (engine.Physics): DM control physics object
+
+        Returns:
+            list[np.ndarray]: A list of positions of the guidewire geometries
+        """
+
         model = physics.copy().model
-        guidewire_geom_ids = [
-            model.geom(i).id
-            for i in range(model.ngeom)
-            if "guidewire" in model.geom(i).name
-        ]
+
+        # Collect IDs of all guidewire geometries
+        guidewire_geom_ids = []
+        for i in range(model.ngeom):
+            geom_name = model.geom(i).name
+            if "guidewire" in geom_name:
+                guidewire_geom_ids.append(model.geom(i).id)
+
+        # Get positions based on IDs
         guidewire_geom_pos = [physics.data.geom_xpos[i] for i in guidewire_geom_ids]
+
         return guidewire_geom_pos
 
 
-def run_env(args=None):
-    """Run the environment."""
-    from argparse import ArgumentParser
-    from cathsim.utils import launch
+def make_dm_env(
+    phantom: str = "phantom3",
+    target: str = "bca",
+    **kwargs,
+) -> composer.Environment:
+    """Makes a dm_control environment given a configuration.
 
-    parser = ArgumentParser()
-    parser.add_argument("--interact", type=bool, default=True)
-    parser.add_argument("--phantom", default="phantom3", type=str)
-    parser.add_argument("--target", default="bca", type=str)
+    Args:
+      phantom: str:  (Default value = "phantom3") The phantom to use
+      **kwargs: Additional arguments for the environment
 
-    parsed_args = parser.parse_args(args)
+    Returns:
+        composer.Environment: The environment
 
-    phantom = Phantom(parsed_args.phantom + ".xml")
+    """
 
-    tip = Tip()
-    guidewire = Guidewire()
-
+    phantom = Phantom(phantom + ".xml")
+    tip = Tip(n_bodies=4)
+    guidewire = Guidewire(n_bodies=80)
     task = Navigate(
         phantom=phantom,
         guidewire=guidewire,
         tip=tip,
-        use_pixels=True,
-        use_segment=True,
-        target=parsed_args.target,
-        visualize_sites=True,
+        target=target,
+        **kwargs,
     )
-
     env = composer.Environment(
         task=task,
-        time_limit=2000,
-        random_state=np.random.RandomState(42),
+        random_state=random_state,
         strip_singleton_obs_buffer_dim=True,
     )
 
-    launch(env)
+    return env
 
 
 if __name__ == "__main__":
-    phantom_name = "phantom3"
-    phantom = Phantom(phantom_name + ".xml")
-    tip = Tip()
-    guidewire = Guidewire()
-
-    task = Navigate(
-        phantom=phantom,
-        guidewire=guidewire,
-        tip=tip,
+    env = make_dm_env(
+        phantom="phantom3",
         use_pixels=True,
         use_segment=True,
         target="bca",
         image_size=80,
         visualize_sites=False,
+        visualize_target=True,
         sample_target=True,
         target_from_sites=False,
     )
 
-    env = composer.Environment(
-        task=task,
-        time_limit=2000,
-        random_state=np.random.RandomState(42),
-        strip_singleton_obs_buffer_dim=True,
-    )
-
     env._task.get_guidewire_geom_pos(env.physics)
-    exit()
+    print(env._task.get_camera_matrix(camera_name="top_camera", image_size=80))
 
     def random_policy(time_step):
-        """
-
-        :param time_step:
-
-        """
         del time_step  # Unused
         return [0, 0]
 
@@ -606,11 +681,13 @@ if __name__ == "__main__":
         time_step = env.reset()
         # print(env._task.target_pos)
         # print(env._task.get_head_pos(env._physics))
-        print(env._task.get_camera_matrix(env.physics, 480))
-        print(env._task.get_camera_matrix(env.physics, 80))
-        exit()
         for step in range(2):
             action = random_policy(time_step)
             img = env.physics.render(height=480, width=480, camera_id=0)
+            contact_forces = env._task.get_contact_forces(env.physics, threshold=0.01)
+            print(contact_forces)
+            print(env._task.get_head_pos(env._physics))
+            print(env._task.target_pos)
+            print(time_step.reward)
             # plt.imsave("phantom_480.png", img)
             time_step = env.step(action)

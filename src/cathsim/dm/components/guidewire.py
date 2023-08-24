@@ -3,9 +3,9 @@ from pathlib import Path
 
 from dm_control import mjcf
 from dm_control import composer
-from cathsim.observables import JointObservables
 
-from cathsim.utils import get_env_config
+from cathsim.dm.observables import JointObservables
+from cathsim.dm.utils import get_env_config
 
 
 SCALE = 1

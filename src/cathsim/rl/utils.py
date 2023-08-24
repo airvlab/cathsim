@@ -9,7 +9,6 @@ from mergedeep import merge
 from stable_baselines3 import PPO, SAC
 
 from imitation.algorithms import bc
-from cathsim.utils import make_gym_env
 
 import pprint
 

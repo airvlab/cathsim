@@ -3,7 +3,7 @@ from pathlib import Path
 from dm_control import mjcf
 from dm_control import composer
 
-from cathsim.utils import normalize_rgba, get_env_config
+from cathsim.dm.utils import normalize_rgba, get_env_config
 
 env_config = get_env_config()
 phantom_config = env_config["phantom"]
@@ -25,7 +25,7 @@ class Phantom(composer.Entity):
         self.scale = [phantom_config["scale"] for i in range(3)]
 
         path = Path(__file__).parent
-        model_dir = path / "assets"
+        model_dir = path / "phantom_assets"
         phantom_xml_path = (model_dir / phantom_xml).as_posix()
         self._mjcf_root = mjcf.from_file(
             phantom_xml_path, False, model_dir.as_posix(), **kwargs
