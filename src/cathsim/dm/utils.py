@@ -8,7 +8,7 @@ import gymnasium as gym
 from cathsim.gym.wrappers import (
     GoalEnvWrapper,
     MultiInputImageWrapper,
-    Dict2Array,
+    SingleDict2Array,
 )
 
 
@@ -130,7 +130,7 @@ WRAPPERS = {
             ),
         },
     ),
-    "Dict2Array": (Dict2Array, {}),
+    "SingleDict2Array": (SingleDict2Array, {}),
     "NormalizeObservation": (wrappers.NormalizeObservation, {}),
     "FrameStack": (
         wrappers.FrameStack,

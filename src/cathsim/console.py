@@ -3,10 +3,8 @@ import torch as th
 from pathlib import Path
 import argparse as ap
 
-from cathsim.rl.utils import Config, ALGOS, generate_experiment_paths
-
-from cathsim.wrappers import Dict2Array
-from stable_baselines3.common.policies import ActorCriticCnnPolicy
+from cathsim.rl.utils import ALGOS, generate_experiment_paths
+from cathsim.rl import Config
 
 
 def cmd_visualize_agent(args=None):
@@ -19,6 +17,8 @@ def cmd_visualize_agent(args=None):
     from cathsim.utils import make_gym_env
     from cathsim.visualization import point2pixel
     import argparse as ap
+    from cathsim.wrappers import SingleDict2Array
+    from stable_baselines3.common.policies import ActorCriticCnnPolicy
 
     # from scratch.bc.custom_networks import CustomPolicy
     parser = ap.ArgumentParser()
@@ -61,7 +61,7 @@ def cmd_visualize_agent(args=None):
     if algo == "bc":
         config["wrapper_kwargs"]["channel_first"] = True
         env = make_gym_env(config=config)
-        env = Dict2Array(env)
+        env = SingleDict2Array(env)
         model = ActorCriticCnnPolicy(
             observation_space=env.observation_space,
             action_space=env.action_space,
@@ -161,7 +161,7 @@ def cmd_run_env(args=None):
 
 
 def cmd_train(args=None):
-    from cathsim.rl.utils import train
+    from cathsim.rl import train
 
     parser = ap.ArgumentParser()
     parser.add_argument("-a", "--algo", type=str, default="sac")

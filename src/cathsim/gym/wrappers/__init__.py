@@ -1,3 +1,4 @@
-from cathsim.gym.wrappers.flatten_dict import Dict2Array
+from cathsim.gym.wrappers.single_dict_to_array import SingleDict2Array
 from cathsim.gym.wrappers.goal_env import GoalEnvWrapper
 from cathsim.gym.wrappers.multi_input_image_wrapper import MultiInputImageWrapper
+from cathsim.gym.wrappers.transform_dict_observation import TransformDictObservation

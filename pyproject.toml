@@ -20,19 +20,18 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-  "gymnasium",
-  "stable-baselines3",
-  "dm-control",
-  "opencv-python",
-  "matplotlib",
-  "torch",
-  "imitation",
-  "tqdm",
-  "rich",
-  "mergedeep",
-  "trimesh",
-  "rtree",
-  "toolz"
+    "gymnasium",
+    "stable_baselines3@git+https://github.com/DLR-RM/stable-baselines3",
+    "pyaml",
+    "dm-control",
+    "trimesh",
+    "opencv-python",
+    "matplotlib",
+    "tqdm",
+    "rich",
+    "mergedeep",
+    "rtree",
+    "toolz"
 ]
 
 [tool.setuptools.packages.find]
@@ -48,7 +47,10 @@ docs = [
     "sphinx-autodoc-typehints",
     "sphinx_copybutton"
 ]
-dev = ["pytest"]
+dev = [
+    "pytest",
+    "gymnasium[box2d]",
+]
 
 [project.scripts]
 run_env = "cathsim.console:cmd_run_env"

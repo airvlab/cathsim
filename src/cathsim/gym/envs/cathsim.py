@@ -1,33 +1,15 @@
 """Wrappers for dm_control environments to be used with OpenAI gym."""
 import numpy as np
 
-from gymnasium import spaces
-from gymnasium.envs.registration import register
-import gymnasium
 import gymnasium as gym
+import gymnasium.spaces as spaces
+from gymnasium.envs.registration import EnvSpec
 
 from dm_env import specs
 from cathsim.dm import make_dm_env
 
 
-register(
-    id="cathsim/CathSim-v0",
-    entry_point="cathsim.gym.envs:CathSim",
-    max_episode_steps=300,
-    nondeterministic=True,
-)
-
-
 def convert_spec_to_gym_space(dm_control_space: specs) -> gym.spaces:
-    """Convert DM control space to Gym space.
-
-    Args:
-        dm_control_space (dm_env.specs): The DM control space.
-
-    Returns:
-        gym.spaces: The Gym space.
-    """
-    # If dm_control_space is an instance of BoundedArray.
     if isinstance(dm_control_space, specs.BoundedArray):
         low, high = (
             (0, 255)
@@ -43,7 +25,6 @@ def convert_spec_to_gym_space(dm_control_space: specs) -> gym.spaces:
             else np.float32,
         )
 
-    # If dm_control_space is an instance of Array (but not BoundedArray).
     elif isinstance(dm_control_space, specs.Array):
         return spaces.Box(
             low=-float("inf"),
@@ -52,7 +33,6 @@ def convert_spec_to_gym_space(dm_control_space: specs) -> gym.spaces:
             dtype=np.float32,
         )
 
-    # If dm_control_space is a dictionary.
     elif isinstance(dm_control_space, dict):
         return spaces.Dict(
             {
@@ -61,17 +41,18 @@ def convert_spec_to_gym_space(dm_control_space: specs) -> gym.spaces:
             }
         )
 
-    # Consider raising an error if none of the types match for clearer error handling.
     else:
         raise ValueError(f"Unsupported DM control space type: {type(dm_control_space)}")
 
 
-class CathSim(gymnasium.Env):
+class CathSim(gym.Env):
+    spec = EnvSpec("cathsim/CathSim-v0", max_episode_steps=300)
+
     def __init__(
         self,
         phantom: str = "phantom3",
         use_contact_forces: bool = False,
-        use_force: bool = True,
+        use_force: bool = False,
         use_geom_pos: bool = False,
         **kwargs,
     ):
@@ -154,6 +135,14 @@ class CathSim(gymnasium.Env):
             self.viewer = None
         return self._env.close()
 
+    def print_spaces(self):
+        print("Observation space:")
+        if isinstance(self.observation_space, spaces.Dict):
+            for key, value in self.observation_space.spaces.items():
+                print("\t", key, value.shape)
+        print("Action space:")
+        print("\t", self.action_space.shape)
+
     @property
     def head_pos(self) -> np.ndarray:
         """Get the position of the guidewire tip."""
@@ -187,64 +176,3 @@ class CathSim(gymnasium.Env):
     def guidewire_geom_pos(self) -> np.ndarray:
         """The position of the guidewire body geometries. This property is used to determine the shape of the guidewire."""
         return self._env._task.get_guidewire_geom_pos(self.physics)
-
-
-def make_gym_env(
-    config: dict = {}, n_envs: int = 1, monitor_wrapper: bool = True
-) -> gym.Env:
-    """Makes a gym environment given a configuration. This is a wrapper for the creation of environment and basic wrappers
-
-    Args:
-        config: dict:  (Default value = {}) The configuration dictionary
-        n_envs: int:  (Default value = 1) The number of environments to create
-        monitor_wrapper: bool:  (Default value = True) Whether or not to use the monitor wrapper
-
-    Returns:
-        gym.Env: The environment
-
-    """
-    from stable_baselines3.common.vec_env import SubprocVecEnv, VecMonitor
-    from stable_baselines3.common.monitor import Monitor
-
-    wrapper_kwargs = config.wrapper_kwargs or {}
-    task_kwargs = config.task_kwargs or {}
-
-    def _create_env() -> gym.Env:
-        from cathsim.gym.wrappers import Dict2Array, MultiInputImageWrapper
-        from gymnasium import wrappers
-
-        env = CathSim(**task_kwargs)
-
-        filter_keys = wrapper_kwargs.get("use_obs", [])
-
-        if filter_keys:
-            env = wrappers.FilterObservation(env, filter_keys=filter_keys)
-
-        if task_kwargs.get("use_pixels", False):
-            env = MultiInputImageWrapper(
-                env,
-                grayscale=wrapper_kwargs.get("grayscale", False),
-                image_key=wrapper_kwargs.get("image_key", "pixels"),
-                keep_dim=wrapper_kwargs.get("keep_dim", True),
-                channel_first=wrapper_kwargs.get("channel_first", False),
-            )
-
-        # If the observation dict has a single key, flatten the observation.
-        if wrapper_kwargs.get("dict2array", False):
-            assert (
-                len(env.observation_space.spaces) == 1
-            ), "Only one observation is allowed."
-            env = Dict2Array(env)
-
-        return env
-
-    if n_envs > 1:
-        envs = [_create_env for _ in range(n_envs)]
-        env = SubprocVecEnv(envs)
-    else:
-        env = _create_env()
-
-    if monitor_wrapper:
-        env = Monitor(env) if n_envs == 1 else VecMonitor(env)
-
-    return env

@@ -121,7 +121,9 @@ Note: You will probably have to change the parameters of V-HACD for the best res
 - [x] Add fluid simulation
 - [x] Add VR/AR interface through Unity
 - [x] Implement multiple aortic models
+- [x] Update to `gymnasium`
 - [ ] Add guidewire representation
+- [ ] Create tests for the environment 
 
 ## Contributors
 

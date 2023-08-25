@@ -2,7 +2,7 @@ import numpy as np
 from cathsim.rl.data import Trajectory
 from typing import List
 
-from cathsim.utils import distance
+from cathsim.dm.utils import distance
 
 
 def calculate_total_distance(positions):

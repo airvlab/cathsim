@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Union
 import pickle
 import numpy as np
-import gym
+import gymnasium as gym
 from stable_baselines3.common.base_class import BaseAlgorithm
 
 import torch
@@ -10,11 +10,13 @@ from torch.utils import data
 import pprint
 from toolz.dicttoolz import itemmap
 from functools import reduce
-from cathsim.visualization import plot_3D_to_2D
-from cathsim.utils import flatten_dict, expand_dict, map_val
+from cathsim.dm.visualization import plot_3D_to_2D
+from cathsim.dm.utils import flatten_dict, expand_dict, map_val
 
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+
+RESULTS_PATH = Path.cwd() / "results"
 
 
 class Trajectory:
