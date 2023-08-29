@@ -124,11 +124,9 @@ def cmd_run_env(args=None):
     :param args:  (Default value = None)
 
     """
+    from cathsim.dm import make_dm_env
     from argparse import ArgumentParser
-    from dm_control import composer
-    from cathsim import Phantom, Guidewire, Tip, Navigate
-    from cathsim.utils import launch
-    import numpy as np
+    from cathsim.dm.utils import launch
 
     ap = ArgumentParser()
     ap.add_argument("--interact", type=bool, default=True)
@@ -139,22 +137,13 @@ def cmd_run_env(args=None):
 
     args = ap.parse_args(args)
 
-    task = Navigate(
-        phantom=Phantom(args.phantom + ".xml"),
-        guidewire=Guidewire(),
-        tip=Tip(),
+    env = make_dm_env(
+        phantom=args.phantom,
         use_pixels=True,
         use_segment=True,
         target=args.target,
         visualize_sites=False,
         visualize_target=args.visualize_target,
-    )
-
-    env = composer.Environment(
-        task=task,
-        time_limit=2000,
-        random_state=np.random.RandomState(42),
-        strip_singleton_obs_buffer_dim=True,
     )
 
     launch(env)

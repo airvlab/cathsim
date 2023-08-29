@@ -1,5 +1,5 @@
 """
-Utilities module for the environment.
+utilities module for the environment.
 """
 import numpy as np
 import yaml
@@ -13,7 +13,7 @@ from cathsim.gym.wrappers import (
 
 
 from stable_baselines3.common.monitor import Monitor
-from stable_baselines3.common.vec_env import VecMonitor, DummyVecEnv, SubprocVecEnv
+from stable_baselines3.common.vec_env import VecMonitor, SubprocVecEnv
 from pathlib import Path
 from dm_control.viewer.application import Application
 from toolz.dicttoolz import itemmap

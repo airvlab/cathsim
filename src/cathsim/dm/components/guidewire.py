@@ -241,4 +241,4 @@ if __name__ == "__main__":
     guidewire = Guidewire()
     guidewire.mjcf_model.compiler.set_attributes(autolimits=True, angle="radian")
     mjcf.Physics.from_mjcf_model(guidewire.mjcf_model)
-    guidewire.save_model(Path.cwd() / "gdw.xml")
+    guidewire.save_model(Path.cwd() / "guidewire.xml")
