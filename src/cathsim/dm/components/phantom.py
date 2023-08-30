@@ -42,6 +42,7 @@ class Phantom(composer.Entity):
         )
 
     def _set_defaults(self):
+        """Sets the default values for the Phantom3."""
         self._mjcf_root.default.geom.set_attributes(
             **phantom_default["geom"],
         )
@@ -49,18 +50,38 @@ class Phantom(composer.Entity):
             **phantom_default["site"],
         )
 
-    def set_rgba(self, rgba: list) -> None:
+    def set_rgba(self, rgba: list):
+        """Sets the RGBA values for the Phantom3.
+
+        Used to change the color of the Phantom3. This can be used for domain randomization.
+
+        Args:
+            rgba (list): List of RGBA values (normalized to 1.0)
+        """
         self.rgba = rgba
         self._mjcf_root.find("geom", "visual").rgba = self.rgba
         collision_rgba = rgba.copy()
         collision_rgba[-1] = 0
         self._mjcf_root.default.geom.set_attributes(rgba=collision_rgba)
 
-    def set_hulls_alpha(self, alpha: float) -> None:
+    def set_hulls_alpha(self, alpha: float):
+        """Sets the alpha value for the hulls.
+
+        Usefull for debugging and visualization.
+
+        Args:
+            alpha (float): Alpha value to set
+        """
         self.rgba[-1] = alpha
         self._mjcf_root.default.geom.set_attributes(rgba=self.rgba)
 
-    def set_scale(self, scale: tuple) -> None:
+    def set_scale(self, scale: tuple):
+        """Changes the scale of the phantom.
+
+
+        Args:
+            scale (tuple): The scale to set
+        """
         self._mjcf_root.default.mesh.set_attributes(scale=scale)
         self._mjcf_root.find("mesh", "visual").scale = [x * 1.005 for x in scale]
 

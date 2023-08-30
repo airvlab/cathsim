@@ -421,7 +421,6 @@ class Navigate(composer.Task):
     def initialize_episode(self, physics, random_state):
         """Initialize the episode."""
 
-        # Apply physics variations for the episode
         self._physics_variator.apply_variations(physics, random_state)
 
         # Set initial guidewire pose
@@ -430,7 +429,6 @@ class Navigate(composer.Task):
         )
         self._guidewire.set_pose(physics, position=guidewire_pose)
 
-        # Reset success condition and sample a new target if needed
         self.success = False
         if self.sample_target:
             self.set_target(self.get_random_target(physics))

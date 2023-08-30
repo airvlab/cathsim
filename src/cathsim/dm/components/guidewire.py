@@ -42,6 +42,14 @@ class BaseBody(composer.Entity):
         stiffness: float = None,
         name: str = None,
     ):
+        """Add a body to the guidewire.
+
+        Args:
+            n (int): The index of the body to add
+            parent (mjcf.Element): The parent element to add the body to
+            stiffness (float): Stiffness of the joint
+            name (str): Name of the body/joint/geom
+        """
         child = parent.add("body", name=f"{name}_body_{n}", pos=[0, 0, OFFSET])
         child.add("geom", name=f"geom_{n}")
         j0 = child.add("joint", name=f"{name}_J0_{n}", axis=[1, 0, 0])
@@ -65,23 +73,24 @@ class Guidewire(BaseBody):
     """Guidewire class"""
 
     def _build(self, n_bodies: int = 80):
-        """
-        Build MJCF data and set attributes. This is called by __init__ to initialize the class.
+        """Build the guidewire.
+
+        Set the default values, add bodies and joints, and add actuators.
 
         Args:
-            n_bodies: Number of bodies to build ( default 80 )
+            n_bodies (int): Number of bodies to add to the guidewire
         """
-
         self._length = CYLINDER_HEIGHT * 2 + SPHERE_RADIUS * 2 + OFFSET * n_bodies
         self._n_bodies = n_bodies
 
         self._mjcf_root = mjcf.RootElement(model="guidewire")
 
-        self._setup_defaults()
-        self._setup_bodies_and_joints()
-        self._setup_actuators()
+        self._set_defaults()
+        self._set_bodies_and_joints()
+        self._set_actuators()
 
-    def _setup_defaults(self):
+    def _set_defaults(self):
+        """Set the default values for the guidewire."""
         self._mjcf_root.default.geom.set_attributes(
             size=[SPHERE_RADIUS, CYLINDER_HEIGHT],
             **guidewire_default["geom"],
@@ -101,7 +110,8 @@ class Guidewire(BaseBody):
             **guidewire_default["velocity"],
         )
 
-    def _setup_bodies_and_joints(self):
+    def _set_bodies_and_joints(self):
+        """Set the bodies and joints of the guidewire."""
         parent = self._mjcf_root.worldbody.add(
             "body",
             name="guidewire_body_0",
@@ -134,7 +144,8 @@ class Guidewire(BaseBody):
             stiffness *= 0.995
         self._tip_site = parent.add("site", name="tip_site", pos=[0, 0, OFFSET])
 
-    def _setup_actuators(self):
+    def _set_actuators(self):
+        """Set the actuators of the guidewire."""
         kp = 40
         self._mjcf_root.actuator.add(
             "velocity",
@@ -155,16 +166,26 @@ class Guidewire(BaseBody):
 
     @property
     def attachment_site(self):
+        """The attachment site of the guidewire. Useful for attaching the tip to the guidewire."""
         return self._tip_site
 
     def _build_observables(self):
+        """Build the observables of the guidewire."""
         return JointObservables(self)
 
     @property
     def actuators(self):
+        """Get the actuators of the guidewire."""
         return tuple(self._mjcf_root.find_all("actuator"))
 
     def save_model(self, path: Path):
+        """Save the guidewire model to an `.xml` file.
+
+        Usefull for debugging, exporting, and visualizing the guidewire.
+
+        Args:
+            path (Path): Path to save the model to
+        """
         if path.suffix is None:
             path = path / "guidewire.xml"
         with open(path, "w") as file:
@@ -172,7 +193,13 @@ class Guidewire(BaseBody):
 
 
 class Tip(BaseBody):
-    def _build(self, name: str = "tip", n_bodies=3):
+    def _build(self, name: str = "tip", n_bodies: int = 3):
+        """Build the tip of the guidewire.
+
+        Args:
+            name (str): Name of the tip (Will be removed in the future)
+            n_bodies (int): Number of bodies to add to the tip
+        """
         self._mjcf_root = mjcf.RootElement(model=name)
         self._n_bodies = n_bodies
 
@@ -182,6 +209,7 @@ class Tip(BaseBody):
         self.head_geom.name = "head"
 
     def _setup_defaults(self):
+        """Set the default values for the tip."""
         self._mjcf_root.default.geom.set_attributes(
             size=[SPHERE_RADIUS, CYLINDER_HEIGHT],
             **tip_default["geom"],
@@ -194,6 +222,7 @@ class Tip(BaseBody):
         )
 
     def _setup_bodies_and_joints(self):
+        """Setup the bodies and joints of the tip."""
         parent = self._mjcf_root.worldbody.add(
             "body",
             name="tip_body_0",
@@ -209,10 +238,12 @@ class Tip(BaseBody):
             parent = self.add_body(n, parent, name="tip")
 
     def _build_observables(self):
+        """Setup the observables of the tip."""
         return JointObservables(self)
 
     @property
     def head_geom(self):
+        """Get the head geom of the tip."""
         return self._mjcf_root.find_all("geom")[-1]
 
 
