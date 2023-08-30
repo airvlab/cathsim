@@ -1,0 +1,17 @@
+scale: 1
+diameter: 0.001
+
+default:
+  geom:
+    group: 2
+    type: capsule
+    rgba: [.2, .2, .2, 1]
+    density: 6.72e+2
+    condim: 1
+    friction: [.1]
+    fluidshape: "ellipsoid"
+  joint:
+    type: hinge
+    stiffness: 1
+    damping: 0.5
+    armature: 0.05

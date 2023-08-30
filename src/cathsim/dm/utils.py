@@ -91,21 +91,23 @@ def distance(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     return np.linalg.norm(a - b, axis=-1)
 
 
-def get_env_config(config_path: Path = None) -> dict:
-    """Read and parse `env_config` yaml file.
+def get_env_config(config: str = None) -> dict:
+    config_folder = Path(__file__).parent / "config"
+    if config is None:
+        config_path = config_folder / "env.yaml"
+    else:
+        config_path = config_folder / f"{config}.yaml"
+    if config_path.exists():
+        config = get_config(config_path)
+        return config
+    else:
+        raise FileNotFoundError(f"Could not find config file {config_path}")
 
-    Args:
-      config_path: Path:  (Default value = None)
 
-    Returns:
-        dict: The configuration dictionary
-
-    """
-    if config_path is None:
-        config_path = Path(__file__).parent / "env_config.yaml"
+def get_config(config_path: Path = None) -> dict:
     with open(config_path, "r") as f:
-        env_config = yaml.safe_load(f)
-    return env_config
+        config = yaml.safe_load(f)
+    return config
 
 
 WRAPPERS = {

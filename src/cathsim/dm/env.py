@@ -19,22 +19,16 @@ from cathsim.dm.observables import CameraObservable
 from cathsim.dm.utils import filter_mask, get_env_config
 from cathsim.dm.visualization import point2pixel, create_camera_matrix
 
+
 env_config = get_env_config()
 
 OPTION = env_config["option"]
 OPTION_FLAG = OPTION.pop("flag")
 COMPILER = env_config["compiler"]
-VISUAL = env_config["visual"]
-VISUAL_GLOBAL = VISUAL.pop("global")
 GUIDEWIRE_CONFIG = env_config["guidewire"]
 
-DEFAULT_SITE_ATTRIBUTES = env_config["default"]["default_site_attributes"]
+DEFAULT_SITE = env_config["default"]["site"]
 SKYBOX_TEXTURE = env_config["skybox_texture"]
-
-BODY_DIAMETER = GUIDEWIRE_CONFIG["diameter"] * GUIDEWIRE_CONFIG["scale"]
-SPHERE_RADIUS = (BODY_DIAMETER / 2) * GUIDEWIRE_CONFIG["scale"]
-CYLINDER_HEIGHT = SPHERE_RADIUS * GUIDEWIRE_CONFIG["sphere_to_cylinder_ratio"]
-OFFSET = SPHERE_RADIUS + CYLINDER_HEIGHT * 2
 
 
 random_state = np.random.RandomState(42)
@@ -110,8 +104,7 @@ class Scene(composer.Arena):
         self._mjcf_root.compiler.set_attributes(**COMPILER)
         self._mjcf_root.option.set_attributes(**OPTION)
         self._mjcf_root.option.flag.set_attributes(**OPTION_FLAG)
-        self._mjcf_root.visual.set_attributes(**VISUAL)
-        self._mjcf_root.default.site.set_attributes(**DEFAULT_SITE_ATTRIBUTES)
+        self._mjcf_root.default.site.set_attributes(**DEFAULT_SITE)
 
     def _add_cameras(self):
         """Add cameras to the scene."""

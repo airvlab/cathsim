@@ -5,9 +5,8 @@ from dm_control import composer
 
 from cathsim.dm.utils import normalize_rgba, get_env_config
 
-env_config = get_env_config()
-phantom_config = env_config["phantom"]
-phantom_config["rgba"] = normalize_rgba(phantom_config["rgba"])
+phantom_config = get_env_config("phantom")
+phantom_default = phantom_config["default"]
 
 
 class Phantom(composer.Entity):
@@ -21,7 +20,8 @@ class Phantom(composer.Entity):
             phantom_xml: Name of the XML file to use
             assets_dir: Directory where assets are saved
         """
-        self.rgba = phantom_config["rgba"]
+
+        self.rgba = normalize_rgba(phantom_default["geom"]["rgba"])
         self.scale = [phantom_config["scale"] for i in range(3)]
 
         path = Path(__file__).parent
@@ -30,19 +30,7 @@ class Phantom(composer.Entity):
         self._mjcf_root = mjcf.from_file(
             phantom_xml_path, False, model_dir.as_posix(), **kwargs
         )
-        self._mjcf_root.default.geom.set_attributes(
-            margin=0.004,
-            group=0,
-            condim=phantom_config["condim"],
-        )
-        self._mjcf_root.default.site.set_attributes(
-            rgba=[0, 0, 0, 0],
-        )
-        self._mjcf_root.default.site.set_attributes(
-            type="sphere",
-            size=[0.002],
-            rgba=[0.8, 0.8, 0.8, 0],
-        )
+        self._set_defaults()
 
         self.set_scale(scale=self.scale)
         self.set_rgba(rgba=self.rgba)
@@ -51,6 +39,14 @@ class Phantom(composer.Entity):
         )
         self.simplified = (
             model_dir / f'meshes/{phantom_xml.split(".")[0]}/simplified.stl'
+        )
+
+    def _set_defaults(self):
+        self._mjcf_root.default.geom.set_attributes(
+            **phantom_default["geom"],
+        )
+        self._mjcf_root.default.site.set_attributes(
+            **phantom_default["site"],
         )
 
     def set_rgba(self, rgba: list) -> None:
