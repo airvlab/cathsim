@@ -5,8 +5,10 @@ import random
 from typing import Union, Optional
 
 
-from dm_control import mjcf
+from dm_control import mjcf, mujoco
+from dm_control.mujoco.wrapper.mjbindings import mjlib
 from dm_control.mujoco import wrapper, engine
+from dm_control.mujoco.wrapper.core import set_callback, MjModel, MjData
 from dm_control import composer
 from dm_control.composer import variation
 from dm_control.composer.variation import distributions, noises
@@ -79,6 +81,16 @@ def sample_points(
 
         if valid_points:
             return random.choice(valid_points)
+
+
+callback_called = 0
+
+
+def custom_fluid(model: MjModel, data: MjData):
+    global callback_called
+    joint_pos = data.qpos
+    joint_vel = data.qvel
+    callback_called += 1
 
 
 class Scene(composer.Arena):
@@ -611,6 +623,36 @@ class Navigate(composer.Task):
 
         return guidewire_geom_pos
 
+    def before_substep(self, physics: engine.Physics, action, random_state):
+        pass
+
+    def before_step(self, physics, action, random_state):
+        data = physics.data
+        model = physics.model
+        qfrc_passive = data.qfrc_passive
+        print("Passive: ", qfrc_passive)
+        set_callback("mjcb_passive", custom_fluid(model, data))
+        jac = self.get_jacobian(physics)
+
+        del random_state  # Unused.
+        physics.set_control(action)
+
+    @staticmethod
+    def get_jacobian(physics: engine.Physics):
+        jac_pos = np.zeros((3, physics.model.nv))
+        jac_rot = np.zeros((3, physics.model.nv))
+        # get Jacobian of fingertip position
+        mjlib.mj_jacGeom(
+            physics.model.ptr,
+            physics.data.ptr,
+            jac_pos,
+            jac_rot,
+            physics.model.name2id("guidewire/tip/head", "geom"),
+        )
+
+        print("Jac Pos: ", jac_pos.shape)
+        print("Jac Rot: ", jac_rot.shape)
+
 
 def make_dm_env(
     phantom: str = "phantom3",
@@ -680,5 +722,6 @@ if __name__ == "__main__":
             print(env._task.get_head_pos(env._physics))
             print(env._task.target_pos)
             print(time_step.reward)
+            print(f"Callback called {callback_called} times")
             # plt.imsave("phantom_480.png", img)
             time_step = env.step(action)
