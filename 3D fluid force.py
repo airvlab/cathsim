@@ -1,19 +1,17 @@
-
 import numpy as np
 import pandas as pd
 from dm_control import mujoco
 from dm_control.mujoco.wrapper.core import set_callback, MjModel, MjData
 
-# Read fluid field data
+# Read fluid field data and define fluid parameters (density and viscosity)
 df = pd.read_csv('fluid_velocity_data.csv')
 velocities = {}
 for index, row in df.iterrows():
     key = (row['X [ m ]'], row['Y [ m ]'], row['Z [ m ]'])
     velocities[key] = np.array([row['Velocity u [ m s^-1 ]'], row['Velocity v [ m s^-1 ]'], row['Velocity w [ m s^-1 ]']])
 
-# Fluid parameters
-fluid_density = 1050 # kg/m^3
-dynamic_viscosity = 0.0035 # Pa.s
+fluid_density = 1050  # kg/m^3
+dynamic_viscosity = 0.0035  # Pa.s
 
 def calculate_forces_3D(velocities, object_position, object_velocity, object_area, object_normal):
     # Get the local fluid velocity
@@ -54,6 +52,13 @@ def custom_fluid(model: MjModel, data: MjData):
     fluid_force = calculate_forces_3D(velocities, object_position, object_velocity, object_area, object_normal)
     
     # Apply fluid forces to the simulation.
-    data.xfrc_applied[pasive_force, :3] = fluid_force
+    data.xfrc_applied[mjcb_passive, :3] = fluid_force
     
     callback_called += 1  # Increment the callback counter
+    
+for episode in range(2):
+    time_step = env.reset()
+    for step in range(2):
+        action = random_policy(time_step)
+        set_callback("mjcb_passive", custom_fluid(model, data))
+        time_step = env.step(action)
