@@ -1,75 +1,75 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import warnings
+from typing import Union
+
+
+def quaternion_to_rotation_matrix(q: Union[list, tuple, np.ndarray]) -> np.ndarray:
+    w, x, y, z = q
+    R = np.array(
+        [
+            [1 - 2 * (y**2 + z**2), 2 * (x * y - z * w), 2 * (x * z + y * w)],
+            [2 * (x * y + z * w), 1 - 2 * (x**2 + z**2), 2 * (y * z - x * w)],
+            [2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x**2 + y**2)],
+        ]
+    )
+    return R
+
+
+def euler_to_rotation_matrix(euler_angles: np.ndarray) -> np.ndarray:
+    rx, ry, rz = np.deg2rad(euler_angles)
+
+    Rx = np.array(
+        [[1, 0, 0], [0, np.cos(rx), -np.sin(rx)], [0, np.sin(rx), np.cos(rx)]]
+    )
+
+    Ry = np.array(
+        [[np.cos(ry), 0, np.sin(ry)], [0, 1, 0], [-np.sin(ry), 0, np.cos(ry)]]
+    )
+
+    Rz = np.array(
+        [[np.cos(rz), -np.sin(rz), 0], [np.sin(rz), np.cos(rz), 0], [0, 0, 1]]
+    )
+
+    R = Rz @ Ry @ Rx
+    return R
 
 
 def create_camera_matrix(
     image_size: int,
-    pos=np.array([-0.03, 0.125, 0.15]),
-    euler=np.array([0, 0, 0]),
-    fov=45,
+    pos: list = [-0.03, 0.125, 0.15],
+    quaternion: list = [1, 0, 0, 0],
+    fov: float = 45.0,
 ) -> np.ndarray:
-    """
-    Generate a camera matrix given the parameters
+    # Convert input lists to numpy arrays
+    pos = np.array(pos)
+    quaternion = np.array(quaternion)
 
-    Args:
-      image_size: int:
-      pos:  (Default value = np.array([-0.03, 0.125, 0.15]):
-      euler:  (Default value = np.array([0, 0, 0]):
-      fov:  (Default value = 45)
+    # Calculate focal scaling factor
+    focal_scaling = (1.0 / np.tan(np.deg2rad(fov) / 2)) * (image_size / 2.0)
 
-    Returns:
-        np.ndarray: The camera matrix
+    # Create intrinsic camera matrix K
+    K = np.array(
+        [
+            [focal_scaling, 0, image_size / 2],
+            [0, focal_scaling, image_size / 2],
+            [0, 0, 1],
+        ]
+    )
 
-    """
+    # Calculate rotation matrix R based on Euler angles or quaternion
+    R = quaternion_to_rotation_matrix(quaternion)
 
-    def euler_to_rotation_matrix(euler_angles: np.ndarray) -> np.ndarray:
-        """
-        Make a rotation matrix from euler angles
+    # Calculate corrected translation vector T
+    T = -R @ pos
 
-        Args:
-            euler_angles: np.ndarray: The euler angles
+    # Create extrinsic matrix
+    extrinsic = np.eye(4)
+    extrinsic[0:3, 0:3] = R
+    extrinsic[0:3, 3] = T
 
-        Returns:
-            np.ndarray: The rotation matrix
-
-        """
-        rx, ry, rz = np.deg2rad(euler_angles)
-
-        Rx = np.array(
-            [[1, 0, 0], [0, np.cos(rx), -np.sin(rx)], [0, np.sin(rx), np.cos(rx)]]
-        )
-
-        Ry = np.array(
-            [[np.cos(ry), 0, np.sin(ry)], [0, 1, 0], [-np.sin(ry), 0, np.cos(ry)]]
-        )
-
-        Rz = np.array(
-            [[np.cos(rz), -np.sin(rz), 0], [np.sin(rz), np.cos(rz), 0], [0, 0, 1]]
-        )
-
-        R = Rz @ Ry @ Rx
-        return R
-
-    # Intrinsic Parameters
-    focal_scaling = (1.0 / np.tan(np.deg2rad(fov) / 2)) * image_size / 2.0
-    K = np.array([
-        [focal_scaling, 0, image_size / 2],
-        [0, focal_scaling, image_size / 2],
-        [0, 0, 1]
-    ])
-
-    # Extrinsic Parameters
-    R = euler_to_rotation_matrix(euler)  # Assuming this is 3x3
-    T = np.array([-pos[0], -pos[1], -pos[2], 1])  # Homogeneous coordinates
-
-    # Combine into 4x4 Extrinsic Matrix
-    Extrinsic = np.eye(4)
-    Extrinsic[0:3, 0:3] = R
-    Extrinsic[:, 3] = T
-
-    # Camera Matrix (3x4)
-    camera_matrix = K @ Extrinsic[0:3, :]  # Notice we only take the first 3 rows of Extrinsic
+    # Create final camera matrix
+    camera_matrix = K @ extrinsic[0:3, :]
 
     return camera_matrix
 

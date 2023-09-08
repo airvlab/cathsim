@@ -17,7 +17,10 @@ from cathsim.dm.components import Guidewire, Tip
 from cathsim.dm.utils import distance
 from cathsim.dm.observables import CameraObservable
 from cathsim.dm.utils import filter_mask, get_env_config
-from cathsim.dm.visualization import point2pixel, create_camera_matrix
+from cathsim.dm.visualization import (
+    point2pixel,
+    create_camera_matrix,
+)
 
 
 env_config = get_env_config()
@@ -71,7 +74,9 @@ def sample_points(
     Returns:
         np.ndarray: A point sampled from the mesh
     """
-    def is_within_limits(point): return y_bounds[0] < point[1] < y_bounds[1]
+
+    def is_within_limits(point):
+        return y_bounds[0] < point[1] < y_bounds[1]
 
     while True:
         points = trimesh.sample.volume_mesh(mesh, n_points)
@@ -115,7 +120,7 @@ class Scene(composer.Arena):
             "top_camera_close", [-0.03, 0.125, 0.065], euler=[0, 0, 0]
         )
         self._side_camera = self.add_camera(
-            "side", [-.22, .105, 0.03], quat=[0.5, 0.5, -0.5, -0.5]
+            "side", [-0.22, 0.105, 0.03], quat=[0.5, 0.5, -0.5, -0.5]
         )
 
     def _add_assets_and_lights(self):
@@ -145,9 +150,7 @@ class Scene(composer.Arena):
 
         return light
 
-    def add_camera(
-        self, name: str, pos: list = [0, 0, 0], **kwargs
-    ) -> mjcf.Element:
+    def add_camera(self, name: str, pos: list = [0, 0, 0], **kwargs) -> mjcf.Element:
         """Add a camera object to the scene.
 
         For more information about the camera object, see the mujoco documentation:
@@ -161,9 +164,7 @@ class Scene(composer.Arena):
         Returns:
             mjcf.Element: The camera element
         """
-        camera = self._mjcf_root.worldbody.add(
-            "camera", name=name, pos=pos, **kwargs
-        )
+        camera = self._mjcf_root.worldbody.add("camera", name=name, pos=pos, **kwargs)
         return camera
 
     def add_site(self, name: str, pos: list = [0, 0, 0], **kwargs) -> mjcf.Element:
@@ -536,38 +537,23 @@ class Navigate(composer.Task):
         image_size: Optional[int] = None,
         camera_name: str = "top_camera",
     ) -> np.ndarray:
-        """
-        Get the camera matrix for the given camera.
+        def euler_to_quaternion(roll: float, pitch: float, yaw: float) -> np.ndarray:
+            roll, pitch, yaw = np.deg2rad([roll, pitch, yaw])
+            # Pre-compute sine and cosine of half angles
+            cy = math.cos(yaw * 0.5)
+            sy = math.sin(yaw * 0.5)
+            cp = math.cos(pitch * 0.5)
+            sp = math.sin(pitch * 0.5)
+            cr = math.cos(roll * 0.5)
+            sr = math.sin(roll * 0.5)
 
-        Args:
-            image_size (Optional[int]): The size of the image. If not provided, uses the class's default image size.
-            camera_name (str): The name of the camera for which the matrix is to be generated. Default is "top_camera".
+            # Compute quaternion
+            w = cy * cp * cr + sy * sp * sr
+            x = cy * cp * sr - sy * sp * cr
+            y = sy * cp * sr + cy * sp * cr
+            z = sy * cp * cr - cy * sp * sr
 
-        Returns:
-            np.ndarray: The camera matrix corresponding to the specified camera.
-
-        Raises:
-            ValueError: If the specified camera_name doesn't exist in the arena.
-        """
-
-        def quat2euler(quat: np.ndarray) -> Tuple[float, float, float]:
-            w, x, y, z = quat
-
-            # Yaw (Z-axis rotation)
-            psi = math.atan2(2.0 * (w * z + x * y), 1.0 - 2.0 * (y * y + z * z))
-
-            # Pitch (Y-axis rotation)
-            theta = math.asin(2.0 * (w * x - y * z))
-
-            # Roll (X-axis rotation)
-            phi = math.atan2(2.0 * (w * y + x * z), 1.0 - 2.0 * (x * x + y * y))
-
-            # Convert from radians to degrees
-            phi_deg = math.degrees(phi)
-            theta_deg = math.degrees(theta)
-            psi_deg = math.degrees(psi)
-
-            return (phi_deg, theta_deg, psi_deg)
+            return np.array([w, x, y, z])
 
         cameras = self._arena.mjcf_model.find_all("camera")
         camera = next((cam for cam in cameras if cam.name == camera_name), None)
@@ -576,13 +562,15 @@ class Navigate(composer.Task):
             raise ValueError(f"No camera found with the name: {camera_name}")
 
         euler = camera.euler
-        if euler is None:
-            euler = quat2euler(camera.quat)
+        quat = camera.quat
+        if quat is None and euler is not None:
+            quat = euler_to_quaternion(*euler)
 
         image_size = image_size or self.image_size
-
         camera_matrix = create_camera_matrix(
-            image_size=image_size, pos=camera.pos, euler=euler
+            image_size=image_size,
+            pos=camera.pos,
+            quaternion=quat,
         )
 
         return camera_matrix
@@ -700,7 +688,7 @@ if __name__ == "__main__":
         top: np.ndarray,
         side: np.ndarray,
         geom_pos: np.ndarray,
-        path: Path = data_path / "guidewire-reconstruction-2"
+        path: Path = data_path / "guidewire-reconstruction-2",
     ):
         if not path.exists():
             path.mkdir(parents=True)
@@ -725,13 +713,12 @@ if __name__ == "__main__":
     env._task.get_guidewire_geom_pos(env.physics)
     print(env._task.get_camera_matrix(camera_name="top_camera", image_size=480))
     print(env._task.get_camera_matrix(camera_name="side", image_size=480))
-    # exit()
+    exit()
 
     def random_policy(time_step):
         del time_step  # Unused
         return [0.4, random.random() * 2 - 1]
 
-    # loop 2 episodes of 2 steps
     for episode in range(1):
         time_step = env.reset()
         # print(env._task.target_pos)
@@ -743,8 +730,8 @@ if __name__ == "__main__":
             top = time_step.observation["guidewire"]
             side = time_step.observation["side"]
             # side = env.physics.render(height=480, width=480, camera_id=2)
-            geom_pos = env._task.get_guidewire_geom_pos(env.physics)
-            save_guidewire_reconstruction(step, top, side, geom_pos)
+            # geom_pos = env._task.get_guidewire_geom_pos(env.physics)
+            # save_guidewire_reconstruction(step, top, side, geom_pos)
             cv2.imshow("top", top)
             cv2.imshow("side", side)
             cv2.waitKey(1)
