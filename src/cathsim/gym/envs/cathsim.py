@@ -100,15 +100,6 @@ class CathSim(gym.Env):
             info["geom_pos"] = self.guidewire_geom_pos.copy()
         return info
 
-    def print_spaces(self):
-        print("\nSPACES")
-        print("\tObservation space:")
-        if isinstance(self.observation_space, spaces.Dict):
-            for key, value in self.observation_space.spaces.items():
-                print("\t\t", key, value.shape)
-        print("\tAction space:")
-        print("\t\t", self.action_space.shape)
-
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
         timestep = self._env.reset()
