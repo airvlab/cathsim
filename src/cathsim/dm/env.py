@@ -2,7 +2,7 @@ import math
 import numpy as np
 import trimesh
 import random
-from typing import Union, Optional
+from typing import Union, Optional, Tuple
 
 
 from dm_control import mjcf
@@ -71,7 +71,7 @@ def sample_points(
     Returns:
         np.ndarray: A point sampled from the mesh
     """
-    is_within_limits = lambda point: y_bounds[0] < point[1] < y_bounds[1]
+    def is_within_limits(point): return y_bounds[0] < point[1] < y_bounds[1]
 
     while True:
         points = trimesh.sample.volume_mesh(mesh, n_points)
@@ -109,10 +109,13 @@ class Scene(composer.Arena):
     def _add_cameras(self):
         """Add cameras to the scene."""
         self._top_camera = self.add_camera(
-            "top_camera", [-0.03, 0.125, 0.15], [0, 0, 0]
+            "top_camera", [-0.03, 0.125, 0.25], euler=[0, 0, 0]
         )
         self._top_camera_close = self.add_camera(
-            "top_camera_close", [-0.03, 0.125, 0.065], [0, 0, 0]
+            "top_camera_close", [-0.03, 0.125, 0.065], euler=[0, 0, 0]
+        )
+        self._side_camera = self.add_camera(
+            "side", [-.22, .105, 0.03], quat=[0.5, 0.5, -0.5, -0.5]
         )
 
     def _add_assets_and_lights(self):
@@ -143,7 +146,7 @@ class Scene(composer.Arena):
         return light
 
     def add_camera(
-        self, name: str, pos: list = [0, 0, 0], euler: list = [0, 0, 0], **kwargs
+        self, name: str, pos: list = [0, 0, 0], **kwargs
     ) -> mjcf.Element:
         """Add a camera object to the scene.
 
@@ -153,14 +156,13 @@ class Scene(composer.Arena):
         Args:
             name (str): Name of the camera
             pos (list): Position of the camera ( default : [0, 0, 0] )
-            euler (list): Rotation of the camera ( default : [0, 0, 0] )
             **kwargs: Additional arguments for the camera
 
         Returns:
             mjcf.Element: The camera element
         """
         camera = self._mjcf_root.worldbody.add(
-            "camera", name=name, pos=pos, euler=euler, **kwargs
+            "camera", name=name, pos=pos, **kwargs
         )
         return camera
 
@@ -179,6 +181,11 @@ class Scene(composer.Arena):
         """
         site = self._mjcf_root.worldbody.add("site", name=name, pos=pos, **kwargs)
         return site
+
+    @property
+    def get_cameras(self):
+        """The get_cameras property."""
+        return self._mjcf_root.find_all("camera")
 
 
 class UniformSphere(variation.Variation):
@@ -255,6 +262,7 @@ class Navigate(composer.Task):
         dense_reward: bool = True,
         success_reward: float = 10.0,
         use_pixels: bool = False,
+        use_side: bool = False,
         use_segment: bool = False,
         use_phantom_segment: bool = False,
         image_size: int = 80,
@@ -269,6 +277,7 @@ class Navigate(composer.Task):
         self.dense_reward = dense_reward
         self.success_reward = success_reward
         self.use_pixels = use_pixels
+        self.use_side = use_side
         self.use_segment = use_segment
         self.use_phantom_segment = use_phantom_segment
         self.image_size = image_size
@@ -340,6 +349,15 @@ class Navigate(composer.Task):
                 width=self.image_size,
                 height=self.image_size,
             )
+            if self.use_side:
+                guidewire_option = make_scene([1, 2])
+                self._task_observables["side"] = CameraObservable(
+                    camera_name="side",
+                    width=self.image_size,
+                    height=self.image_size,
+                    scene_option=guidewire_option,
+                    segmentation=True,
+                )
 
         if self.use_segment:
             guidewire_option = make_scene([1, 2])
@@ -532,16 +550,39 @@ class Navigate(composer.Task):
             ValueError: If the specified camera_name doesn't exist in the arena.
         """
 
+        def quat2euler(quat: np.ndarray) -> Tuple[float, float, float]:
+            w, x, y, z = quat
+
+            # Yaw (Z-axis rotation)
+            psi = math.atan2(2.0 * (w * z + x * y), 1.0 - 2.0 * (y * y + z * z))
+
+            # Pitch (Y-axis rotation)
+            theta = math.asin(2.0 * (w * x - y * z))
+
+            # Roll (X-axis rotation)
+            phi = math.atan2(2.0 * (w * y + x * z), 1.0 - 2.0 * (x * x + y * y))
+
+            # Convert from radians to degrees
+            phi_deg = math.degrees(phi)
+            theta_deg = math.degrees(theta)
+            psi_deg = math.degrees(psi)
+
+            return (phi_deg, theta_deg, psi_deg)
+
         cameras = self._arena.mjcf_model.find_all("camera")
         camera = next((cam for cam in cameras if cam.name == camera_name), None)
 
         if camera is None:
             raise ValueError(f"No camera found with the name: {camera_name}")
 
+        euler = camera.euler
+        if euler is None:
+            euler = quat2euler(camera.quat)
+
         image_size = image_size or self.image_size
 
         camera_matrix = create_camera_matrix(
-            image_size=image_size, pos=camera.pos, euler=camera.euler
+            image_size=image_size, pos=camera.pos, euler=euler
         )
 
         return camera_matrix
@@ -648,12 +689,33 @@ def make_dm_env(
 
 
 if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    from pathlib import Path
+    import cv2
+
+    data_path = Path.cwd() / "data"
+
+    def save_guidewire_reconstruction(
+        t: int,
+        top: np.ndarray,
+        side: np.ndarray,
+        geom_pos: np.ndarray,
+        path: Path = data_path / "guidewire-reconstruction-2"
+    ):
+        if not path.exists():
+            path.mkdir(parents=True)
+
+        plt.imsave(path / f"{t}_top.png", top[:, :, 0], cmap="gray")
+        plt.imsave(path / f"{t}_side.png", side[:, :, 0], cmap="gray")
+        np.save(path / f"{t}_geom_pos", geom_pos)
+
     env = make_dm_env(
         phantom="phantom3",
         use_pixels=True,
         use_segment=True,
+        use_side=True,
         target="bca",
-        image_size=80,
+        image_size=480,
         visualize_sites=False,
         visualize_target=True,
         sample_target=True,
@@ -661,24 +723,36 @@ if __name__ == "__main__":
     )
 
     env._task.get_guidewire_geom_pos(env.physics)
-    print(env._task.get_camera_matrix(camera_name="top_camera", image_size=80))
+    print(env._task.get_camera_matrix(camera_name="top_camera", image_size=480))
+    print(env._task.get_camera_matrix(camera_name="side", image_size=480))
+    # exit()
 
     def random_policy(time_step):
         del time_step  # Unused
-        return [0, 0]
+        return [0.4, random.random() * 2 - 1]
 
     # loop 2 episodes of 2 steps
-    for episode in range(2):
+    for episode in range(1):
         time_step = env.reset()
         # print(env._task.target_pos)
         # print(env._task.get_head_pos(env._physics))
-        for step in range(2):
+        for step in range(24):
             action = random_policy(time_step)
-            img = env.physics.render(height=480, width=480, camera_id=0)
-            contact_forces = env._task.get_contact_forces(env.physics, threshold=0.01)
-            print(contact_forces)
-            print(env._task.get_head_pos(env._physics))
-            print(env._task.target_pos)
-            print(time_step.reward)
+            # get_segment_images(env.physics)
+            # top = env.physics.render(height=480, width=480, camera_id=0)
+            top = time_step.observation["guidewire"]
+            side = time_step.observation["side"]
+            # side = env.physics.render(height=480, width=480, camera_id=2)
+            geom_pos = env._task.get_guidewire_geom_pos(env.physics)
+            save_guidewire_reconstruction(step, top, side, geom_pos)
+            cv2.imshow("top", top)
+            cv2.imshow("side", side)
+            cv2.waitKey(1)
+
+            # contact_forces = env._task.get_contact_forces(env.physics, threshold=0.01)
+            # print(contact_forces)
+            # print(env._task.get_head_pos(env._physics))
+            # print(env._task.target_pos)
+            # print(time_step.reward)
             # plt.imsave("phantom_480.png", img)
             time_step = env.step(action)

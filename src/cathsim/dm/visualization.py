@@ -53,20 +53,24 @@ def create_camera_matrix(
 
     # Intrinsic Parameters
     focal_scaling = (1.0 / np.tan(np.deg2rad(fov) / 2)) * image_size / 2.0
-    focal = np.diag([-focal_scaling, focal_scaling, 1.0, 0])[0:3, :]
-    image = np.eye(3)
-    image[0, 2] = (image_size - 1) / 2.0
-    image[1, 2] = (image_size - 1) / 2.0
+    K = np.array([
+        [focal_scaling, 0, image_size / 2],
+        [0, focal_scaling, image_size / 2],
+        [0, 0, 1]
+    ])
 
     # Extrinsic Parameters
-    rotation_matrix = euler_to_rotation_matrix(euler)
-    R = np.eye(4)
-    R[0:3, 0:3] = rotation_matrix
-    T = np.eye(4)
-    T[0:3, 3] = -pos
+    R = euler_to_rotation_matrix(euler)  # Assuming this is 3x3
+    T = np.array([-pos[0], -pos[1], -pos[2], 1])  # Homogeneous coordinates
 
-    # Camera Matrix
-    camera_matrix = image @ focal @ R @ T
+    # Combine into 4x4 Extrinsic Matrix
+    Extrinsic = np.eye(4)
+    Extrinsic[0:3, 0:3] = R
+    Extrinsic[:, 3] = T
+
+    # Camera Matrix (3x4)
+    camera_matrix = K @ Extrinsic[0:3, :]  # Notice we only take the first 3 rows of Extrinsic
+
     return camera_matrix
 
 
