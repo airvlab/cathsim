@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import warnings
 from typing import Union
+from scipy.spatial import transform
+from pprint import pprint
 
 
 def create_camera_matrix(image_size: int, R: np.ndarray, pos: list, fov: float = 45.0) -> np.ndarray:
@@ -27,7 +29,6 @@ def create_camera_matrix(image_size: int, R: np.ndarray, pos: list, fov: float =
 
     # Compute the 3x4 camera matrix.
     camera_matrix = image @ focal @ rotation @ translation
-
     return camera_matrix
 
 

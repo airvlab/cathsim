@@ -116,10 +116,10 @@ class Scene(composer.Arena):
     def _add_cameras(self):
         """Add cameras to the scene."""
         self._top_camera = self.add_camera(
-            "top_camera", [-0.03, 0.125, 0.25], quat=[1, 0, 0, 0]
+            "top_camera", [-0.03, 0.125, 0.25], quat=[1, 0, 0, 0],
         )
         self._top_camera_close = self.add_camera(
-            "top_camera_close", [-0.03, 0.125, 0.065], quat=[1, 0, 0, 0]
+            "top_camera_close", [-0.03, 0.125, 0.065], quat=[1, 0, 0, 0],
         )
         self._side_camera = self.add_camera(
             "side", [-0.22, 0.105, 0.03], quat=[0.5, 0.5, -0.5, -0.5]
@@ -186,7 +186,7 @@ class Scene(composer.Arena):
         return site
 
     @property
-    def get_cameras(self):
+    def cameras(self):
         """The get_cameras property."""
         return self._mjcf_root.find_all("camera")
 
@@ -665,6 +665,7 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from pathlib import Path
     import cv2
+    import pprint
 
     data_path = Path.cwd() / "data"
 
