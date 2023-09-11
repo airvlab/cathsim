@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import warnings
 from typing import Union
+from scipy.spatial import transform
+from pprint import pprint
 
 
 def quaternion_to_rotation_matrix(q: Union[list, tuple, np.ndarray]) -> np.ndarray:
@@ -37,39 +39,40 @@ def euler_to_rotation_matrix(euler_angles: np.ndarray) -> np.ndarray:
 
 def create_camera_matrix(
     image_size: int,
-    pos: list = [-0.03, 0.125, 0.15],
+    pos: list = [0.03, -0.125, -0.25],
     quaternion: list = [1, 0, 0, 0],
     fov: float = 45.0,
 ) -> np.ndarray:
+
     # Convert input lists to numpy arrays
     pos = np.array(pos)
     quaternion = np.array(quaternion)
 
-    # Calculate focal scaling factor
-    focal_scaling = (1.0 / np.tan(np.deg2rad(fov) / 2)) * (image_size / 2.0)
+    # Create the Image matrix (3x3)
+    image = np.eye(3)
+    image[0, 2] = image[1, 2] = (image_size - 1) / 2.0
 
-    # Create intrinsic camera matrix K
-    K = np.array(
-        [
-            [focal_scaling, 0, image_size / 2],
-            [0, focal_scaling, image_size / 2],
-            [0, 0, 1],
-        ]
-    )
+    # Create the Focal transformation matrix (3x4)
+    focal_scaling = 579.41125497  # pre-computed focal scaling
+    focal = np.diag([-focal_scaling, focal_scaling, 1.0, 0])[0:3, :]
 
-    # Calculate rotation matrix R based on Euler angles or quaternion
-    R = quaternion_to_rotation_matrix(quaternion)
+    # Create the Rotation matrix (4x4)
+    rotation = np.eye(4)
 
-    # Calculate corrected translation vector T
-    T = -R @ pos
+    # Create the Translation matrix (4x4)
+    translation = np.eye(4)
+    translation[0:3, 3] = -pos
 
-    # Create extrinsic matrix
-    extrinsic = np.eye(4)
-    extrinsic[0:3, 0:3] = R
-    extrinsic[0:3, 3] = T
-
-    # Create final camera matrix
-    camera_matrix = K @ extrinsic[0:3, :]
+    # Compute the 3x4 Camera matrix
+    camera_matrix = image @ focal @ rotation @ translation
+    print("image:")
+    pprint(image)
+    print("focal:")
+    pprint(focal)
+    print("rotation:")
+    pprint(rotation)
+    print("translation:")
+    pprint(translation)
 
     return camera_matrix
 

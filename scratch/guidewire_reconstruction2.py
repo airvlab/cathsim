@@ -6,21 +6,17 @@ import matplotlib.pyplot as plt
 
 DATA_DIR = Path.cwd() / "data" / "guidewire-reconstruction-2"
 
-P_top = np.array(
-    [
-        [5.79411255e02, 0.00000000e00, 2.40000000e02, -4.26176624e01],
-        [0.00000000e00, 5.79411255e02, 2.40000000e02, -1.32426407e02],
-        [0.00000000e00, 0.00000000e00, 1.00000000e00, -2.50000000e-01],
-    ]
-)
+P_top = np.array([
+    [-5.79411255e+02, 0.00000000e+00, 2.39500000e+02, -7.72573376e+01],
+    [0.00000000e+00, 5.79411255e+02, 2.39500000e+02, -1.32301407e+02],
+    [0.00000000e+00, 0.00000000e+00, 1.00000000e+00, -2.50000000e-01],
+])
 
-P_side = np.array(
-    [
-        [0.00000000e00, 2.40000000e02, -5.79411255e02, -7.81766235e00],
-        [-5.79411255e02, 2.40000000e02, 0.00000000e00, -1.52670476e02],
-        [0.00000000e00, 1.00000000e00, 0.00000000e00, -1.05000000e-01],
-    ]
-)
+P_side = np.array([
+    [-2.39500000e+02, 5.79411255e+02, 0.00000000e+00, -1.13528182e+02],
+    [-2.39500000e+02, 0.00000000e+00, 5.79411255e+02, -7.00723376e+01],
+    [-1.00000000e+00, 0.00000000e+00, 0.00000000e+00, -2.20000000e-01],
+])
 
 
 if not DATA_DIR.exists():
@@ -32,7 +28,7 @@ def plot_point_on_image(image, point, camera_matrix, color=(0, 0, 255), radius=5
         image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
 
     point = point2pixel(point, camera_matrix)
-    point[0] = image.shape[1] - point[0]
+    # point[0] = image.shape[1] - point[0]
     print(point)
     point = tuple(point.astype(int))
 
@@ -62,11 +58,11 @@ head_pos = np.load(DATA_DIR / "14_geom_pos.npy")[-1]
 print(f"Head position ({head_pos.shape}): {head_pos}")
 
 
-# top_view = plot_point_on_image(top_view, head_pos, P_top)
+top_view = plot_point_on_image(top_view, head_pos, P_top)
 side_view = plot_point_on_image(side_view, head_pos, P_side)
-# image = np.hstack([top_view, side_view])
+image = np.hstack([top_view, side_view])
 
-plt.imshow(side_view)
+plt.imshow(image)
 plt.axis("off")
 plt.show()
 

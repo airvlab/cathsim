@@ -114,10 +114,10 @@ class Scene(composer.Arena):
     def _add_cameras(self):
         """Add cameras to the scene."""
         self._top_camera = self.add_camera(
-            "top_camera", [-0.03, 0.125, 0.25], euler=[0, 0, 0]
+            "top_camera", [-0.03, 0.125, 0.25], quat=[1, 0, 0, 0],
         )
         self._top_camera_close = self.add_camera(
-            "top_camera_close", [-0.03, 0.125, 0.065], euler=[0, 0, 0]
+            "top_camera_close", [-0.03, 0.125, 0.065], quat=[1, 0, 0, 0],
         )
         self._side_camera = self.add_camera(
             "side", [-0.22, 0.105, 0.03], quat=[0.5, 0.5, -0.5, -0.5]
@@ -184,7 +184,7 @@ class Scene(composer.Arena):
         return site
 
     @property
-    def get_cameras(self):
+    def cameras(self):
         """The get_cameras property."""
         return self._mjcf_root.find_all("camera")
 
@@ -537,40 +537,20 @@ class Navigate(composer.Task):
         image_size: Optional[int] = None,
         camera_name: str = "top_camera",
     ) -> np.ndarray:
-        def euler_to_quaternion(roll: float, pitch: float, yaw: float) -> np.ndarray:
-            roll, pitch, yaw = np.deg2rad([roll, pitch, yaw])
-            # Pre-compute sine and cosine of half angles
-            cy = math.cos(yaw * 0.5)
-            sy = math.sin(yaw * 0.5)
-            cp = math.cos(pitch * 0.5)
-            sp = math.sin(pitch * 0.5)
-            cr = math.cos(roll * 0.5)
-            sr = math.sin(roll * 0.5)
-
-            # Compute quaternion
-            w = cy * cp * cr + sy * sp * sr
-            x = cy * cp * sr - sy * sp * cr
-            y = sy * cp * sr + cy * sp * cr
-            z = sy * cp * cr - cy * sp * sr
-
-            return np.array([w, x, y, z])
-
         cameras = self._arena.mjcf_model.find_all("camera")
         camera = next((cam for cam in cameras if cam.name == camera_name), None)
 
         if camera is None:
             raise ValueError(f"No camera found with the name: {camera_name}")
 
-        euler = camera.euler
-        quat = camera.quat
-        if quat is None and euler is not None:
-            quat = euler_to_quaternion(*euler)
+        print("Camera position: ", camera.pos)
+        print("Camera quaternion: ", camera.quat)
 
         image_size = image_size or self.image_size
         camera_matrix = create_camera_matrix(
             image_size=image_size,
             pos=camera.pos,
-            quaternion=quat,
+            quaternion=camera.quat,
         )
 
         return camera_matrix
@@ -680,6 +660,7 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from pathlib import Path
     import cv2
+    import pprint
 
     data_path = Path.cwd() / "data"
 
@@ -710,9 +691,34 @@ if __name__ == "__main__":
         target_from_sites=False,
     )
 
-    env._task.get_guidewire_geom_pos(env.physics)
-    print(env._task.get_camera_matrix(camera_name="top_camera", image_size=480))
-    print(env._task.get_camera_matrix(camera_name="side", image_size=480))
+    # env._task.get_guidewire_geom_pos(env.physics)
+    image_size = 480
+    print("INCORRECT CAMERA")
+    camera_top_1 = env._task.get_camera_matrix(camera_name="top_camera", image_size=480)
+    # camera_side_1 = env._task.get_camera_matrix(camera_name="side", image_size=480)
+    physics = env.physics
+
+    camera_top_2 = engine.Camera(physics, width=480, height=480, camera_id=0)
+    # camera_side_2 = engine.Camera(physics, width=480, height=480, camera_id=2)
+    camera_matrices = camera_top_2.matrices()
+    image = camera_matrices.image
+    focal = camera_matrices.focal
+    rotation = camera_matrices.rotation
+    translation = camera_matrices.translation
+
+    print("CORRECT CAMERA")
+    print("image:")
+    print(image)
+    print("focal:")
+    print(focal)
+    print("rotation:")
+    print(rotation)
+    print("translation:")
+    print(translation)
+    assert np.allclose(camera_top_1, camera_top_2.matrix, atol=1e-5), \
+        pprint.pformat(camera_top_1) + "\n" + pprint.pformat(camera_top_2)
+    # assert np.allclose(camera_side_1, camera_side_2.matrix, atol=1e-5), \
+    #     pprint.pformat(camera_side_1) + "\n" + pprint.pformat(camera_side_2)
     exit()
 
     def random_policy(time_step):
