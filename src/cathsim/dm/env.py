@@ -3,8 +3,10 @@ import numpy as np
 import trimesh
 import random
 from typing import Union, Optional, Tuple
+from scipy.spatial import transform
 
 
+from dm_control import mujoco
 from dm_control import mjcf
 from dm_control.mujoco import wrapper, engine
 from dm_control import composer
@@ -114,10 +116,10 @@ class Scene(composer.Arena):
     def _add_cameras(self):
         """Add cameras to the scene."""
         self._top_camera = self.add_camera(
-            "top_camera", [-0.03, 0.125, 0.25], euler=[0, 0, 0]
+            "top_camera", [-0.03, 0.125, 0.25], quat=[1, 0, 0, 0]
         )
         self._top_camera_close = self.add_camera(
-            "top_camera_close", [-0.03, 0.125, 0.065], euler=[0, 0, 0]
+            "top_camera_close", [-0.03, 0.125, 0.065], quat=[1, 0, 0, 0]
         )
         self._side_camera = self.add_camera(
             "side", [-0.22, 0.105, 0.03], quat=[0.5, 0.5, -0.5, -0.5]
@@ -537,23 +539,6 @@ class Navigate(composer.Task):
         image_size: Optional[int] = None,
         camera_name: str = "top_camera",
     ) -> np.ndarray:
-        def euler_to_quaternion(roll: float, pitch: float, yaw: float) -> np.ndarray:
-            roll, pitch, yaw = np.deg2rad([roll, pitch, yaw])
-            # Pre-compute sine and cosine of half angles
-            cy = math.cos(yaw * 0.5)
-            sy = math.sin(yaw * 0.5)
-            cp = math.cos(pitch * 0.5)
-            sp = math.sin(pitch * 0.5)
-            cr = math.cos(roll * 0.5)
-            sr = math.sin(roll * 0.5)
-
-            # Compute quaternion
-            w = cy * cp * cr + sy * sp * sr
-            x = cy * cp * sr - sy * sp * cr
-            y = sy * cp * sr + cy * sp * cr
-            z = sy * cp * cr - cy * sp * sr
-
-            return np.array([w, x, y, z])
 
         cameras = self._arena.mjcf_model.find_all("camera")
         camera = next((cam for cam in cameras if cam.name == camera_name), None)
@@ -561,16 +546,16 @@ class Navigate(composer.Task):
         if camera is None:
             raise ValueError(f"No camera found with the name: {camera_name}")
 
-        euler = camera.euler
-        quat = camera.quat
-        if quat is None and euler is not None:
-            quat = euler_to_quaternion(*euler)
+        if camera.quat is not None:
+            R = transform.Rotation.from_quat(camera.quat)
+        elif camera.euler is not None:
+            R = transform.Rotation.from_euler("xyz", camera.euler, degrees=True)
 
         image_size = image_size or self.image_size
         camera_matrix = create_camera_matrix(
             image_size=image_size,
             pos=camera.pos,
-            quaternion=quat,
+            R=R.as_matrix(),
         )
 
         return camera_matrix
@@ -711,8 +696,17 @@ if __name__ == "__main__":
     )
 
     env._task.get_guidewire_geom_pos(env.physics)
+    physics = env.physics
+    image_size = 480
+
     print(env._task.get_camera_matrix(camera_name="top_camera", image_size=480))
     print(env._task.get_camera_matrix(camera_name="side", image_size=480))
+
+    camera_top = mujoco.Camera(physics, image_size, image_size, 0)
+    camera_side = mujoco.Camera(physics, image_size, image_size, 2)
+
+    print(camera_top.matrix)
+    print(camera_side.matrix)
     exit()
 
     def random_policy(time_step):
