@@ -546,8 +546,10 @@ class Navigate(composer.Task):
         if camera is None:
             raise ValueError(f"No camera found with the name: {camera_name}")
 
+        quat = camera.quat
         if camera.quat is not None:
-            R = transform.Rotation.from_quat(camera.quat)
+            quat = np.array([quat[3], quat[0], quat[1], quat[2]])
+            R = transform.Rotation.from_quat(quat)
         elif camera.euler is not None:
             R = transform.Rotation.from_euler("xyz", camera.euler, degrees=True)
 
@@ -700,8 +702,8 @@ if __name__ == "__main__":
     physics = env.physics
     image_size = 480
 
-    print(env._task.get_camera_matrix(camera_name="top_camera", image_size=480))
-    print(env._task.get_camera_matrix(camera_name="side", image_size=480))
+    print(env._task.get_camera_matrix(camera_name="top_camera", image_size=image_size))
+    print(env._task.get_camera_matrix(camera_name="side", image_size=image_size))
 
     camera_top = mujoco.Camera(physics, image_size, image_size, 0)
     camera_side = mujoco.Camera(physics, image_size, image_size, 2)
