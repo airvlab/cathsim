@@ -641,18 +641,26 @@ class Navigate(composer.Task):
     def before_step(self, physics, action, random_state):
         data = physics.data
         model = physics.model
-        qfrc_passive = data.qfrc_passive
-        print("Passive: ", qfrc_passive)
+        qfrc_passive_before = data.qfrc_passive.copy()
+        # base_pos = physics.named.xpos["guidewire/"]
+
         set_callback("mjcb_passive", custom_fluid(model, data))
+        vel = np.random.uniform(-1, 1, size=(3, 1))
         jac = self.get_jacobian(physics)
 
-        del random_state  # Unused.
+        vel_joint_space = np.linalg.pinv(jac) @ vel
+
+        data.qfrc_passive += vel_joint_space.squeeze()
+
+        del random_state
         physics.set_control(action)
+        assert (qfrc_passive_before != data.qfrc_passive).any()
 
     @staticmethod
     def get_jacobian(physics: engine.Physics):
         jac_pos = np.zeros((3, physics.model.nv))
         jac_rot = np.zeros((3, physics.model.nv))
+
         # get Jacobian of fingertip position
         mjlib.mj_jacGeom(
             physics.model.ptr,
@@ -664,6 +672,11 @@ class Navigate(composer.Task):
 
         print("Jac Pos: ", jac_pos.shape)
         print("Jac Rot: ", jac_rot.shape)
+        return jac_pos
+
+
+def cartesian_to_joint_force(force: np.ndarray):
+    pass
 
 
 def make_dm_env(
@@ -737,6 +750,7 @@ if __name__ == "__main__":
 
     env._task.get_guidewire_geom_pos(env.physics)
     physics = env.physics
+    print("qpos", physics.data.qpos.shape)
     image_size = 480
 
     def random_policy(time_step):
@@ -747,15 +761,12 @@ if __name__ == "__main__":
         time_step = env.reset()
         # print(env._task.target_pos)
         # print(env._task.get_head_pos(env._physics))
-        for step in range(24):
+        for step in range(200):
             action = random_policy(time_step)
-
-        print(env._task.get_head_pos(env._physics))
-        print(env._task.target_pos)
-        print(time_step.reward)
-        print(f"Callback called {callback_called} times")
-
-        top = time_step.observation["guidewire"]
-        cv2.imshow("top", top)
-        cv2.waitKey(1)
-        time_step = env.step(action)
+            if step > 30:
+                action = np.zeros_like(action)
+            print(f"Callback called {callback_called} times")
+            top = time_step.observation["guidewire"]
+            cv2.imshow("top", top)
+            cv2.waitKey(1)
+            time_step = env.step(action)
