@@ -115,13 +115,13 @@ class Scene(composer.Arena):
 
     def _add_cameras(self):
         """Add cameras to the scene."""
-        self._top_camera = self.add_camera(
+        self.top_camera = self.add_camera(
             "top_camera", [-0.03, 0.125, 0.25], quat=[1, 0, 0, 0],
         )
-        self._top_camera_close = self.add_camera(
+        self.top_camera_close = self.add_camera(
             "top_camera_close", [-0.03, 0.125, 0.065], quat=[1, 0, 0, 0],
         )
-        self._side_camera = self.add_camera(
+        self.side_camera = self.add_camera(
             "side", [-0.22, 0.105, 0.03], quat=[0.5, 0.5, -0.5, -0.5]
         )
 
@@ -546,18 +546,13 @@ class Navigate(composer.Task):
         if camera is None:
             raise ValueError(f"No camera found with the name: {camera_name}")
 
-        quat = camera.quat
-        if camera.quat is not None:
-            quat = np.array([quat[3], quat[0], quat[1], quat[2]])
-            R = transform.Rotation.from_quat(quat)
-        elif camera.euler is not None:
-            R = transform.Rotation.from_euler("xyz", camera.euler, degrees=True)
+        assert (camera.quat is not None), "Camera quaternion is None"
 
         image_size = image_size or self.image_size
         camera_matrix = create_camera_matrix(
             image_size=image_size,
             pos=camera.pos,
-            R=R.as_matrix(),
+            quat=camera.quat,
         )
 
         return camera_matrix
@@ -667,7 +662,6 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from pathlib import Path
     import cv2
-    import pprint
 
     data_path = Path.cwd() / "data"
 
@@ -702,18 +696,8 @@ if __name__ == "__main__":
     physics = env.physics
     image_size = 480
 
-    print(env._task.get_camera_matrix(camera_name="top_camera", image_size=image_size))
-    print(env._task.get_camera_matrix(camera_name="side", image_size=image_size))
-
-    camera_top = mujoco.Camera(physics, image_size, image_size, 0)
-    camera_side = mujoco.Camera(physics, image_size, image_size, 2)
-
-    print(camera_top.matrix)
-    print(camera_side.matrix)
-    exit()
-
     def random_policy(time_step):
-        del time_step  # Unused
+        del time_step
         return [0.4, random.random() * 2 - 1]
 
     for episode in range(1):

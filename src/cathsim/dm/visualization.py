@@ -1,12 +1,25 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import warnings
-from typing import Union
 from scipy.spatial import transform
-from pprint import pprint
 
 
-def create_camera_matrix(image_size: int, R: np.ndarray, pos: list, fov: float = 45.0) -> np.ndarray:
+def quat_to_mat(quat):
+    "assumes quat is in wxyz format"
+    if quat[0] == 1 and quat[1] == 0 and quat[2] == 0 and quat[3] == 0:
+        return np.eye(3)
+    else:
+        quat = [quat[3], quat[0], quat[1], quat[2]]
+        return transform.Rotation.from_quat(quat).as_matrix().T
+
+
+def create_camera_matrix(
+    image_size: int,
+    pos: list,
+    quat: list,
+    fov: float = 45.0,
+    debug=False
+) -> np.ndarray:
     pos = np.array(pos)
 
     # Translation matrix (4x4).
@@ -14,6 +27,7 @@ def create_camera_matrix(image_size: int, R: np.ndarray, pos: list, fov: float =
     translation[0:3, 3] = -pos
 
     # Rotation matrix (4x4).
+    R = quat_to_mat(quat)
     rotation = np.eye(4)
     rotation[0:3, 0:3] = R
 
@@ -29,13 +43,21 @@ def create_camera_matrix(image_size: int, R: np.ndarray, pos: list, fov: float =
 
     # Compute the 3x4 camera matrix.
     camera_matrix = image @ focal @ rotation @ translation
+    if debug:
+        print("quat: \n", quat)
+        print("translation: \n", translation[:3, 3])
+        print("rotation: \n", rotation[:3, :3])
+        print("focal: \n", focal)
+        print("image: \n", image)
     return camera_matrix
 
 
 def point2pixel(
-    point: np.ndarray,
+    points: np.ndarray,
     camera_matrix: np.ndarray = None,
     camera_kwargs: dict = dict(image_size=80),
+
+
 ) -> np.ndarray:
     """Transforms from world coordinates to pixel coordinates.
 
@@ -49,10 +71,21 @@ def point2pixel(
     """
     if camera_matrix is None:
         camera_matrix = create_camera_matrix(**camera_kwargs)
-    x, y, z = point
-    xs, ys, s = camera_matrix.dot(np.array([x, y, z, 1.0]))
 
-    return np.array([round(xs / s), round(ys / s)]).astype(np.int32)
+    if points.ndim == 1:
+        points = points[np.newaxis, :]
+
+    # Making points homogeneous
+    points_homogeneous = np.hstack([points, np.ones((points.shape[0], 1))])
+
+    # Projecting to pixel coordinates
+    pixel_coords = camera_matrix.dot(points_homogeneous.T)
+
+    # Converting homogeneous coordinates to Cartesian coordinates
+    pixel_coords = pixel_coords / pixel_coords[-1, :]
+    pixel_coords = np.round(pixel_coords[:-1, :].T).astype(np.int32)
+
+    return pixel_coords.squeeze()
 
 
 def plot_3D_to_2D(
