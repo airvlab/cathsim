@@ -6,10 +6,10 @@ class GuidewireModel:
     Represents a MuJoCo guidewire model and provides methods for creating and saving the XML representation.
     """
     
-    # Class level constants
+    # General parameters
     SCALE = 1
     ELEVATE = 0.003  # Height elevation in meters
-    INSERT = 0.01  # Insertion length in meters
+    INSERT = 0.01  # Guidewire insertion length in meters
     DENSITY = 6450  # Density of the material (nitinol) in SI unit (kg/cu.m)
     TOTAL_BODY_LENGTH = 0.5  # Total length of the guidewire body in meters
     N_BODIES = 30  # Number of individual pieces or sections
@@ -17,7 +17,7 @@ class GuidewireModel:
     BODY_RADIUS = BODY_DIAMETER / 2  # Radius, which is half of the diameter
     BODY_LENGTH = TOTAL_BODY_LENGTH / N_BODIES * SCALE  # Length of each body section
 
-    # Environment options representing properties of human blood
+    # Environment options representing properties of human blood and MuJoCo environment options
     ENV_OPTIONS = {
         "density": "1055",  # Density of human blood in kg/cu.m
         "viscosity": "0.0035",  # Viscosity of blood in Pa
