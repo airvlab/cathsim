@@ -1,15 +1,15 @@
 ## Overview
-This project provides a simulation for a MuJoCo guidewire model, specifically focusing on creating an XML representation of the model. MuJoCo stands for "Multi-Joint dynamics with Contact," and it's a physics engine for detailed, efficient rigid body simulations with contacts.\
+This project provides a simulation for a MuJoCo guidewire model, specifically focusing on creating an XML representation of the model. MuJoCo stands for "Multi-Joint dynamics with Contact," and it's a physics engine for detailed, efficient rigid body simulations with contacts.
 
 ## Features
 ### Guidewire Model Representation
 The core of this project is the `GuidewireModel` class. It serves to represent the MuJoCo guidewire model and comes with methods for creating and saving its XML representation.
 
 ### Static Constants
-The `GuidewireModel` class consists of various constants representing parameters of the guidewire, like its scale, density, length, and so on. These parameters are used to create a detailed XML representation of the model.\
+The `GuidewireModel` class consists of various constants representing parameters of the guidewire, like its scale, density, length, and so on. These parameters are used to create a detailed XML representation of the model.
 
 ### Environmental Options
-The model also takes into account certain properties of human blood, such as density and viscosity, which are represented as environment options.\
+The model also takes into account certain properties of human blood, such as density and viscosity, which are represented as environment options.
 
 ### XML Representation
 The primary method, `create_guidewire`, is responsible for generating an XML structure that describes the guidewire model with its elasticity properties. This XML structure integrates the MuJoCo elasticity plugin to realistically simulate the behaviour of the guidewire.
