@@ -5,7 +5,7 @@ from dm_control.composer.observation import observable
 from dm_control import composer
 from dm_env import specs
 
-from cathsim.utils import get_env_config
+from cathsim.dm.utils import get_env_config
 
 
 env_config = get_env_config()

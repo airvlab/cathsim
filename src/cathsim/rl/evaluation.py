@@ -2,7 +2,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-import gym
+import gymnasium as gym
 from tqdm import tqdm
 from pprint import pprint
 
@@ -158,11 +158,19 @@ def evaluate_policy(
     trajectories = []
     for i in tqdm(range(n_episodes)):
         trajectory = Trajectory()
-        observation = env.reset()
+        observation, _ = env.reset()
         done = False
+        j = 0
         while not done:
             action, _ = model.predict(observation)
-            new_observation, reward, done, info = env.step(action)
+            new_observation, reward, terminated, truncated, info = env.step(action)
+            done = terminated or truncated
+            print(
+                f"Step {j} terminated: {terminated}, truncated: {truncated}, done: {done}",
+                flush=True,
+                end="\r",
+            )
+            j += 1
             trajectory.add_transition(
                 observation=observation,
                 action=action,
@@ -301,120 +309,3 @@ if __name__ == "__main__":
     eval_data = collate_evaluation_data(Path.cwd() / "test-base" / "test-trial")
     analysis = analyze_evaluation_data(eval_data)
     pprint(analysis)
-
-    exit()
-    dataframe = aggregate_results()
-    exit()
-    print(dataframe)
-    dataframe.to_csv(RESULTS_SUMMARY / "results_4.csv", index=False)
-    # make column names title case, without underscores
-    dataframe.columns = [
-        column.replace("_", " ").title() for column in dataframe.columns
-    ]
-
-    columns = [
-        "Phantom",
-        "Target",
-        "Algorithm",
-        "Force",
-        "Force Std",
-        "Path Length",
-        "Path Length Std",
-        "Episode Length",
-        "Episode Length Std",
-        "Safety",
-        "Safety Std",
-        "Curv",
-        "Curv Std",
-        "Success",
-        "Success Std",
-        "Spl",
-    ]
-    # remove curv and curv std
-    columns.pop(11)
-    columns.pop(12)
-    # make sure all the numbers are formatted with two 00s after the decimal point
-    # using :.2f
-    dataframe = dataframe.applymap(lambda x: f"{x:.2f}" if isinstance(x, float) else x)
-
-    new_columns = [
-        "Phantom",
-        "Target",
-        "Algorithm",
-        "Force (N)",
-        "Path Length (mm)",
-        "Episode Length (s)",
-        "Safety %",
-        "Success %",
-        "SPL %",
-    ]
-    dataframe["Force (N)"] = (
-        "$"
-        + dataframe["Force"].astype(str)
-        + " \\pm "
-        + dataframe["Force Std"].astype(str)
-        + "$"
-    )
-    dataframe["Path Length (mm)"] = (
-        "$"
-        + dataframe["Path Length"].astype(str)
-        + " \\pm "
-        + dataframe["Path Length Std"].astype(str)
-        + "$"
-    )
-    dataframe["Episode Length (s)"] = (
-        "$"
-        + dataframe["Episode Length"].astype(str)
-        + " \\pm "
-        + dataframe["Episode Length Std"].astype(str)
-        + "$"
-    )
-    dataframe["Safety %"] = (
-        "$"
-        + dataframe["Safety"].astype(str)
-        + " \\pm "
-        + dataframe["Safety Std"].astype(str)
-        + "$"
-    )
-    dataframe["Success %"] = (
-        "$"
-        + dataframe["Success"].astype(str)
-        + " \\pm "
-        + dataframe["Success Std"].astype(str)
-        + "$"
-    )
-    dataframe["SPL %"] = "$" + dataframe["Spl"].astype(str) + "$"
-    # format the elements of the columns
-    # drop the row where the phantom is low_tort
-    dataframe = dataframe[dataframe["Phantom"] != "low_tort"]
-    dataframe = dataframe[dataframe["Phantom"] != "phantom4"]
-    formatters = {
-        "Phantom": lambda x: "Type-I Aortic Arch"
-        if x == "phantom3"
-        else "Type-II Aortic Arch",
-        "Target": lambda x: x.upper(),
-        "Algorithm": lambda x: x.replace("_", " ").title(),
-    }
-    # make the targets, which are bca and lcca, to be as a second collumn
-
-    for column in new_columns:
-        if column in formatters:
-            dataframe[column] = dataframe[column].apply(formatters[column])
-
-    # multiindex based on the phantom and target
-    dataframe = dataframe.set_index(["Phantom", "Target", "Algorithm"])
-
-    print(dataframe)
-    print(
-        dataframe.to_latex(
-            float_format="%.2f",
-            sparsify=True,
-            columns=new_columns,
-            column_format="cccrrrrrr",
-            escape=False,
-            formatters={
-                "Phantom": lambda x: x.upper(),
-                "Target": lambda x: x.upper(),
-            },
-        )
-    )

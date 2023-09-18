@@ -3,10 +3,8 @@ import torch as th
 from pathlib import Path
 import argparse as ap
 
-from cathsim.rl.utils import Config, ALGOS, generate_experiment_paths
-
-from cathsim.wrappers import Dict2Array
-from stable_baselines3.common.policies import ActorCriticCnnPolicy
+from cathsim.rl.utils import ALGOS, generate_experiment_paths
+from cathsim.rl import Config
 
 
 def cmd_visualize_agent(args=None):
@@ -19,6 +17,8 @@ def cmd_visualize_agent(args=None):
     from cathsim.utils import make_gym_env
     from cathsim.visualization import point2pixel
     import argparse as ap
+    from cathsim.wrappers import SingleDict2Array
+    from stable_baselines3.common.policies import ActorCriticCnnPolicy
 
     # from scratch.bc.custom_networks import CustomPolicy
     parser = ap.ArgumentParser()
@@ -61,7 +61,7 @@ def cmd_visualize_agent(args=None):
     if algo == "bc":
         config["wrapper_kwargs"]["channel_first"] = True
         env = make_gym_env(config=config)
-        env = Dict2Array(env)
+        env = SingleDict2Array(env)
         model = ActorCriticCnnPolicy(
             observation_space=env.observation_space,
             action_space=env.action_space,
@@ -124,53 +124,33 @@ def cmd_run_env(args=None):
     :param args:  (Default value = None)
 
     """
+    from cathsim.dm import make_dm_env
     from argparse import ArgumentParser
-    from dm_control import composer
-    from cathsim import Phantom, Guidewire, Tip, Navigate
-    from cathsim.utils import launch
-    import numpy as np
+    from cathsim.dm.utils import launch
 
-    parser = ArgumentParser()
-    parser.add_argument("--save-trajectories", default=None, type=bool)
-    parser.add_argument("--base-path", default=None, type=str)
-    parser.add_argument("--phantom", default="phantom3", type=str)
-    parser.add_argument("--target", default="bca", type=str)
-    parser.add_argument("--experiment-name", default="test", type=str)
-    args = parser.parse_args(args)
+    ap = ArgumentParser()
+    ap.add_argument("--interact", type=bool, default=True)
+    ap.add_argument("--phantom", default="phantom3", type=str)
+    ap.add_argument("--target", default="bca", type=str)
+    ap.add_argument("--image_size", default=80, type=int)
+    ap.add_argument("--visualize-target", action="store_true")
 
-    phantom = Phantom(args.phantom + ".xml")
+    args = ap.parse_args(args)
 
-    tip = Tip()
-    guidewire = Guidewire()
-
-    task = Navigate(
-        phantom=phantom,
-        guidewire=guidewire,
-        tip=tip,
+    env = make_dm_env(
+        phantom=args.phantom,
         use_pixels=True,
         use_segment=True,
         target=args.target,
-        visualize_sites=True,
+        visualize_sites=False,
+        visualize_target=args.visualize_target,
     )
 
-    env = composer.Environment(
-        task=task,
-        time_limit=2000,
-        random_state=np.random.RandomState(42),
-        strip_singleton_obs_buffer_dim=True,
-    )
-
-    launch(
-        env,
-        save_trajectories=args.save_trajectories,
-        phantom=args.phantom,
-        target=args.target,
-        experiment_name=args.experiment_name,
-    )
+    launch(env)
 
 
 def cmd_train(args=None):
-    from cathsim.rl.utils import train
+    from cathsim.rl import train
 
     parser = ap.ArgumentParser()
     parser.add_argument("-a", "--algo", type=str, default="sac")
