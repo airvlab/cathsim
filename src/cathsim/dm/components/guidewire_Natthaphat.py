@@ -1,11 +1,12 @@
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 
+
 class GuidewireModel:
     """
     Represents a MuJoCo guidewire model and provides methods for creating and saving the XML representation.
     """
-    
+
     # General parameters
     SCALE = 1
     ELEVATE = 0.003  # Height elevation in meters
@@ -33,11 +34,11 @@ class GuidewireModel:
     def create_guidewire():
         """
         Create an XML representation for a MuJoCo guidewire model using the elasticity plugin.
-        
+
         Constructs an XML tree that describes the guidewire model integrating the elasticity plugin to simulate 
         its behavior realistically. The model includes the aortic arch, compiler settings, world body properties, 
         the guidewire's core structure, and actuators.
-        
+
         Returns:
             str: A prettified XML string representation of the guidewire model.
         """
@@ -87,11 +88,11 @@ class GuidewireModel:
             # Convert the XML tree to a string
             xml_str = ET.tostring(root, encoding="unicode")
             return GuidewireModel.prettify_xml(xml_str)
-            
+
         except ET.ParseError as e:
             print(f"Error during XML generation: {e}")
             return None
-        
+
     @staticmethod
     def prettify_xml(xml_str):
         """
@@ -128,11 +129,12 @@ class GuidewireModel:
         except OSError as e:
             print(f"Error writing to file: {e}")
 
+
 if __name__ == "__main__":
     try:
         # Generate the XML representation for the guidewire.
         guidewire_model = GuidewireModel.create_guidewire()
-        
+
         # If successfully generated, print and save it.
         if guidewire_model:
             print(guidewire_model)
