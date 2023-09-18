@@ -224,7 +224,7 @@ class Tip(BaseGuidewire):
         parent.add("joint", name="tip_J1_0", axis=[0, 1, 0])
 
         for n in range(1, self._n_bodies):
-            parent = add_body(n, parent, name="tip")
+            parent = add_body(n, parent, name="tip", OFFSET=OFFSET)
 
     def _build_observables(self):
         """Setup the observables of the tip."""
