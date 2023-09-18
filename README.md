@@ -1,4 +1,4 @@
-![image](https://github.com/robotvisionlabs/cathsim/assets/131594382/42b23ee8-7305-4827-832c-83bedcd70935)# CathSim: An Open-source Simulator for Endovascular Intervention
+# CathSim: An Open-source Simulator for Endovascular Intervention
 ### [[Project Page](https://RobotVisionAI.github.io/cathsim/)] [[Paper](https://arxiv.org/abs/2208.01455)]
 
 ## Contents
