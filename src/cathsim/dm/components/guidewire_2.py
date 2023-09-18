@@ -27,6 +27,18 @@ class Guidewire(BaseGuidewire):
     def __str__(self):
         return pprint.pformat(self._mjcf_root)
 
+    # TODO: implement this
+    def _set_defaults(self):
+        pass
+
+    # TODO: implement this
+    def _set_actuators(self):
+        pass
+
+    # TODO: implement this
+    def _set_bodies_and_joints(self):
+        pass
+
 
 class GuidewireModel:
     """
