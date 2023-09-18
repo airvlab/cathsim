@@ -94,5 +94,10 @@ How to Use:
 ![ai-vr1](./ar_vr_unity_cathsim_1.png)
 
 
+## Terms of Use
+
+Please review our [Terms of Use](TERMS.md) before using this project.
+
 ## License
+
 Please feel free to copy, distribute, display, perform or remix our work but for non-commercial porposes only.
