@@ -5,6 +5,7 @@ from dm_control import mjcf
 from dm_control import composer
 
 from cathsim.dm.observables import JointObservables
+from cathsim.dm.components.base_models import BaseGuidewire
 from cathsim.dm.utils import get_env_config
 
 
@@ -34,42 +35,27 @@ SPHERE_RADIUS, CYLINDER_HEIGHT, OFFSET = get_body_properties(
 )
 
 
-class BaseBody(composer.Entity):
-    def add_body(
-        self,
-        n: int = 0,
-        parent: mjcf.Element = None,
-        stiffness: float = None,
-        name: str = None,
-    ):
-        """Add a body to the guidewire.
+def add_body(n, parent, stiffness=None, name=None, OFFSET=0.1):
+    """Add a body to the guidewire.
 
-        Args:
-            n (int): The index of the body to add
-            parent (mjcf.Element): The parent element to add the body to
-            stiffness (float): Stiffness of the joint
-            name (str): Name of the body/joint/geom
-        """
-        child = parent.add("body", name=f"{name}_body_{n}", pos=[0, 0, OFFSET])
-        child.add("geom", name=f"geom_{n}")
-        j0 = child.add("joint", name=f"{name}_J0_{n}", axis=[1, 0, 0])
-        j1 = child.add("joint", name=f"{name}_J1_{n}", axis=[0, 1, 0])
-        if stiffness is not None:
-            j0.stiffness = stiffness
-            j1.stiffness = stiffness
+    Args:
+        n (int): The index of the body to add
+        parent (mjcf.Element): The parent element to add the body to
+        stiffness (float): Stiffness of the joint
+        name (str): Name of the body/joint/geom
+    """
+    child = parent.add("body", name=f"{name}_body_{n}", pos=[0, 0, OFFSET])
+    child.add("geom", name=f"geom_{n}")
+    j0 = child.add("joint", name=f"{name}_J0_{n}", axis=[1, 0, 0])
+    j1 = child.add("joint", name=f"{name}_J1_{n}", axis=[0, 1, 0])
+    if stiffness is not None:
+        j0.stiffness = stiffness
+        j1.stiffness = stiffness
 
-        return child
-
-    @property
-    def mjcf_model(self):
-        return self._mjcf_root
-
-    @property
-    def joints(self):
-        return tuple(self._mjcf_root.find_all("joint"))
+    return child
 
 
-class Guidewire(BaseBody):
+class Guidewire(BaseGuidewire):
     """Guidewire class"""
 
     def _build(self, n_bodies: int = 80):
@@ -88,6 +74,10 @@ class Guidewire(BaseBody):
         self._set_defaults()
         self._set_bodies_and_joints()
         self._set_actuators()
+
+    @property
+    def mjcf_model(self):
+        return self._mjcf_root
 
     def _set_defaults(self):
         """Set the default values for the guidewire."""
@@ -140,7 +130,7 @@ class Guidewire(BaseBody):
 
         stiffness = self._mjcf_root.default.joint.stiffness
         for n in range(1, self._n_bodies):
-            parent = self.add_body(n, parent, stiffness=stiffness, name="guidewire")
+            parent = add_body(n, parent, stiffness=stiffness, name="guidewire", OFFSET=OFFSET)
             stiffness *= 0.995
         self._tip_site = parent.add("site", name="tip_site", pos=[0, 0, OFFSET])
 
@@ -173,11 +163,6 @@ class Guidewire(BaseBody):
         """Build the observables of the guidewire."""
         return JointObservables(self)
 
-    @property
-    def actuators(self):
-        """Get the actuators of the guidewire."""
-        return tuple(self._mjcf_root.find_all("actuator"))
-
     def save_model(self, path: Path):
         """Save the guidewire model to an `.xml` file.
 
@@ -192,7 +177,7 @@ class Guidewire(BaseBody):
             file.write(self.mjcf_model.to_xml_string("guidewire"))
 
 
-class Tip(BaseBody):
+class Tip(BaseGuidewire):
     def _build(self, name: str = "tip", n_bodies: int = 3):
         """Build the tip of the guidewire.
 
@@ -207,6 +192,10 @@ class Tip(BaseBody):
         self._setup_bodies_and_joints()
 
         self.head_geom.name = "head"
+
+    @property
+    def mjcf_model(self):
+        return self._mjcf_root
 
     def _setup_defaults(self):
         """Set the default values for the tip."""
@@ -235,7 +224,7 @@ class Tip(BaseBody):
         parent.add("joint", name="tip_J1_0", axis=[0, 1, 0])
 
         for n in range(1, self._n_bodies):
-            parent = self.add_body(n, parent, name="tip")
+            parent = add_body(n, parent, name="tip")
 
     def _build_observables(self):
         """Setup the observables of the tip."""
