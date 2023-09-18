@@ -1,5 +1,31 @@
+import math
+from pathlib import Path
+
+from dm_control import mjcf
+from dm_control import composer
+
+from cathsim.dm.components.base_models import BaseGuidewire
+from cathsim.dm.utils import get_env_config
+
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
+
+import pprint
+
+guidewire_config = get_env_config("guidewire_2")
+guidewire_default = guidewire_config["default"]
+
+tip_config = get_env_config("tip")
+tip_default = tip_config["default"]
+
+
+class Guidewire(BaseGuidewire):
+    pass
+
+    # TODO: Change this one to print the guidewire in a nice format
+    # You can use `pprint.pformat`. Change the self._mjcf_root to print the xml model
+    def __str__(self):
+        return pprint.pformat(self._mjcf_root)
 
 
 class GuidewireModel:
