@@ -9,6 +9,7 @@
 
 ## Requirements
 1. Unity Hub
+2. C# programming language
 
 
 ## Installation
