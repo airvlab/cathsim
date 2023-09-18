@@ -1,11 +1,8 @@
 # Folders
 logs/
-wandb/
-# scratch/
-transitions/
-lightning_logs/
-logs/
-# data/
+results/
+scratch/
+data/
 .sync*
 
 

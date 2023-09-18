@@ -704,14 +704,15 @@ if __name__ == "__main__":
         time_step = env.reset()
         # print(env._task.target_pos)
         # print(env._task.get_head_pos(env._physics))
-        for step in range(24):
+        for step in range(1):
             action = random_policy(time_step)
             # get_segment_images(env.physics)
             # top = env.physics.render(height=480, width=480, camera_id=0)
             top = time_step.observation["guidewire"]
             side = time_step.observation["side"]
             # side = env.physics.render(height=480, width=480, camera_id=2)
-            # geom_pos = env._task.get_guidewire_geom_pos(env.physics)
+            geom_pos = env._task.get_guidewire_geom_pos(env.physics)
+            __import__('pprint').pprint(geom_pos)
             # save_guidewire_reconstruction(step, top, side, geom_pos)
             cv2.imshow("top", top)
             cv2.imshow("side", side)
