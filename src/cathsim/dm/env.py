@@ -94,13 +94,6 @@ def sample_points(
 callback_called = 0
 
 
-def custom_fluid(model: MjModel, data: MjData):
-    global callback_called
-    joint_pos = data.qpos
-    joint_vel = data.qvel
-    callback_called += 1
-
-
 class Scene(composer.Arena):
     def _build(self, name: str = "arena"):
         """Build the scene.
@@ -650,12 +643,15 @@ class Navigate(composer.Task):
         return jac_pos, jac_rot
 
     def get_guidewire_geom_info(self, physics: engine.Physics) -> list[np.ndarray]:
+        if hasattr(self, "guidewire_bodies"):
+            return self.guidewire_bodies
+
         model = physics.copy().model
 
         # Collect IDs of all guidewire geometries
         guidewire_geom_ids = []
-        for i in range(model.ngeom):
-            geom_name = model.geom(i).name
+        for i in range(model.nbody):
+            geom_name = model.body(i).name
             if "guidewire" in geom_name:
                 guidewire_geom_ids.append(model.geom(i).id)
 
@@ -663,28 +659,23 @@ class Navigate(composer.Task):
         guidewire_geom_info = []
         for i in guidewire_geom_ids:
             position = physics.data.geom_xpos[i]
-            jac_pos, jac_rot = self.get_jacobian_for_geom_id(physics, i)
-            guidewire_geom_info.append((position, jac_pos, jac_rot))
+            guidewire_geom_info.append((i, position))
 
-        return guidewire_geom_info
+        self.guidewire_bodies = guidewire_geom_info
+        return self.guidewire_bodies
 
     def before_step(self, physics, action, random_state):
-        data = physics.data
-        model = physics.model
-        qfrc_passive_before = data.qfrc_passive.copy()
-        # base_pos = physics.named.xpos["guidewire/"]
 
         guidewire_geom_info = self.get_guidewire_geom_info(physics)
-        # set_callback("mjcb_passive", custom_fluid(model, data))
 
-        for pos, jac, _ in guidewire_geom_info:
-            vel = np.random.uniform(-.001, .001, size=(3, 1))
-            vel_joint_space = np.linalg.pinv(jac) @ vel
-            data.qfrc_passive += vel_joint_space.squeeze()
+        for i, pos in guidewire_geom_info:
+            f = np.random.uniform(-0.1, 0.1, size=(3, 1))
+            torque = np.zeros_like(f)
+            mujoco.mj_applyFT(physics.model.ptr, physics.data.ptr, f,
+                              torque, pos, i, physics.data.qfrc_applied)
 
         del random_state
         physics.set_control(action)
-        assert (qfrc_passive_before != data.qfrc_passive).any()
 
     @staticmethod
     def get_jacobian(physics: engine.Physics):
@@ -794,7 +785,6 @@ if __name__ == "__main__":
             action = random_policy(time_step)
             if step > 30:
                 action = np.zeros_like(action)
-            print(f"Callback called {callback_called} times")
             top = time_step.observation["guidewire"]
             cv2.imshow("top", top)
             cv2.waitKey(1)
