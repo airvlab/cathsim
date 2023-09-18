@@ -1,0 +1,39 @@
+scale: 1
+rgba: [.1, .1, .1, 1]
+diameter: 0.001
+stiffness: 20
+sphere_to_cylinder_ratio: 1.5
+condim: 1
+spring: 0.05
+force: 300
+stretch: false
+twist: false
+friction: [.1]  # default: [1, 0.005, 0.0001]
+tip_n_bodies: 2
+density: 6.72e+2  # nitiol density  # 7980,
+
+default:
+  geom:
+    group: 1
+    type: capsule
+    rgba: [0.2, 0.2, 0.2, 1]
+    density: 6.72e+2
+    condim: 1
+    friction: [.1]
+    fluidshape: ellipsoid
+  joint:
+    type: hinge
+    ref: 0
+    springref: 0
+    armature: 0.05
+    axis: [0, 0, 1]
+    stiffness: 20
+  site:
+    type: sphere
+    rgba: [0.3, 0, 0, 0]
+  velocity:
+    ctrlrange: [-1, 1]
+    forcerange: [-300, 300]
+    kv: 5
+
+
