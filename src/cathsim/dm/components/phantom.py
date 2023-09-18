@@ -1,15 +1,15 @@
 from pathlib import Path
 
 from dm_control import mjcf
-from dm_control import composer
 
 from cathsim.dm.utils import normalize_rgba, get_env_config
+from cathsim.dm.components.base_models import BasePhantom
 
 phantom_config = get_env_config("phantom")
 phantom_default = phantom_config["default"]
 
 
-class Phantom(composer.Entity):
+class Phantom(BasePhantom):
     def _build(
         self, phantom_xml: str = "phantom3.xml", assets_dir: Path = None, **kwargs
     ):

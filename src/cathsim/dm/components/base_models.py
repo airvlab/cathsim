@@ -61,4 +61,11 @@ class BaseGuidewire(BaseModel, ABC):
 
 
 class BasePhantom(BaseModel, ABC):
-    pass
+
+    @ property
+    def sites(self) -> dict:
+        """
+        Gets the sites from the mesh. Useful for declaring navigation targets or areas of interest.
+        """
+        sites = self.mjcf_model.find_all("site")
+        return {site.name: site.pos for site in sites}
