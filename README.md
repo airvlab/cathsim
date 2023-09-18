@@ -29,6 +29,7 @@ How to Use:
 2. Create an array of control points (values) that you want to interpolate.
 3. Initialize the CatmullRomSpline by calling the constructor with the control points array.
 4. Use the GetValue method to interpolate values along the spline at different positions.
+5. Use the Test method to test sample interpolation
    
    
 ### 2. MouseDraggable.cs
