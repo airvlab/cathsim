@@ -635,8 +635,38 @@ class Navigate(composer.Task):
 
         return guidewire_geom_pos
 
-    def before_substep(self, physics: engine.Physics, action, random_state):
-        pass
+    def get_jacobian_for_geom_id(self, physics: engine.Physics, geom_id: int):
+        jac_pos = np.zeros((3, physics.model.nv))
+        jac_rot = np.zeros((3, physics.model.nv))
+
+        # get Jacobian of specific geometry
+        mjlib.mj_jacGeom(
+            physics.model.ptr,
+            physics.data.ptr,
+            jac_pos,
+            jac_rot,
+            geom_id,
+        )
+        return jac_pos, jac_rot
+
+    def get_guidewire_geom_info(self, physics: engine.Physics) -> list[np.ndarray]:
+        model = physics.copy().model
+
+        # Collect IDs of all guidewire geometries
+        guidewire_geom_ids = []
+        for i in range(model.ngeom):
+            geom_name = model.geom(i).name
+            if "guidewire" in geom_name:
+                guidewire_geom_ids.append(model.geom(i).id)
+
+        # Get positions and Jacobians based on IDs
+        guidewire_geom_info = []
+        for i in guidewire_geom_ids:
+            position = physics.data.geom_xpos[i]
+            jac_pos, jac_rot = self.get_jacobian_for_geom_id(physics, i)
+            guidewire_geom_info.append((position, jac_pos, jac_rot))
+
+        return guidewire_geom_info
 
     def before_step(self, physics, action, random_state):
         data = physics.data
@@ -644,13 +674,13 @@ class Navigate(composer.Task):
         qfrc_passive_before = data.qfrc_passive.copy()
         # base_pos = physics.named.xpos["guidewire/"]
 
-        set_callback("mjcb_passive", custom_fluid(model, data))
-        vel = np.random.uniform(-1, 1, size=(3, 1))
-        jac = self.get_jacobian(physics)
+        guidewire_geom_info = self.get_guidewire_geom_info(physics)
+        # set_callback("mjcb_passive", custom_fluid(model, data))
 
-        vel_joint_space = np.linalg.pinv(jac) @ vel
-
-        data.qfrc_passive += vel_joint_space.squeeze()
+        for pos, jac, _ in guidewire_geom_info:
+            vel = np.random.uniform(-.001, .001, size=(3, 1))
+            vel_joint_space = np.linalg.pinv(jac) @ vel
+            data.qfrc_passive += vel_joint_space.squeeze()
 
         del random_state
         physics.set_control(action)
@@ -661,7 +691,6 @@ class Navigate(composer.Task):
         jac_pos = np.zeros((3, physics.model.nv))
         jac_rot = np.zeros((3, physics.model.nv))
 
-        # get Jacobian of fingertip position
         mjlib.mj_jacGeom(
             physics.model.ptr,
             physics.data.ptr,
