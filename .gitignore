@@ -1,7 +1,7 @@
 # Folders
 logs/
 results/
-scratch/
+# scratch/
 data/
 .sync*
 
