@@ -1,0 +1,174 @@
+<mujoco model="Tendon Finger">
+	<compiler coordinate="global"/>
+
+	<visual>
+		<headlight diffuse=".7 .7 .7"/>
+	</visual>
+
+	<asset>
+		<material name="sitemat" rgba=".7 .6 .5 1"/>
+		<material name="tendonmat" rgba=".5 .6 .7 1"/>
+	</asset>
+
+	<default>
+		<geom density="1"  contype="0" conaffinity="0" rgba=".9 .3 .1 1" group="1"/>
+		<joint limited="true"/>
+		<site type="sphere" size="0.05" material="sitemat"/>
+		<tendon width="0.02" material="tendonmat"/>
+	</default>
+
+	<worldbody>
+
+		<geom type="plane" contype="1" conaffinity="1" pos="2 0 -5" size="5 5 0.5" rgba=".6 .6 .5 1"/>	
+
+		<site name="S_M1" pos="3.6278 0 0.0624"/>
+		<site name="S_M2" pos="2.6510 0 0.2332" group="2"/>
+		<site name="S_M3" pos="2.5300 0.3544 -0.2488" group="2"/>
+		<site name="S_M4" pos="2.5150 0 -0.4878" group="2"/>
+		<site name="S_M5" pos="2.5300 -0.3880 -0.2358" group="2"/>
+
+		<site name="S_M2a" pos="1.8 0 0.2332" group="2"/>
+		<site name="S_M3a" pos="1.4 0.3544 -0.2488" group="2"/>
+		<site name="S_M4a" pos="1   0 -0.4878" group="2"/>
+		<site name="S_M5a" pos="1.4 -0.3880 -0.2358" group="2"/>
+
+		<geom name="MCP_wrap"  type="sphere" pos="3.3 0 -0.29" size="0.42" rgba="0 .7 .7 .5"/>
+	
+		<body>
+			<geom type="cylinder" contype="1" conaffinity="1" pos="1.8 0  -2" size=".25 .3" rgba=".7 .3 .8 1"/>
+			<site name="W2" pos="1.8 0  -2"/>
+			<joint type="slide" pos="1.8 0  -2" axis="0 0 1" limited="false"/>
+		</body>
+
+		<body>
+			<geom type="cylinder" contype="1" conaffinity="1" pos="1.4 0.3544 -2" size=".15 .3" rgba=".7 .3 .8 1"/>
+			<site name="W3" pos="1.4 0.3544 -2"/>
+			<joint type="slide" pos="1.4 0.3544 -2" axis="0 0 1" limited="false"/>
+		</body>
+
+		<body>
+			<geom type="cylinder" contype="1" conaffinity="1" pos="1   0 -2" size=".15 .3" rgba=".7 .3 .8 1"/>
+			<site name="W4" pos="1   0 -2"/>
+			<joint type="slide" pos="1   0 -2" axis="0 0 1" limited="false"/>
+		</body>
+
+		<body>
+			<geom type="cylinder" contype="1" conaffinity="1" pos="1.4 -0.3880 -2" size=".15 .3" rgba=".7 .3 .8 1"/>
+			<site name="W5" pos="1.4 -0.3880 -2"/>
+			<joint type="slide" pos="1.4 -0.3880 -2" axis="0 0 1" limited="false"/>
+		</body>
+
+		<body name="Proximate">
+			<joint type="hinge" pos="3.3191 0 -0.2488" axis="1.5606 0 1.4461" ref="0" range="-30 30"/>
+			<joint type="hinge" pos="3.3191 0 -0.2488" axis="0 1 0" ref="44.6037" range="0 90"/>
+			
+			<geom type="capsule" fromto="3.3191 0 -0.2488  4.7652 0 -1.8094" size="0.2"/>
+			
+			<site name="S_P1" pos="4.6557 0 -1.2831"/>
+			<site name="S_P2" pos="4.1532 0 -0.6197"/>
+			<site name="S_P3" pos="3.7676 0 -1.0104"/>
+			<site name="S_P4" pos="4.2662 0 -1.5837"/>		
+			<!--site name="I_M1" pos="3.8785 0 -0.4110"/-->
+			<site name="I_M2" pos="3.6599 0.4059 -0.6146"/>
+			<site name="I_M3" pos="3.6599 -0.4059 -0.6146"/>
+			
+			<geom name="PIP_wrap"  type="cylinder" pos="4.75 0 -1.75" zaxis="0 1 0" size="0.2 0.2" rgba="0 .7 .7 .5"/>
+			<site name="PIP_wrapside" pos="4.85 0 -1.75" group="3"/>
+			
+			<body name="Intermediate">
+				<joint type="hinge" pos="4.7652 0 -1.8094" axis="0 1 0" ref="34.8844" range="0 90"/>
+				
+				<geom type="capsule" fromto="4.7652 0 -1.8094  4.8664 0.0148 -3.0144" size="0.15"/>
+			
+				<site name="S_D1" pos="5.0280 0 -2.7065"/>
+				<site name="S_D2" pos="5.0189 0 -2.2020"/>
+				<site name="S_D3" pos="4.5500 0 -2.2390"/>
+				<site name="S_D4" pos="4.6940 0 -2.7254"/>
+				<site name="I_P1" pos="4.9260 0 -1.9327"/>
+				<site name="I_P2" pos="4.7143 0 -2.4997"/>
+			
+				<body name="Distal">
+					<joint type="hinge" pos="4.8664 0.0148 -3.0144" axis="0 1 0" ref="24.6697" range="0 90"/>
+
+					<geom name="DIP_wrap"  type="cylinder" pos="4.8664 0.0148 -3.0144" 
+						zaxis="0 1 0" size="0.15 0.16" rgba="0 .7 .7 .5"/>
+					<site name="DIP_wrapside" pos="4.95 0.0148 -3.0144" group="3"/>
+					
+					<geom type="capsule" fromto="4.8664 0.0148 -3.0144  4.5 0.0148 -3.8" size="0.1"/>
+					
+					<site name="I_D1" pos="4.9130 0.0148 -3.2080"/>
+					<site name="I_D2" pos="4.5144 0.0148 -3.3888"/>
+				</body>
+			</body>
+		</body>
+	</worldbody>
+
+	<tendon>
+		<spatial name="flexorShort">
+			<site site="S_M4"/>
+			<site site="S_P3"/>
+			<site site="S_P4"/>
+			<site site="S_D3"/>
+			<site site="I_P2"/>
+		</spatial>
+	
+		<spatial name="left" limited="true" range="0 5">
+			<site site="W3"/>
+			<site site="S_M3a"/>
+			<site site="S_M3"/>
+			<geom geom="MCP_wrap"/>
+			<site site="I_M2"/>
+		</spatial>
+	
+		<spatial name="extensor" limited="true" range="0 7.5">
+			<site site="W2"/>
+			<site site="S_M2a"/>
+			<site site="S_M2"/>
+
+			<pulley divisor="2"/>
+			<site site="S_M1"/>
+			<site site="S_P2"/>
+			<site site="S_P1"/>
+			<geom geom="PIP_wrap" sidesite="PIP_wrapside"/>
+			<site site="I_P1"/>
+			
+			<pulley divisor="2"/>
+			<site site="S_M2"/>
+			<site site="S_M1"/>
+			<site site="S_P2"/>
+			<site site="S_P1"/>
+			<geom geom="PIP_wrap" sidesite="PIP_wrapside"/>
+			<site site="S_D2"/>
+			<site site="S_D1"/>
+			<geom geom="DIP_wrap" sidesite="DIP_wrapside"/>
+			<site site="I_D1"/>
+		</spatial>
+	
+		<!--spatial name="extensorNew" limited="true" range="0 5">
+			<site site="W2"/>
+			<site site="S_M2a"/>
+			<site site="S_M2"/>
+			<site site="S_M1"/>
+			<site site="I_M1"/>
+		</spatial-->
+	
+		<spatial name="right" limited="true" range="0 5">
+			<site site="W5"/>
+			<site site="S_M5a"/>
+			<site site="S_M5"/>
+			<geom geom="MCP_wrap"/>
+			<site site="I_M3"/>
+		</spatial>
+	
+		<spatial name="flexorLong" limited="true" range="0 8">
+			<site site="W4"/>
+			<site site="S_M4a"/>
+			<site site="S_M4"/>
+			<site site="S_P3"/>
+			<site site="S_P4"/>
+			<site site="S_D3"/>
+			<site site="S_D4"/>
+			<site site="I_D2"/>
+		</spatial>		
+	</tendon>
+</mujoco>

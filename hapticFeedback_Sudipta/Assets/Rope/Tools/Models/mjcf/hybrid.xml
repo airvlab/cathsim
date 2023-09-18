@@ -1,0 +1,294 @@
+<mujoco model="hybrid">
+    <!--
+    This file and the .stl mesh files referenced from it have been derived by Roboti LLC from the model of the Modular Prosthetic Limb developed by The Johns Hopkins University / Applied Physics Laboratory. The modifications are as follows: the original meshes have been replaced with their convex hulls; the original URDF model has been converted to the MJCF format and a number of MJCF-specific fields have been added.
+
+    The Johns Hopkins University / Applied Physics Laboratory has given Roboti LLC permission to distribute the modified model under the following license:
+
+    =========================
+
+    (C) 2013 The Johns Hopkins University / Applied Physics Laboratory All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+    ========================
+
+    The modifications made by Roboti LLC are also licensed under the Apache License version 2.0.
+    -->
+    
+    <compiler angle="radian" meshdir="../mesh/hybrid/" texturedir="../texture/"/>
+    <option timestep="0.002" iterations="50" apirate="50"/>
+    <size njmax="600" nconmax="150" nstack="300000"/>
+
+    <default>
+		<default class="MPL"> 
+			<geom material="MatMesh" contype="1" conaffinity="1" condim="4" margin="0.001"/>
+        	<joint limited="true" damping="0.002" armature=".001"/>
+		</default>
+
+        <default class ="Jaco"> 
+            <geom material="MatViz" type="mesh" contype="1" conaffinity="1"/>
+            <joint pos="0 0 0" type="hinge" limited="false" damping="0.4" armature=".02"/>
+        </default>  
+        
+        <default class="free">
+            <joint type="free" damping="0" armature="0" limited="false"/>
+        </default>     
+    </default>
+
+    <statistic extent="1" center="0 -0.2 0.2"/>
+
+    <visual>
+        <quality shadowsize="2048"/>
+    	<map fogstart="6" fogend="10"/>
+    	<headlight diffuse=".6 .6 .6" specular="0 0 0"/>
+    </visual>
+
+    <asset>
+		<mesh name="index0" 	file="index0.stl"/>
+		<mesh name="index1" 	file="index1.stl"/>
+		<mesh name="index2" 	file="index2.stl"/>
+		<mesh name="index3" 	file="index3.stl"/>
+		<mesh name="middle0" 	file="middle0.stl"/>
+		<mesh name="middle1" 	file="middle1.stl"/>
+		<mesh name="middle2" 	file="middle2.stl"/>
+		<mesh name="middle3" 	file="middle3.stl"/>
+		<mesh name="palm" 		file="palm.stl"/>
+		<mesh name="pinky0" 	file="pinky0.stl"/>
+		<mesh name="pinky1" 	file="pinky1.stl"/>
+		<mesh name="pinky2" 	file="pinky2.stl"/>
+		<mesh name="pinky3" 	file="pinky3.stl"/>
+		<mesh name="ring0" 		file="ring0.stl"/>
+		<mesh name="ring1" 		file="ring1.stl"/>
+		<mesh name="ring2" 		file="ring2.stl"/>
+		<mesh name="ring3" 		file="ring3.stl"/>
+		<mesh name="thumb0" 	file="thumb0.stl"/>
+		<mesh name="thumb1" 	file="thumb1.stl"/>
+		<mesh name="thumb2" 	file="thumb2.stl"/>
+		<mesh name="thumb3" 	file="thumb3.stl"/>
+		<mesh name="wristx" 	file="wristx.stl"/>
+		<mesh name="wristy" 	file="wristy.stl"/>
+		<mesh name="wristz" 	file="wristz.stl"/>
+
+        <mesh file="jaco_link_base.stl"/>
+        <mesh file="jaco_link_1.stl"/>
+        <mesh file="jaco_link_2.stl"/>
+        <mesh file="jaco_link_3.stl"/>
+        <mesh file="jaco_link_4.stl"/>
+        <mesh file="jaco_link_5.stl"/>
+        
+		<texture type="skybox" builtin="gradient" rgb1=".4 .6 .8" rgb2="0 0 0" 
+			width="100" height="100"/>
+		<texture name="groundplane" type="2d" builtin="checker" rgb1=".2 .3 .4" rgb2=".1 .2 .3" 
+            width="100" height="100"/>
+		<texture name="skin" type="cube" file="skin.png"/>
+		<texture name="marble2d" type="2d" file="marble.png"/>
+
+		<material name="groundplane" texture="groundplane" texrepeat="10 10"/>
+		<material name="table2d" texture="marble2d" reflectance="0.3" rgba=".8 .8 .8 1"/>
+        <material name="MatMesh" texture="skin"/>
+
+        <material name="MatViz" specular="1" shininess=".1" rgba=".7 .4 .2 1"/>        
+	</asset>
+
+    <contact>       
+        <exclude body1="wristz" body2="wristy"/>
+		<exclude body1="wristx" body2="thumb0"/>
+		<exclude body1="palm" body2="thumb1"/>
+        <exclude body1="palm" body2="index1"/>
+        <exclude body1="palm" body2="middle1"/>
+        <exclude body1="palm" body2="ring1"/>
+        <exclude body1="palm" body2="pinky1"/>
+        <exclude body1="jaco_link_base" body2="jaco_link_1"/>
+    </contact>
+
+    <worldbody>
+        <light directional="false" cutoff="35" exponent="10" diffuse=".7 .7 .7" pos="0.4 -0.2 1.5" dir="-0.4 0.2 -1.5" specular=".3 .3 .3"/>
+		
+        <camera name="fixed" pos="0 -0.7 0.7" zaxis="0 -1 1" fovy="45" ipd="0.068"/>
+	
+		<geom type="plane" material="table2d" pos="0 0 0" size=".75 .75 .025"/>
+
+
+        <!-- ARM -->
+        <body name="jaco_link_base" childclass="Jaco" pos="0 -0.3 0.25">
+            <inertial pos="-3.14012e-008 0.000451919 0.0770704" quat="1 -0.000920048 6.51183e-006 5.62643e-005" mass="0.787504" diaginertia="0.00187445 0.00186316 0.000676952" />
+            <geom mesh="jaco_link_base"/>
+            <geom type="capsule" pos="0 0 -0.125" size=".045 0.125"/>
+            
+            
+            <body name="jaco_link_1" pos="0 0 0.1535" quat="0 0 1 0">
+                <inertial pos="-1.14317e-006 0.0102141 -0.0637045" quat="0.702792 0.0778988 -0.0778994 0.702813" mass="0.613151" diaginertia="0.00149348 0.00144012 0.000401632" />
+                <joint name="jaco_joint_1" axis="0 0 -1" />
+                <geom mesh="jaco_link_1"/>
+                
+                
+                <body name="jaco_link_2" pos="0 0 -0.1185" quat="0 0 0.707107 0.707107">
+                    <inertial pos="0.206657 -1.55187e-007 -0.030675" quat="8.97411e-006 0.707331 5.06696e-006 0.706883" mass="1.85031" diaginertia="0.0402753 0.0398125 0.00121953" />
+                    <joint name="jaco_joint_2" axis="0 0 1" />
+                    <geom mesh="jaco_link_2"/>
+                    
+                    
+                    <body name="jaco_link_3" pos="0.41 0 0" quat="0 0.707107 0.707107 0">
+                        <inertial pos="0.0847979 -1.18469e-007 -0.020283" quat="2.33799e-005 0.694869 1.96996e-005 0.719136" mass="0.70372" diaginertia="0.00386732 0.00373181 0.000358773" />
+                        <joint name="jaco_joint_3" axis="0 0 -1" />
+                        <geom mesh="jaco_link_3"/>
+                        
+                        
+                        <body name="jaco_link_4" pos="0.207 0 -0.01125" quat="0 0.707107 0 -0.707107">
+                            <inertial pos="0.00914824 4.53141e-008 -0.0370941" quat="0.971237 -1.92989e-005 -0.238115 3.23646e-005" mass="0.227408" diaginertia="0.000176463 0.00017225 0.000108303" />
+                            <joint name="jaco_joint_4" axis="0 0 -1" />
+                            <geom mesh="jaco_link_4"/>
+                           
+
+                            <body name="jaco_link_5" pos="0.0343 0 -0.06588" quat="0.887011 0 -0.461749 0">
+                                <inertial pos="0.00914824 4.53141e-008 -0.0370941" quat="0.971237 -1.92989e-005 -0.238115 3.23646e-005" mass="0.227408" diaginertia="0.000176463 0.00017225 0.000108303" />
+                                <joint name="jaco_joint_5" axis="0 0 -1" />
+                                <geom mesh="jaco_link_5"/>
+
+		<!-- ======= ROBOT ======= -->
+            <body childclass="MPL" name="wristy" pos="0.0343 0 -0.06588" xyaxes="0 1 0 -1.4 0 1">
+                <inertial pos="-7.08369e-005 -0.0217787 -0.000286168" quat="0.707488 0.00581744 -0.0107421 0.70662" mass="0.0272932" diaginertia="2.46813e-005 1.77029e-005 1.71079e-005" />
+                <geom type="mesh" mesh="wristy"/>
+                <joint name="wrist_PRO" type="hinge" damping="0.4" pos="0 0 0" axis="0 1 0" range="-1.57 1.57"/>
+                <body name="wristx" pos="-3.36826e-005 -0.0476452 0.00203763">
+                    <inertial pos="0.00139174 -0.00975189 -0.00252668" quat="-0.0729226 0.705959 0.0352732 0.703605" mass="0.010691" diaginertia="5.04455e-006 4.25035e-006 3.25677e-006" />
+                    <joint name="wrist_UDEV" damping="0.4" type="hinge" pos="0 0 0" axis="0 0 -1" range="-0.261 0.785"/>
+                    <geom type="mesh" mesh="wristx"/>
+                    <body name="wristz" pos="0.0001872 -0.03 -0.002094">
+                        <inertial pos="0.000579016 -0.00125952 0.000455968" quat="0.527723 0.475346 0.521597 0.472749" mass="0.00602247" diaginertia="1.58133e-006 1.43102e-006 1.26861e-006" />
+                        <joint name="wrist_FLEX" damping="0.4" type="hinge" pos="0 0 0" axis="1 0 0" range="-1.04 1.04"/>
+                        <geom type="mesh" mesh="wristz"/>
+		  			
+		  			    <!-- ======= PALM  ======= -->
+                        <body name="palm" pos="0.025625 0 0">
+                            <inertial pos="-0.0217876 -0.0376147 0.00276997" quat="-0.146373 0.723094 0.0985561 0.66783" mass="0.119867" diaginertia="0.000123088 0.000100082 6.89467e-005" />
+                            <geom type="mesh" mesh="palm"/>
+                        
+                            <!-- ======= THUMB ======= -->
+                            <body name="thumb0" pos="0.00835752 -0.0206978 -0.010093" quat="0.990237 0.0412644 -0.0209178 -0.13149">
+                                <inertial pos="0.00863339 -0.000156884 -0.000945846" quat="0.408795 0.551643 0.541079 0.485602" mass="0.00336696" diaginertia="4.50769e-007 4.48758e-007 2.35017e-007" />
+                                <joint name="thumb_ABD" type="hinge" pos="0 0 0" axis="0 1 0" range="0 2.07"/>
+                                <geom type="mesh" mesh="thumb0"/>
+                                <body name="thumb1" pos="0.0209172 -0.00084 0.0014476">
+                                    <inertial pos="0.019024 0.000361131 -0.000186763" quat="0.5208 0.469572 0.484571 0.522934" mass="0.00596213" diaginertia="9.88001e-007 9.45125e-007 5.32989e-007" />
+                                    <joint name="thumb_MCP" type="hinge" pos="0 0 0" axis="0 0 -1" range="0 1.03"/>
+                                    <geom type="mesh" mesh="thumb1"/>
+                                    <body name="thumb2" pos="0.0335 0 -0.0007426">
+                                        <inertial pos="0.0188965 0.000375725 0.00065381" quat="0.502274 0.484638 0.475673 0.535333" mass="0.00599792" diaginertia="9.96692e-007 9.64948e-007 5.14416e-007" />
+                                        <joint name="thumb_PIP" type="hinge" pos="0 0 0" axis="0 0 -1" range="0 1.03"/>
+                                        <geom type="mesh" mesh="thumb2"/>
+                                        <body name="thumb3" pos="0.0335 0 0.0010854">
+                                        	<inertial pos="0.0188965 0.000375725 0.00065381" quat="0.502274 0.484638 0.475673 0.535333" mass="0.00599792" diaginertia="9.96692e-007 9.64948e-007 5.14416e-007" />
+                                            <joint name="thumb_DIP" type="hinge" pos="0 0 0" axis="0 0 -1" range="-0.819 1.28"/>
+                                            <geom type="mesh" mesh="thumb3"/>
+                                        </body>
+                                    </body>
+                                </body>
+                            </body>
+
+		  				    <!-- ======= INDEX ======= -->
+                            <body name="index0" pos="0.00986485 -0.0658 0.00101221" quat="0.996195 0 0.0871557 0">
+                                <inertial pos="-0.000142572 -0.00548494 0.000206145" quat="0.699132 0.714861 -0.000723869 0.013694" mass="0.00295579" diaginertia="4.22462e-007 4.02281e-007 1.93868e-007" />
+                                <joint name="index_ABD" type="hinge" pos="0 0 0" axis="0 0 1" range="0 0.345"/>
+                                <geom type="mesh" mesh="index0"/>
+                                <body name="index1" pos="6.26e-005 -0.018 0">
+                                    <inertial pos="0.000406487 -0.0213125 0.000655609" quat="0.698452 0.715642 -0.00415384 0.0023049" mass="0.00478235" diaginertia="8.18599e-007 7.95693e-007 3.06254e-007" />
+                                    <joint name="index_MCP" type="hinge" pos="0 0 0" axis="1 0 0" range="-0.785 1.57"/>
+                                    <geom type="mesh" mesh="index1"/>
+                                    <body name="index2" pos="0.001086 -0.0435 0.0005">
+                                        <inertial pos="-0.000841462 -0.012689 0.000572665" quat="0.734882 0.677481 -0.028511 0.0124827" mass="0.00344764" diaginertia="3.63962e-007 3.59059e-007 1.05304e-007" />
+                                        <joint name="index_PIP" type="hinge" pos="0 0 0" axis="1 0 0" range="0 1.72"/>
+                                        <geom type="mesh" mesh="index2"/>
+                                        <body name="index3" pos="-0.000635 -0.0245 0">
+                                            <inertial pos="4.32004e-005 -0.0125318 0.000903476" quat="0.516251 0.4829 -0.483241 0.516498" mass="0.00274415" diaginertia="1.19635e-007 1.09202e-007 7.77873e-008" />
+                                            <joint name="index_DIP" type="hinge" pos="0 0 0" axis="1 0 0" range="0 1.38"/>
+                                            <geom type="mesh" mesh="index3"/>
+                                        </body>
+                                    </body>
+                                </body>
+                            </body>
+		  				
+		  				    <!-- ======= MIDDLE ======= -->
+                            <body name="middle0" pos="-0.012814 -0.0779014 0.00544608" quat="-3.14 0.0436194 0 0">
+                                <inertial pos="-0.000142567 -0.00548493 0.000206162" quat="0.699131 0.714862 -0.000723874 0.013694" mass="0.00295579" diaginertia="4.22461e-007 4.02281e-007 1.93868e-007" />
+                                <!--<joint name="middle0" type="hinge" pos="0 0 0" range="-0.345 0" axis="0 0 -1" />-->
+                                <geom type="mesh" mesh="middle0"/>
+                                <body name="middle1" pos="6.26e-005 -0.018 0">
+                                    <inertial pos="0.000406411 -0.0213125 0.00065565" quat="0.698451 0.715642 -0.00415503 0.00230486" mass="0.00478229" diaginertia="8.18595e-007 7.9569e-007 3.06253e-007" />
+                                    <joint name="middle_MCP" type="hinge" pos="0 0 0" axis="1 0 0" range="-0.785 1.57"/>
+                                    <geom type="mesh" mesh="middle1"/>
+                                    <body name="middle2" pos="0.001086 -0.0435 0.0005">
+                                        <inertial pos="-0.000841444 -0.012689 0.00057266" quat="0.734883 0.677482 -0.0284727 0.0124412" mass="0.00344765" diaginertia="3.63962e-007 3.5906e-007 1.05304e-007" />
+                                        <joint name="middle_PIP" type="hinge" pos="0 0 0" axis="1 0 0" range="0 1.73"/>
+                                        <geom type="mesh" mesh="middle2"/>
+                                        <body name="middle3" pos="-0.000635 -0.0245 0">
+                                            <inertial pos="4.31236e-005 -0.0125318 0.000903446" quat="0.516263 0.482913 -0.483228 0.516487" mass="0.00274417" diaginertia="1.19635e-007 1.09202e-007 7.77884e-008" />
+                                            <joint name="middle_DIP" type="hinge" pos="0 0 0" axis="1 0 0" range="0 1.38"/>
+                                            <geom type="mesh" mesh="middle3"/>
+                                        </body>
+                                    </body>
+                                </body>
+                            </body>
+		  				
+	  				        <!-- ======= RING ======= -->
+                            <body name="ring0" pos="-0.0354928 -0.0666999 0.00151221" quat="0.996195 0 -0.0871557 0">
+                                <inertial pos="-0.000142559 -0.00548494 0.000206147" quat="0.699132 0.714861 -0.000720946 0.013691" mass="0.00295579" diaginertia="4.22462e-007 4.02281e-007 1.93868e-007" />
+                                <joint name="ring_ABD" type="hinge" pos="0 0 0" axis="0 0 -1" range="0 0.345"/>
+                                <geom type="mesh" mesh="ring0"/>
+                                <body name="ring1" pos="6.26e-005 -0.018 0">
+                                    <inertial pos="0.000406447 -0.0213125 0.00065563" quat="0.698451 0.715642 -0.00415675 0.00230715" mass="0.00478232" diaginertia="8.18597e-007 7.95692e-007 3.06254e-007" />
+                                    <joint name="ring_MCP" type="hinge" pos="0 0 0" axis="1 0 0" range="-0.785 1.57"/>
+                                    <geom type="mesh" mesh="ring1"/>
+                                    <body name="ring2" pos="0.001086 -0.0435 0.0005">
+                                        <inertial pos="-0.000841518 -0.012689 0.000572674" quat="0.73488 0.677478 -0.0285773 0.0125557" mass="0.00344767" diaginertia="3.63963e-007 3.59061e-007 1.05305e-007" />
+                                        <joint name="ring_PIP" type="hinge" pos="0 0 0" axis="1 0 0" range="0 1.72"/>
+                                        <geom type="mesh" mesh="ring2"/>
+                                        <body name="ring3" pos="-0.000635 -0.0245 0">
+                                            <inertial pos="4.31973e-005 -0.0125318 0.000903457" quat="0.516255 0.482902 -0.483238 0.516495" mass="0.00274416" diaginertia="1.19635e-007 1.09202e-007 7.77877e-008" />
+                                            <joint name="ring_DIP" type="hinge" pos="0 0 0" axis="1 0 0" range="0 1.38"/>
+                                            <geom type="mesh" mesh="ring3"/>
+                                        </body>
+                                    </body>
+                                </body>
+                            </body>
+		  				
+		  				    <!-- ======= LITTLE ======= -->
+                            <body name="pinky0" pos="-0.0562459 -0.0554001 -0.00563858" quat="0.996195 0 -0.0871557 0">
+                                <inertial pos="-0.000142559 -0.00538484 0.000206147" quat="0.699132 0.714861 -0.000721037 0.0136911" mass="0.00295579" diaginertia="4.22462e-007 4.02281e-007 1.93868e-007" />
+                                <joint name="pinky_ABD" type="hinge" pos="0 0 0" axis="0 0 -1" range="0 0.345"/>
+                                <geom type="mesh" mesh="pinky0"/>
+                                <body name="pinky1" pos="6.26e-005 -0.0178999 0">
+                                    <inertial pos="0.000458624 -0.0160478 0.000924735" quat="0.685529 0.72723 0.021252 -0.0270914" mass="0.0034099" diaginertia="4.03391e-007 3.84061e-007 2.19866e-007" />
+                                    <joint name="pinky_MCP" type="hinge" pos="0 0 0" axis="1 0 0" range="-0.785 1.57"/>
+                                    <geom type="mesh" mesh="pinky1"/>
+                                    <body name="pinky2" pos="0.000578 -0.033 0.0005">
+                                        <inertial pos="-0.000270832 -0.00914628 0.000738493" quat="0.746786 0.664476 -4.11065e-005 -0.0279675" mass="0.00250622" diaginertia="1.79089e-007 1.75934e-007 7.44543e-008" />
+                                        <joint name="pinky_PIP" type="hinge" pos="0 0 0" axis="1 0 0" range="0 1.72"/>
+                                        <geom type="mesh" mesh="pinky2"/>
+                                        <body name="pinky3" pos="-4.78e-005 -0.0175 0">
+                                            <inertial pos="3.85026e-005 -0.0125047 0.000912295" quat="0.516037 0.484447 -0.483043 0.515448" mass="0.00273265" diaginertia="1.19141e-007 1.08629e-007 7.77271e-008" />
+                                            <joint name="pinky_DIP" type="hinge" pos="0 0 0" axis="1 0 0" range="0 1.38"/>
+                                            <geom type="mesh" mesh="pinky3"/>
+                                        </body>
+                                    </body>
+                                </body>
+                            </body>
+                        </body>
+                    </body>
+                </body>
+            </body>
+
+        </body>
+        </body>
+        </body>
+        </body>
+        </body>
+        </body>
+
+    </worldbody>
+
+</mujoco>
