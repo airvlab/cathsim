@@ -2,16 +2,12 @@ import math
 import numpy as np
 import trimesh
 import random
-from typing import Union, Optional, Tuple
-from scipy.spatial import transform
+from typing import Union, Optional
 
 
 from dm_control import mjcf, mujoco
 from dm_control.mujoco.wrapper.mjbindings import mjlib
-from dm_control import mujoco
-from dm_control import mjcf
 from dm_control.mujoco import wrapper, engine
-from dm_control.mujoco.wrapper.core import set_callback, MjModel, MjData
 from dm_control import composer
 from dm_control.composer import variation
 from dm_control.composer.variation import distributions, noises
@@ -122,10 +118,14 @@ class Scene(composer.Arena):
     def _add_cameras(self):
         """Add cameras to the scene."""
         self.top_camera = self.add_camera(
-            "top_camera", [-0.03, 0.125, 0.25], quat=[1, 0, 0, 0],
+            "top_camera",
+            [-0.03, 0.125, 0.25],
+            quat=[1, 0, 0, 0],
         )
         self.top_camera_close = self.add_camera(
-            "top_camera_close", [-0.03, 0.125, 0.065], quat=[1, 0, 0, 0],
+            "top_camera_close",
+            [-0.03, 0.125, 0.065],
+            quat=[1, 0, 0, 0],
         )
         self.side_camera = self.add_camera(
             "side", [-0.22, 0.105, 0.03], quat=[0.5, 0.5, -0.5, -0.5]
@@ -545,14 +545,13 @@ class Navigate(composer.Task):
         image_size: Optional[int] = None,
         camera_name: str = "top_camera",
     ) -> np.ndarray:
-
         cameras = self._arena.mjcf_model.find_all("camera")
         camera = next((cam for cam in cameras if cam.name == camera_name), None)
 
         if camera is None:
             raise ValueError(f"No camera found with the name: {camera_name}")
 
-        assert (camera.quat is not None), "Camera quaternion is None"
+        assert camera.quat is not None, "Camera quaternion is None"
 
         image_size = image_size or self.image_size
         camera_matrix = create_camera_matrix(
@@ -665,14 +664,20 @@ class Navigate(composer.Task):
         return self.guidewire_bodies
 
     def before_step(self, physics, action, random_state):
-
         guidewire_geom_info = self.get_guidewire_geom_info(physics)
 
         for i, pos in guidewire_geom_info:
             f = np.random.uniform(-0.1, 0.1, size=(3, 1))
             torque = np.zeros_like(f)
-            mujoco.mj_applyFT(physics.model.ptr, physics.data.ptr, f,
-                              torque, pos, i, physics.data.qfrc_applied)
+            mujoco.mj_applyFT(
+                physics.model.ptr,
+                physics.data.ptr,
+                f,
+                torque,
+                pos,
+                i,
+                physics.data.qfrc_applied,
+            )
 
         del random_state
         physics.set_control(action)
