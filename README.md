@@ -61,20 +61,36 @@ How to Use:
    Create a prefab for rope fragments and assign it to the fragmentPrefab field.
    Configure the desired number of fragments, spacing between them, and raycast distance
    for collisions in the inspector.
+   In the Inspector panel, customize the following parameters to suit your project:
+      1) Fragment Prefab: Assign a prefab for rope fragments.
+      2) Fragment Count: Set the number of rope fragments.
+      3) Interval: Specify the spacing between fragments.
+      4) Move Speed: Adjust the speed of rope movement.
+      5) Rotation Speed: Control the rope's rotation speed.
+      6) Raycast Distance: Define the maximum raycasting distance for collisions.
+      7) Haptic Manager: Assign the HapticFeedbackManager script if you want to enable haptic          feedback.
 3. Haptic Feedback (VR):
    If you're using VR, make sure you have the XR settings configured in your Unity
    project. The script automatically checks for VR support.
 4. Layer Configuration:
-   Create a layer named "Environment" in your Unity project.
-   Assign this layer to the objects in your scene that the rope should collide with.
+   Configure the environment layer in Unity to specify which objects the rope should collide     with:
+      - In Unity, navigate to "Edit" > "Project Settings."
+      - Select "Tags and Layers."
+      - Under "Layers," find or create the "Environment" layer and assign it to objects in            your scene that should interact with the rope.
 5. Usage:
-   Play the scene.
-   Use the Vertical axis input (e.g., arrow keys or joystick) to adjust the rope's length.
-   The rope will interact with objects in the "Environment" layer and trigger haptic
-   feedback when a collision occurs.
+   Control Rope Movement:
+      During runtime, use the following keyboard input:
+         - Up Arrow: Move the rope forward vertically.
+         - Down Arrow: Move the rope backward vertically.
+         - Left Arrow: Rotate the rope to the left.
+         - Right Arrow: Rotate the rope to the right.
+   Adjust Rope Length:
+         - Use the Up Arrow to increase the rope's length.
+         - Use the Down Arrow to decrease the rope's length. 
 6. Collision Handling:
-   To customize the response to rope fragment collisions, you can modify the 
-   OnCollisionEnter method in this script
+   The script handles collisions between rope fragments and objects in the environment           automatically.
+   When a rope fragment collides with an object tagged as "Environment," collision handling      is triggered.
+   If you've configured the HapticFeedbackManager script, it will provide haptic feedback        based on the platform (VR or non-VR).
 
 
 ### 4. HapticFeedbackManager.cs
