@@ -17,7 +17,7 @@
 1. Install the Unity Hub
 2. Import the project package "haptic-feedback" into Unity, then Run it.
 
-Note: The rope in the scene is representing the guidewire, and the environment is representing the aortic arch.
+Note: The game object called "Rope" in the scene is representing the guidewire, and the "Environment" is representing the aortic arch.
 
 
 ## Scripts
