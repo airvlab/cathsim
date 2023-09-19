@@ -17,6 +17,8 @@
 1. Install the Unity Hub
 2. Import the project package "haptic-feedback" into Unity, then Run it.
 
+Note: The rope in the scene is representing the guidewire, and the environment is representing the aortic arch.
+
 
 ## Scripts
 
@@ -45,7 +47,7 @@ How to Use:
    
 
 ### 3. RopeController.cs
-This script manages a dynamic rope made of interconnected fragments, handles length adjustment, collisions, and provides haptic feedback. The rope representing the guidewire and the environment representing the aortic arch.
+This script manages a dynamic rope made of interconnected fragments, handles length adjustment, collisions, and provides haptic feedback. 
 
 Features: 
 - Dynamic rope with adjustable length
