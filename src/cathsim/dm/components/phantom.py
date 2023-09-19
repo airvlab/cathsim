@@ -1,16 +1,15 @@
 from pathlib import Path
 
 from dm_control import mjcf
-from dm_control import composer
 
-from cathsim.utils import normalize_rgba, get_env_config
+from cathsim.dm.utils import normalize_rgba, get_env_config
+from cathsim.dm.components.base_models import BasePhantom
 
-env_config = get_env_config()
-phantom_config = env_config["phantom"]
-phantom_config["rgba"] = normalize_rgba(phantom_config["rgba"])
+phantom_config = get_env_config("phantom")
+phantom_default = phantom_config["default"]
 
 
-class Phantom(composer.Entity):
+class Phantom(BasePhantom):
     def _build(
         self, phantom_xml: str = "phantom3.xml", assets_dir: Path = None, **kwargs
     ):
@@ -21,28 +20,17 @@ class Phantom(composer.Entity):
             phantom_xml: Name of the XML file to use
             assets_dir: Directory where assets are saved
         """
-        self.rgba = phantom_config["rgba"]
+
+        self.rgba = normalize_rgba(phantom_default["geom"]["rgba"])
         self.scale = [phantom_config["scale"] for i in range(3)]
 
         path = Path(__file__).parent
-        model_dir = path / "assets"
+        model_dir = path / "phantom_assets"
         phantom_xml_path = (model_dir / phantom_xml).as_posix()
         self._mjcf_root = mjcf.from_file(
             phantom_xml_path, False, model_dir.as_posix(), **kwargs
         )
-        self._mjcf_root.default.geom.set_attributes(
-            margin=0.004,
-            group=0,
-            condim=phantom_config["condim"],
-        )
-        self._mjcf_root.default.site.set_attributes(
-            rgba=[0, 0, 0, 0],
-        )
-        self._mjcf_root.default.site.set_attributes(
-            type="sphere",
-            size=[0.002],
-            rgba=[0.8, 0.8, 0.8, 0],
-        )
+        self._set_defaults()
 
         self.set_scale(scale=self.scale)
         self.set_rgba(rgba=self.rgba)
@@ -53,18 +41,47 @@ class Phantom(composer.Entity):
             model_dir / f'meshes/{phantom_xml.split(".")[0]}/simplified.stl'
         )
 
-    def set_rgba(self, rgba: list) -> None:
+    def _set_defaults(self):
+        """Sets the default values for the Phantom3."""
+        self._mjcf_root.default.geom.set_attributes(
+            **phantom_default["geom"],
+        )
+        self._mjcf_root.default.site.set_attributes(
+            **phantom_default["site"],
+        )
+
+    def set_rgba(self, rgba: list):
+        """Sets the RGBA values for the Phantom3.
+
+        Used to change the color of the Phantom3. This can be used for domain randomization.
+
+        Args:
+            rgba (list): List of RGBA values (normalized to 1.0)
+        """
         self.rgba = rgba
         self._mjcf_root.find("geom", "visual").rgba = self.rgba
         collision_rgba = rgba.copy()
         collision_rgba[-1] = 0
         self._mjcf_root.default.geom.set_attributes(rgba=collision_rgba)
 
-    def set_hulls_alpha(self, alpha: float) -> None:
+    def set_hulls_alpha(self, alpha: float):
+        """Sets the alpha value for the hulls.
+
+        Usefull for debugging and visualization.
+
+        Args:
+            alpha (float): Alpha value to set
+        """
         self.rgba[-1] = alpha
         self._mjcf_root.default.geom.set_attributes(rgba=self.rgba)
 
-    def set_scale(self, scale: tuple) -> None:
+    def set_scale(self, scale: tuple):
+        """Changes the scale of the phantom.
+
+
+        Args:
+            scale (tuple): The scale to set
+        """
         self._mjcf_root.default.mesh.set_attributes(scale=scale)
         self._mjcf_root.find("mesh", "visual").scale = [x * 1.005 for x in scale]
 

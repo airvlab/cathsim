@@ -1,0 +1,12 @@
+scale: 1
+
+default:
+  geom:
+    margin: 0.004
+    rgba: [111, 18, 0, 0.3]
+    group: 0
+    condim: 1
+  site:
+    rgba: [0.8, 0.8, 0.8, 0]
+    type: sphere
+    size: [0.002]

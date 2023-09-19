@@ -1,25 +1,21 @@
 """
-Utilities module for the environment.
+utilities module for the environment.
 """
-from cathsim.wrappers import (
-    DMEnvToGymWrapper,
+import numpy as np
+import yaml
+from gymnasium import wrappers
+import gymnasium as gym
+from cathsim.gym.wrappers import (
     GoalEnvWrapper,
     MultiInputImageWrapper,
-    Dict2Array,
+    SingleDict2Array,
 )
-from gym import wrappers
 
 
 from stable_baselines3.common.monitor import Monitor
-from stable_baselines3.common.vec_env import VecMonitor, DummyVecEnv, SubprocVecEnv
+from stable_baselines3.common.vec_env import VecMonitor, SubprocVecEnv
 from pathlib import Path
-import yaml
-import numpy as np
-
-
-import gym
 from dm_control.viewer.application import Application
-from dm_control import composer
 from toolz.dicttoolz import itemmap
 
 
@@ -95,154 +91,71 @@ def distance(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     return np.linalg.norm(a - b, axis=-1)
 
 
-def get_env_config(config_path: Path = None) -> dict:
-    """Read and parse `env_config` yaml file.
+def get_env_config(config: str = None) -> dict:
+    config_folder = Path(__file__).parent / "config"
+    if config is None:
+        config_path = config_folder / "env.yaml"
+    else:
+        config_path = config_folder / f"{config}.yaml"
+    if config_path.exists():
+        config = get_config(config_path)
+        return config
+    else:
+        raise FileNotFoundError(f"Could not find config file {config_path}")
 
-    Args:
-      config_path: Path:  (Default value = None)
 
-    Returns:
-        dict: The configuration dictionary
-
-    """
-    if config_path is None:
-        config_path = Path(__file__).parent / "env_config.yaml"
+def get_config(config_path: Path = None) -> dict:
     with open(config_path, "r") as f:
-        env_config = yaml.safe_load(f)
-    return env_config
+        config = yaml.safe_load(f)
+    return config
 
 
-def make_dm_env(
-    phantom: str = "phantom3",
-    target: str = "bca",
-    use_pixels: bool = False,
-    dense_reward: bool = True,
-    success_reward: float = 10.0,
-    delta: float = 0.004,
-    use_segment: bool = False,
-    image_size: int = 80,
-    **kwargs,
-) -> composer.Environment:
-    """Makes a dm_control environment given a configuration.
-
-    Args:
-      phantom: str:  (Default value = "phantom3") The phantom to use
-      target: str:  (Default value = "bca") The target to use
-      use_pixels: bool:  (Default value = False) Whether or not to use pixels
-      dense_reward: bool:  (Default value = True) Whether or not to use dense reward
-      success_reward: float:  (Default value = 10.0) The reward for success
-      delta: float:  (Default value = 0.004) The delta for the reward
-      use_segment: bool:  (Default value = False) Whether or not to use the segment image
-      image_size: int:  (Default value = 80) The size of the image
-      **kwargs:
-
-    Returns:
-        composer.Environment: The environment
-
-    """
-
-    from cathsim import Phantom, Tip, Guidewire, Navigate
-
-    phantom = phantom + ".xml"
-
-    phantom = Phantom(phantom)
-    tip = Tip(n_bodies=4)
-    guidewire = Guidewire(n_bodies=80)
-    task = Navigate(
-        phantom=phantom,
-        guidewire=guidewire,
-        tip=tip,
-        dense_reward=dense_reward,
-        success_reward=success_reward,
-        delta=delta,
-        use_pixels=use_pixels,
-        use_segment=use_segment,
-        image_size=image_size,
-        target=target,
-        **kwargs,
-    )
-    env = composer.Environment(
-        task=task,
-        random_state=np.random.RandomState(42),
-        strip_singleton_obs_buffer_dim=True,
-    )
-
-    return env
+WRAPPERS = {
+    "GoalEnvWrapper": (GoalEnvWrapper, {}),
+    "FilterObservation": (
+        wrappers.FilterObservation,
+        {"filter_keys": lambda cfg: cfg["wrapper_kwargs"].get("use_obs", [])},
+    ),
+    "TimeLimit": (
+        wrappers.TimeLimit,
+        {"max_episode_steps": lambda cfg: cfg["wrapper_kwargs"].get("time_limit", 300)},
+    ),
+    "FlattenObservation": (wrappers.FlattenObservation, {}),
+    "MultiInputImageWrapper": (
+        MultiInputImageWrapper,
+        {
+            "grayscale": lambda cfg: cfg["wrapper_kwargs"].get("grayscale", True),
+            "image_key": lambda cfg: cfg["wrapper_kwargs"].get("image_key", "pixels"),
+            "keep_dim": lambda cfg: cfg["wrapper_kwargs"].get("keep_dim", True),
+            "channel_first": lambda cfg: cfg["wrapper_kwargs"].get(
+                "channel_first", False
+            ),
+        },
+    ),
+    "SingleDict2Array": (SingleDict2Array, {}),
+    "NormalizeObservation": (wrappers.NormalizeObservation, {}),
+    "FrameStack": (
+        wrappers.FrameStack,
+        {"num_stack": lambda cfg: cfg["wrapper_kwargs"].get("frame_stack", 1)},
+    ),
+}
 
 
 def make_gym_env(
-    config: dict = {}, n_envs: int = 1, monitor_wrapper: bool = True
+    config: dict = {}, n_envs: int = 1, monitor_wrapper: bool = True, wrappers=WRAPPERS
 ) -> gym.Env:
-    """Makes a gym environment given a configuration. This is a wrapper for the creation of environment and basic wrappers
-
-    Args:
-        config: dict:  (Default value = {}) The configuration dictionary
-        n_envs: int:  (Default value = 1) The number of environments to create
-        monitor_wrapper: bool:  (Default value = True) Whether or not to use the monitor wrapper
-
-    Returns:
-        gym.Env: The environment
-
-    """
-
-    wrapper_kwargs = config.wrapper_kwargs or {}
-    task_kwargs = config.task_kwargs or {}
-
     def _create_env() -> gym.Env:
-        """Create and return environment based on config. This is a wrapper for the creation of environment and basic wrappers
+        from gymnasium import make
 
-        Returns:
-            gym.Env: The environment
+        env = make("cathsim/CathSim-v0", **wrappers.get("task_kwargs", {}))
 
-        """
-
-        # Environment creation and basic wrapping
-        dm_env = make_dm_env(**task_kwargs)
-        env = DMEnvToGymWrapper(env=dm_env)
-
-        # If goal_env is set to True then the goal is used to determine the desired goal.
-        if wrapper_kwargs.get("goal_env", False):
-            filter_keys = wrapper_kwargs.get("use_obs", []) + [
-                "achieved_goal",
-                "desired_goal",
-            ]
-            env = GoalEnvWrapper(env=env)
-        else:
-            filter_keys = wrapper_kwargs.get("use_obs", [])
-
-        # FilterObservation for the filter_keys.
-        if filter_keys:
-            env = wrappers.FilterObservation(env, filter_keys=filter_keys)
-
-        env = wrappers.TimeLimit(
-            env, max_episode_steps=wrapper_kwargs.get("time_limit", 300)
-        )
-
-        if wrapper_kwargs.get("flatten_obs", False):
-            env = wrappers.FlattenObservation(env)
-
-        if task_kwargs.get("use_pixels", False):
-            env = MultiInputImageWrapper(
-                env,
-                grayscale=wrapper_kwargs.get("grayscale", False),
-                image_key=wrapper_kwargs.get("image_key", "pixels"),
-                keep_dim=wrapper_kwargs.get("keep_dim", True),
-                channel_first=wrapper_kwargs.get("channel_first", False),
-            )
-
-        # If the observation dict has a single key, flatten the observation.
-        if wrapper_kwargs.get("dict2array", False):
-            assert (
-                len(env.observation_space.spaces) == 1
-            ), "Only one observation is allowed."
-            env = Dict2Array(env)
-
-        # NormalizeObservation if normalize_obs is True.
-        if wrapper_kwargs.get("normalize_obs", False):
-            env = wrappers.NormalizeObservation(env)
-
-        if wrapper_kwargs.get("frame_stack", 1) > 1:
-            env = wrappers.FrameStack(env, wrapper_kwargs["frame_stack"])
+        for wrap in wrappers:
+            if wrap["condition"](config):
+                dynamic_kwargs = {
+                    k: (v(config) if callable(v) else v)
+                    for k, v in wrap["kwargs"].items()
+                }
+                env = wrap["wrapper"](env, **dynamic_kwargs)
 
         return env
 

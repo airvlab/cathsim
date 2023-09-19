@@ -1,6 +1,6 @@
 from typing import Dict
 
-from gym import spaces
+from gymnasium import spaces
 
 import torch.nn as nn
 import torch
@@ -13,8 +13,6 @@ from stable_baselines3.common.preprocessing import is_image_space, get_flattened
 
 
 class CustomExtractor(BaseFeaturesExtractor):
-    """Custom feature extractor for the custom environment"""
-
     def __init__(
         self,
         observation_space: spaces.Dict,
@@ -22,14 +20,6 @@ class CustomExtractor(BaseFeaturesExtractor):
         normalized_image: bool = False,
         mlp_layers: list = [256, 128],
     ) -> None:
-        """Extractor for the custom environment
-
-        Args:
-            observation_space (spaces.Dict): Observation space of the environment
-            cnn_output_dim (int): Output dimension of the CNN extractor
-            normalized_image (bool): Normalize the image when using a CNN
-            mlp_layers (list): MLP layers size
-        """
         super().__init__(observation_space, features_dim=1)
         extractors: Dict[str, nn.Module] = {}
         total_concat_size = 0
