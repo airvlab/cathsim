@@ -29,7 +29,7 @@ How to Use:
 
 1. Attach the CatmullRomSpline script to an empty GameObject or any GameObject where you need spline interpolation.
 2. Create an array of control points (values) that you want to interpolate.
-3. Initialize the CatmullRomSpline by calling the constructor with the control points array.
+3. Initialise the CatmullRomSpline by calling the constructor with the control points array.
 4. Use the GetValue method to interpolate values along the spline at different positions.
 5. Use the Test method to do sample interpolation tests
    
@@ -40,7 +40,7 @@ The MouseDraggable script allows you to click and drag a GameObject with a Rigid
 How to Use:
 
 1. Attach the MouseDraggable script to the GameObject you want to make draggable. Make sure the GameObject has a Rigidbody component attached.
-2. In the Unity Inspector, you will see the MouseDraggable script component. Customize the parameter for Drag Sensitivity. Adjust the drag sensitivity to control how responsive the object is to mouse movement.
+2. In the Unity Inspector, you will see the MouseDraggable script component. Customise the parameter for Drag Sensitivity. Adjust the drag sensitivity to control how responsive the object is to mouse movement.
 3. Play the Unity scene to test the draggable behavior.
 4. When you click on the GameObject, it will become draggable by the mouse. You can click and drag it to move it around.
 5. Release the mouse button to stop dragging. The GameObject will then resume its normal physics behavior.
@@ -63,7 +63,7 @@ How to Use:
       - Create a prefab for rope fragments and assign it to the fragmentPrefab field.
       - Configure the desired number of fragments, spacing between them, and raycast distance
         for collisions in the inspector.
-      - In the Inspector panel, customize the following parameters to suit your project:
+      - In the Inspector panel, customise the following parameters to suit your project:
          1) Fragment Prefab: Assign a prefab for rope fragments.
          2) Fragment Count: Set the number of rope fragments.
          3) Interval: Specify the spacing between fragments.
@@ -100,11 +100,11 @@ This Unity script provides a simple way to trigger haptic feedback on supported 
 Features:
 - Supports haptic feedback on platforms that allow vibration
 - Compatible with VR platforms, providing haptic feedback for left and right hand controllers (if supported)
-- Easily customizable duration and intensity of the haptic feedback
+- Easily customisable duration and intensity of the haptic feedback
 
 How to Use:
 1. Attach the HapticFeedbackManager script to a GameObject in your Unity scene.
-2. Customize the haptic feedback duration and intensity by adjusting the hapticDuration and hapticIntensity variables in the Inspector.
+2. Customise the haptic feedback duration and intensity by adjusting the hapticDuration and hapticIntensity variables in the Inspector.
 3. Call the TriggerHapticFeedback method from your script or UI button click event to trigger haptic feedback.
 
    
