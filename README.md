@@ -55,7 +55,7 @@ Features:
 How to Use:
 
 1. Requirements:
-      - Ensure that you have Unity installed and a compatible version of the Unity XR Plugin          if you plan to use VR features.
+      - Ensure that you have Unity installed and a compatible version of the Unity XR Plugin if you plan to use VR features.
 2. Setup:
       - Attach this script to the GameObject in your scene.
       - Create a prefab for rope fragments and assign it to the fragmentPrefab field.
@@ -68,14 +68,14 @@ How to Use:
          4) Move Speed: Adjust the speed of rope movement.
          5) Rotation Speed: Control the rope's rotation speed.
          6) Raycast Distance: Define the maximum raycasting distance for collisions.
-         7) Haptic Manager: Assign the HapticFeedbackManager script if you want to enable                 haptic feedback.
+         7) Haptic Manager: Assign the HapticFeedbackManager script if you want to enable haptic feedback.
 3. Haptic Feedback:
       - If you're using VR, make sure you have the XR settings configured in your Unity
         project. The script automatically checks for VR support.
 4. Layer Configuration:
-      - Configure the environment layer in Unity to specify which objects the rope should             collide with
-      - In Unity, go to Edit > Project Settings and select Tags and Layers
-      - Under Layers, find or create the Environment layer and assign it to objects in                your scene that should interact with the rope.
+      - Configure the environment layer in Unity to specify which objects the rope should collide with
+      - In Unity, go to Edit -> Project Settings and select Tags and Layers
+      - Under Layers, find or create the Environment layer and assign it to objects in your scene that should interact with the rope.
 5. Usage:
       - Control Rope Movement:
         During runtime, use the following keyboard input:
@@ -87,9 +87,9 @@ How to Use:
          - Use the Up Arrow to increase the rope's length.
          - Use the Down Arrow to decrease the rope's length. 
 6. Collision Handling:
-      - The script handles collisions between rope fragments and objects in the environment           automatically.
-      - When a rope fragment collides with an object tagged as "Environment", collision               handling is triggered.
-      - If you've configured the HapticFeedbackManager script, it will provide haptic                 feedback based on the platform (VR or non-VR).
+      - The script handles collisions between rope fragments and objects in the environment automatically.
+      - When a rope fragment collides with an object tagged as "Environment", collision handling is triggered.
+      - If you've configured the HapticFeedbackManager script, it will provide haptic feedback based on the platform (VR or non-VR).
 
 
 ### 4. HapticFeedbackManager.cs
