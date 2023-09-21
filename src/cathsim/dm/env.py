@@ -246,7 +246,7 @@ class Navigate(composer.Task):
 
     Args:
         phantom: The phantom entity to use
-        guidewire: The guidewire entity to use
+        guidewire: the guidewire entity to use
         tip: The tip entity to use for the tip ( default : None )
         delta: Minimum distance threshold for the success reward ( default : 0.004 )
         dense_reward: If True, the reward is the distance to the target ( default : True )
@@ -297,16 +297,12 @@ class Navigate(composer.Task):
         self.sampling_bounds = (0.0954, 0.1342)
         self.random_init_distance = random_init_distance
 
-        # Setup arena and attachments
         self._setup_arena_and_attachments(phantom, guidewire, tip)
 
-        # Configure initial poses and variators
         self._configure_poses_and_variators()
 
-        # Setup observables
         self._setup_observables()
 
-        # Visualization
         self._setup_visualizations()
 
         self.control_timestep = env_config["num_substeps"] * self.physics_timestep
