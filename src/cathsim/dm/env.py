@@ -1,17 +1,14 @@
 import math
 import numpy as np
+import pandas as pd
 import trimesh
 import random
-from typing import Union, Optional, Tuple
-from scipy.spatial import transform
+from typing import Union, Optional
 
 
 from dm_control import mjcf, mujoco
 from dm_control.mujoco.wrapper.mjbindings import mjlib
-from dm_control import mujoco
-from dm_control import mjcf
 from dm_control.mujoco import wrapper, engine
-from dm_control.mujoco.wrapper.core import set_callback, MjModel, MjData
 from dm_control import composer
 from dm_control.composer import variation
 from dm_control.composer.variation import distributions, noises
@@ -19,6 +16,7 @@ from dm_control.composer.observation import observable
 
 from cathsim.dm.components import Phantom
 from cathsim.dm.components import Guidewire, Tip
+from cathsim.dm.fluid import apply_fluid_force
 from cathsim.dm.utils import distance
 from cathsim.dm.observables import CameraObservable
 from cathsim.dm.utils import filter_mask, get_env_config
@@ -94,13 +92,6 @@ def sample_points(
 callback_called = 0
 
 
-def custom_fluid(model: MjModel, data: MjData):
-    global callback_called
-    joint_pos = data.qpos
-    joint_vel = data.qvel
-    callback_called += 1
-
-
 class Scene(composer.Arena):
     def _build(self, name: str = "arena"):
         """Build the scene.
@@ -129,10 +120,14 @@ class Scene(composer.Arena):
     def _add_cameras(self):
         """Add cameras to the scene."""
         self.top_camera = self.add_camera(
-            "top_camera", [-0.03, 0.125, 0.25], quat=[1, 0, 0, 0],
+            "top_camera",
+            [-0.03, 0.125, 0.25],
+            quat=[1, 0, 0, 0],
         )
         self.top_camera_close = self.add_camera(
-            "top_camera_close", [-0.03, 0.125, 0.065], quat=[1, 0, 0, 0],
+            "top_camera_close",
+            [-0.03, 0.125, 0.065],
+            quat=[1, 0, 0, 0],
         )
         self.side_camera = self.add_camera(
             "side", [-0.22, 0.105, 0.03], quat=[0.5, 0.5, -0.5, -0.5]
@@ -297,6 +292,7 @@ class Navigate(composer.Task):
         self.use_segment = use_segment
         self.use_phantom_segment = use_phantom_segment
         self.image_size = image_size
+        self.apply_fluid_force = True
         self.visualize_sites = visualize_sites
         self.visualize_target = visualize_target
         self.sample_target = sample_target
@@ -552,14 +548,13 @@ class Navigate(composer.Task):
         image_size: Optional[int] = None,
         camera_name: str = "top_camera",
     ) -> np.ndarray:
-
         cameras = self._arena.mjcf_model.find_all("camera")
         camera = next((cam for cam in cameras if cam.name == camera_name), None)
 
         if camera is None:
             raise ValueError(f"No camera found with the name: {camera_name}")
 
-        assert (camera.quat is not None), "Camera quaternion is None"
+        assert camera.quat is not None, "Camera quaternion is None"
 
         image_size = image_size or self.image_size
         camera_matrix = create_camera_matrix(
@@ -611,80 +606,11 @@ class Navigate(composer.Task):
         mesh = trimesh.load_mesh(self._phantom.simplified, scale=0.9)
         return sample_points(mesh, self.sampling_bounds)
 
-    def get_guidewire_geom_pos(self, physics: engine.Physics) -> list[np.ndarray]:
-        """Get the guidewire geometry positions.
-
-        Args:
-            physics (engine.Physics): DM control physics object
-
-        Returns:
-            list[np.ndarray]: A list of positions of the guidewire geometries
-        """
-
-        model = physics.copy().model
-
-        # Collect IDs of all guidewire geometries
-        guidewire_geom_ids = []
-        for i in range(model.ngeom):
-            geom_name = model.geom(i).name
-            if "guidewire" in geom_name:
-                guidewire_geom_ids.append(model.geom(i).id)
-
-        # Get positions based on IDs
-        guidewire_geom_pos = [physics.data.geom_xpos[i] for i in guidewire_geom_ids]
-
-        return guidewire_geom_pos
-
-    def get_jacobian_for_geom_id(self, physics: engine.Physics, geom_id: int):
-        jac_pos = np.zeros((3, physics.model.nv))
-        jac_rot = np.zeros((3, physics.model.nv))
-
-        # get Jacobian of specific geometry
-        mjlib.mj_jacGeom(
-            physics.model.ptr,
-            physics.data.ptr,
-            jac_pos,
-            jac_rot,
-            geom_id,
-        )
-        return jac_pos, jac_rot
-
-    def get_guidewire_geom_info(self, physics: engine.Physics) -> list[np.ndarray]:
-        model = physics.copy().model
-
-        # Collect IDs of all guidewire geometries
-        guidewire_geom_ids = []
-        for i in range(model.ngeom):
-            geom_name = model.geom(i).name
-            if "guidewire" in geom_name:
-                guidewire_geom_ids.append(model.geom(i).id)
-
-        # Get positions and Jacobians based on IDs
-        guidewire_geom_info = []
-        for i in guidewire_geom_ids:
-            position = physics.data.geom_xpos[i]
-            jac_pos, jac_rot = self.get_jacobian_for_geom_id(physics, i)
-            guidewire_geom_info.append((position, jac_pos, jac_rot))
-
-        return guidewire_geom_info
-
-    def before_step(self, physics, action, random_state):
-        data = physics.data
-        model = physics.model
-        qfrc_passive_before = data.qfrc_passive.copy()
-        # base_pos = physics.named.xpos["guidewire/"]
-
-        guidewire_geom_info = self.get_guidewire_geom_info(physics)
-        # set_callback("mjcb_passive", custom_fluid(model, data))
-
-        for pos, jac, _ in guidewire_geom_info:
-            vel = np.random.uniform(-.001, .001, size=(3, 1))
-            vel_joint_space = np.linalg.pinv(jac) @ vel
-            data.qfrc_passive += vel_joint_space.squeeze()
-
+    def before_step(self, physics, action,random_state):
+        if self.apply_fluid_force:
+            apply_fluid_force(physics)
         del random_state
         physics.set_control(action)
-        assert (qfrc_passive_before != data.qfrc_passive).any()
 
     @staticmethod
     def get_jacobian(physics: engine.Physics):
@@ -777,24 +703,16 @@ if __name__ == "__main__":
         target_from_sites=False,
     )
 
-    env._task.get_guidewire_geom_pos(env.physics)
-    physics = env.physics
-    print("qpos", physics.data.qpos.shape)
-    image_size = 480
-
     def random_policy(time_step):
         del time_step
         return [0.4, random.random() * 2 - 1]
 
     for episode in range(1):
         time_step = env.reset()
-        # print(env._task.target_pos)
-        # print(env._task.get_head_pos(env._physics))
-        for step in range(200):
+        for step in range(20):
             action = random_policy(time_step)
-            if step > 30:
+            if step > 3:
                 action = np.zeros_like(action)
-            print(f"Callback called {callback_called} times")
             top = time_step.observation["guidewire"]
             cv2.imshow("top", top)
             cv2.waitKey(1)
