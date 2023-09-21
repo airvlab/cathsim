@@ -609,27 +609,6 @@ class Navigate(composer.Task):
         del random_state
         physics.set_control(action)
 
-    @staticmethod
-    def get_jacobian(physics: engine.Physics):
-        jac_pos = np.zeros((3, physics.model.nv))
-        jac_rot = np.zeros((3, physics.model.nv))
-
-        mjlib.mj_jacGeom(
-            physics.model.ptr,
-            physics.data.ptr,
-            jac_pos,
-            jac_rot,
-            physics.model.name2id("guidewire/tip/head", "geom"),
-        )
-
-        print("Jac Pos: ", jac_pos.shape)
-        print("Jac Rot: ", jac_rot.shape)
-        return jac_pos
-
-
-def cartesian_to_joint_force(force: np.ndarray):
-    pass
-
 
 def make_dm_env(
     phantom: str = "phantom3",

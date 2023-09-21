@@ -1,5 +1,4 @@
 import numpy as np
-from time import sleep
 from pathlib import Path
 from dm_control import mujoco
 from functools import lru_cache
@@ -87,12 +86,3 @@ def apply_fluid_force(physics):
             id,
             physics.data.qfrc_passive,
         )
-
-
-if __name__ == "__main__":
-    random_pos = [np.random.random((3,)) for i in range(84)]
-    # velocities = find_nearest_speed(random_pos)
-    velocities = find_average_velocity(random_pos, 3)
-    # print(velocities)
-
-    # assert random_pos.shape == velocities.shape
