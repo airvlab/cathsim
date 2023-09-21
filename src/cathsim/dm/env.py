@@ -651,7 +651,9 @@ class Navigate(composer.Task):
         guidewire_geom_ids = []
         for i in range(model.nbody):
             geom_name = model.body(i).name
-            if "guidewire" in geom_name:
+            contains_guidewire = "guidewire" in geom_name
+            is_part = "body" in geom_name
+            if contains_guidewire and is_part:
                 guidewire_geom_ids.append(model.geom(i).id)
 
         # Get positions and Jacobians based on IDs
