@@ -1,5 +1,6 @@
 import math
 import numpy as np
+import pandas as pd
 import trimesh
 import random
 from typing import Union, Optional
@@ -15,6 +16,7 @@ from dm_control.composer.observation import observable
 
 from cathsim.dm.components import Phantom
 from cathsim.dm.components import Guidewire, Tip
+from cathsim.dm.fluid import apply_fluid_force
 from cathsim.dm.utils import distance
 from cathsim.dm.observables import CameraObservable
 from cathsim.dm.utils import filter_mask, get_env_config
@@ -290,6 +292,7 @@ class Navigate(composer.Task):
         self.use_segment = use_segment
         self.use_phantom_segment = use_phantom_segment
         self.image_size = image_size
+        self.apply_fluid_force = True
         self.visualize_sites = visualize_sites
         self.visualize_target = visualize_target
         self.sample_target = sample_target
@@ -599,84 +602,9 @@ class Navigate(composer.Task):
         mesh = trimesh.load_mesh(self._phantom.simplified, scale=0.9)
         return sample_points(mesh, self.sampling_bounds)
 
-    def get_guidewire_geom_pos(self, physics: engine.Physics) -> list[np.ndarray]:
-        """Get the guidewire geometry positions.
-
-        Args:
-            physics (engine.Physics): DM control physics object
-
-        Returns:
-            list[np.ndarray]: A list of positions of the guidewire geometries
-        """
-
-        model = physics.copy().model
-
-        # Collect IDs of all guidewire geometries
-        guidewire_geom_ids = []
-        for i in range(model.ngeom):
-            geom_name = model.geom(i).name
-            if "guidewire" in geom_name:
-                guidewire_geom_ids.append(model.geom(i).id)
-
-        # Get positions based on IDs
-        guidewire_geom_pos = [physics.data.geom_xpos[i] for i in guidewire_geom_ids]
-
-        return guidewire_geom_pos
-
-    def get_jacobian_for_geom_id(self, physics: engine.Physics, geom_id: int):
-        jac_pos = np.zeros((3, physics.model.nv))
-        jac_rot = np.zeros((3, physics.model.nv))
-
-        # get Jacobian of specific geometry
-        mjlib.mj_jacGeom(
-            physics.model.ptr,
-            physics.data.ptr,
-            jac_pos,
-            jac_rot,
-            geom_id,
-        )
-        return jac_pos, jac_rot
-
-    def get_guidewire_geom_info(self, physics: engine.Physics) -> list[np.ndarray]:
-        if hasattr(self, "guidewire_bodies"):
-            return self.guidewire_bodies
-
-        model = physics.copy().model
-
-        # Collect IDs of all guidewire geometries
-        guidewire_geom_ids = []
-        for i in range(model.nbody):
-            geom_name = model.body(i).name
-            contains_guidewire = "guidewire" in geom_name
-            is_part = "body" in geom_name
-            if contains_guidewire and is_part:
-                guidewire_geom_ids.append(model.geom(i).id)
-
-        # Get positions and Jacobians based on IDs
-        guidewire_geom_info = []
-        for i in guidewire_geom_ids:
-            position = physics.data.geom_xpos[i]
-            guidewire_geom_info.append((i, position))
-
-        self.guidewire_bodies = guidewire_geom_info
-        return self.guidewire_bodies
-
-    def before_step(self, physics, action, random_state):
-        guidewire_geom_info = self.get_guidewire_geom_info(physics)
-
-        for i, pos in guidewire_geom_info:
-            f = np.random.uniform(-0.1, 0.1, size=(3, 1))
-            torque = np.zeros_like(f)
-            mujoco.mj_applyFT(
-                physics.model.ptr,
-                physics.data.ptr,
-                f,
-                torque,
-                pos,
-                i,
-                physics.data.qfrc_applied,
-            )
-
+    def before_step(self, physics, action,random_state):
+        if self.apply_fluid_force:
+            apply_fluid_force(physics)
         del random_state
         physics.set_control(action)
 
@@ -771,19 +699,12 @@ if __name__ == "__main__":
         target_from_sites=False,
     )
 
-    env._task.get_guidewire_geom_pos(env.physics)
-    physics = env.physics
-    print("qpos", physics.data.qpos.shape)
-    image_size = 480
-
     def random_policy(time_step):
         del time_step
         return [0.4, random.random() * 2 - 1]
 
     for episode in range(1):
         time_step = env.reset()
-        # print(env._task.target_pos)
-        # print(env._task.get_head_pos(env._physics))
         for step in range(200):
             action = random_policy(time_step)
             if step > 30:
