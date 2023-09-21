@@ -709,9 +709,9 @@ if __name__ == "__main__":
 
     for episode in range(1):
         time_step = env.reset()
-        for step in range(20):
+        for step in range(200):
             action = random_policy(time_step)
-            if step > 3:
+            if step > 30:
                 action = np.zeros_like(action)
             top = time_step.observation["guidewire"]
             cv2.imshow("top", top)
