@@ -1,79 +1,63 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import warnings
+from scipy.spatial import transform
+
+
+def quat_to_mat(quat):
+    "assumes quat is in wxyz format"
+    if quat[0] == 1 and quat[1] == 0 and quat[2] == 0 and quat[3] == 0:
+        return np.eye(3)
+    else:
+        quat = [quat[3], quat[0], quat[1], quat[2]]
+        return transform.Rotation.from_quat(quat).as_matrix().T
 
 
 def create_camera_matrix(
     image_size: int,
-    pos=np.array([-0.03, 0.125, 0.15]),
-    euler=np.array([0, 0, 0]),
-    fov=45,
+    pos: list,
+    quat: list,
+    fov: float = 45.0,
+    debug=False
 ) -> np.ndarray:
-    """
-    Generate a camera matrix given the parameters
+    pos = np.array(pos)
 
-    Args:
-      image_size: int:
-      pos:  (Default value = np.array([-0.03, 0.125, 0.15]):
-      euler:  (Default value = np.array([0, 0, 0]):
-      fov:  (Default value = 45)
+    # Translation matrix (4x4).
+    translation = np.eye(4)
+    translation[0:3, 3] = -pos
 
-    Returns:
-        np.ndarray: The camera matrix
+    # Rotation matrix (4x4).
+    R = quat_to_mat(quat)
+    rotation = np.eye(4)
+    rotation[0:3, 0:3] = R
 
-    """
-
-    def euler_to_rotation_matrix(euler_angles: np.ndarray) -> np.ndarray:
-        """
-        Make a rotation matrix from euler angles
-
-        Args:
-            euler_angles: np.ndarray: The euler angles
-
-        Returns:
-            np.ndarray: The rotation matrix
-
-        """
-        rx, ry, rz = np.deg2rad(euler_angles)
-
-        Rx = np.array(
-            [[1, 0, 0], [0, np.cos(rx), -np.sin(rx)], [0, np.sin(rx), np.cos(rx)]]
-        )
-
-        Ry = np.array(
-            [[np.cos(ry), 0, np.sin(ry)], [0, 1, 0], [-np.sin(ry), 0, np.cos(ry)]]
-        )
-
-        Rz = np.array(
-            [[np.cos(rz), -np.sin(rz), 0], [np.sin(rz), np.cos(rz), 0], [0, 0, 1]]
-        )
-
-        R = Rz @ Ry @ Rx
-        return R
-
-    # Intrinsic Parameters
-    focal_scaling = (1.0 / np.tan(np.deg2rad(fov) / 2)) * image_size / 2.0
+    # Focal transformation matrix (3x4).
+    focal_scaling = (1.0 / np.tan(np.deg2rad(fov) / 2)) * (image_size / 2.0)
     focal = np.diag([-focal_scaling, focal_scaling, 1.0, 0])[0:3, :]
+    # Focal transformation matrix (3x4).
+
+    # Image matrix (3x3).
     image = np.eye(3)
     image[0, 2] = (image_size - 1) / 2.0
     image[1, 2] = (image_size - 1) / 2.0
 
-    # Extrinsic Parameters
-    rotation_matrix = euler_to_rotation_matrix(euler)
-    R = np.eye(4)
-    R[0:3, 0:3] = rotation_matrix
-    T = np.eye(4)
-    T[0:3, 3] = -pos
-
-    # Camera Matrix
-    camera_matrix = image @ focal @ R @ T
+    # Compute the 3x4 camera matrix.
+    camera_matrix = image @ focal @ rotation @ translation
+    if debug:
+        print("quat: \n", quat)
+        print("translation: \n", translation[:3, 3])
+        print("rotation: \n", rotation[:3, :3])
+        print("focal: \n", focal)
+        print("image: \n", image)
     return camera_matrix
 
 
 def point2pixel(
-    point: np.ndarray,
+    points: np.ndarray,
     camera_matrix: np.ndarray = None,
     camera_kwargs: dict = dict(image_size=80),
+
+
 ) -> np.ndarray:
     """Transforms from world coordinates to pixel coordinates.
 
@@ -87,10 +71,21 @@ def point2pixel(
     """
     if camera_matrix is None:
         camera_matrix = create_camera_matrix(**camera_kwargs)
-    x, y, z = point
-    xs, ys, s = camera_matrix.dot(np.array([x, y, z, 1.0]))
 
-    return np.array([round(xs / s), round(ys / s)]).astype(np.int32)
+    if points.ndim == 1:
+        points = points[np.newaxis, :]
+
+    # Making points homogeneous
+    points_homogeneous = np.hstack([points, np.ones((points.shape[0], 1))])
+
+    # Projecting to pixel coordinates
+    pixel_coords = camera_matrix.dot(points_homogeneous.T)
+
+    # Converting homogeneous coordinates to Cartesian coordinates
+    pixel_coords = pixel_coords / pixel_coords[-1, :]
+    pixel_coords = np.round(pixel_coords[:-1, :].T).astype(np.int32)
+
+    return pixel_coords.squeeze()
 
 
 def plot_3D_to_2D(

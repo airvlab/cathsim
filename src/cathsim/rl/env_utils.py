@@ -47,7 +47,6 @@ def make_gym_env(
     def _create_env() -> gym.Env:
         from cathsim.gym.envs import CathSim
 
-        # env = CathSim(**task_kwargs)
         env = gym.make("cathsim/CathSim-v0", **task_kwargs)
 
         env = apply_filter_observation(
