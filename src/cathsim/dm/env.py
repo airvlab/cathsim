@@ -277,6 +277,7 @@ class Navigate(composer.Task):
         use_segment: bool = False,
         use_phantom_segment: bool = False,
         image_size: int = 80,
+        apply_fluid_force: bool = False,
         sample_target: bool = False,
         visualize_sites: bool = False,
         visualize_target: bool = False,
@@ -292,7 +293,7 @@ class Navigate(composer.Task):
         self.use_segment = use_segment
         self.use_phantom_segment = use_phantom_segment
         self.image_size = image_size
-        self.apply_fluid_force = True
+        self.apply_fluid_force = apply_fluid_force
         self.visualize_sites = visualize_sites
         self.visualize_target = visualize_target
         self.sample_target = sample_target
@@ -602,7 +603,7 @@ class Navigate(composer.Task):
         mesh = trimesh.load_mesh(self._phantom.simplified, scale=0.9)
         return sample_points(mesh, self.sampling_bounds)
 
-    def before_step(self, physics, action,random_state):
+    def before_step(self, physics, action, random_state):
         if self.apply_fluid_force:
             apply_fluid_force(physics)
         del random_state
