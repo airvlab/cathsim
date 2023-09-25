@@ -2,7 +2,7 @@
 ### [[Project Page](https://RobotVisionAI.github.io/cathsim/)] [[Paper](https://arxiv.org/abs/2208.01455)]
 
 ## Contents
-1. [Requirements](#requirements)
+1. [Dependencies](#dependencies)
 2. [Installation](#installation)
 3. [Scripts](#scripts)
 
