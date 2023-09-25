@@ -1,9 +1,10 @@
 from dm_control import composer
 from abc import ABC, abstractmethod
 
+from functools import cached_property
+
 
 class BaseModel(ABC, composer.Entity):
-
     @abstractmethod
     def _build(self):
         """Building method for the guidewire.
@@ -41,14 +42,18 @@ class BaseModel(ABC, composer.Entity):
     def mjcf_model(self):
         raise NotImplementedError("Subclasses should implement this!")
 
-    @property
+    @cached_property
     def actuators(self):
         """Get the actuators of the guidewire."""
         return tuple(self.mjcf_model.find_all("actuator"))
 
-    @property
+    @cached_property
     def joints(self):
         return tuple(self.mjcf_model.find_all("joint"))
+
+    @cached_property
+    def bodies(self):
+        return tuple(self.mjcf_model.find_all("body"))
 
 
 class BaseGuidewire(BaseModel, ABC):
@@ -61,8 +66,7 @@ class BaseGuidewire(BaseModel, ABC):
 
 
 class BasePhantom(BaseModel, ABC):
-
-    @ property
+    @property
     def sites(self) -> dict:
         """
         Gets the sites from the mesh. Useful for declaring navigation targets or areas of interest.

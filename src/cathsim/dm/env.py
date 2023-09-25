@@ -1,4 +1,5 @@
 import math
+from functools import lru_cache, cached_property
 import numpy as np
 import pandas as pd
 import trimesh
@@ -608,6 +609,11 @@ class Navigate(composer.Task):
             apply_fluid_force(physics)
         del random_state
         physics.set_control(action)
+
+    @cached_property
+    def guidewire_bodies_ids(self):
+        """The guidewire_bodies_ids property."""
+        return self._guidewire.bodies
 
 
 def make_dm_env(
