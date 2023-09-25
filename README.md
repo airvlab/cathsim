@@ -25,9 +25,9 @@ Note: The game object called "Rope" in the scene is representing the guidewire, 
 ### 1. CatmullRomSpline.cs
 The "CatmullRomSpline" script provides a Catmull-Rom spline interpolation implementation for creating smooth curves between control points
 
-How to Use:
+To use it:
 
-1. Attach the CatmullRomSpline script to an empty GameObject or any GameObject where you need spline interpolation.
+1. Attach the CatmullRomSpline script to the GameObject where you need spline interpolation.
 2. Create an array of control points (values) that you want to interpolate.
 3. Initialise the CatmullRomSpline by calling the constructor with the control points array.
 4. Use the GetValue method to interpolate values along the spline at different positions.
@@ -37,12 +37,12 @@ How to Use:
 ### 2. MouseDraggable.cs
 The MouseDraggable script allows you to click and drag a GameObject with a Rigidbody attached to it, making it follow the mouse cursor's movement, within the Unity game engine. It smoothly moves the object in response to mouse input, temporarily disabling physics simulation for smooth dragging.
 
-How to Use:
+To use it:
 
-1. Attach the MouseDraggable script to the GameObject you want to make draggable. Make sure the GameObject has a Rigidbody component attached.
+1. Attach the MouseDraggable script to the GameObject that you want to use the drag feature on. Make sure the GameObject has a Rigidbody component attached.
 2. In the Unity Inspector, you will see the MouseDraggable script component. Customise the parameter for Drag Sensitivity. Adjust the drag sensitivity to control how responsive the object is to mouse movement.
 3. Play the Unity scene to test the draggable behavior.
-4. When you click on the GameObject, it will become draggable by the mouse. You can click and drag it to move it around.
+4. When you click on the GameObject, you can drag it to move it around.
 5. Release the mouse button to stop dragging. The GameObject will then resume its normal physics behavior.
    
 
@@ -54,12 +54,12 @@ Features:
 - Collision detection with objects in the environment
 - Haptic feedback support for VR and non-VR platforms
 
-How to Use:
+To use it:
 
 1. Requirements:
-      - Ensure that you have Unity installed and a compatible version of the Unity XR Plugin if you plan to use VR features.
+      - Ensure that you have a compatible version of the Unity XR Plugin.
 2. Setup:
-      - Attach this script to the GameObject in your scene.
+      - Attach this script to the GameObject that requires it
       - Create a prefab for rope fragments and assign it to the fragmentPrefab field.
       - Configure the desired number of fragments, spacing between them, and raycast distance
         for collisions in the inspector.
@@ -91,7 +91,6 @@ How to Use:
 6. Collision Handling:
       - The script handles collisions between rope fragments and objects in the environment automatically.
       - When a rope fragment collides with an object tagged as "Environment", collision handling is triggered.
-      - If you've configured the HapticFeedbackManager script, it will provide haptic feedback based on the platform (VR or non-VR).
 
 
 ### 4. HapticFeedbackManager.cs
@@ -101,9 +100,9 @@ Features:
 - Supports haptic feedback on platforms that allow vibration
 - Compatible with VR platforms, providing haptic feedback for left and right hand controllers (if supported)
 - Easily customisable duration and intensity of the haptic feedback
-
-How to Use:
-1. Attach the HapticFeedbackManager script to a GameObject in your Unity scene.
+  
+To use it:
+1. Attach the HapticFeedbackManager script to the GameObject that requires it.
 2. Customise the haptic feedback duration and intensity by adjusting the hapticDuration and hapticIntensity variables in the Inspector.
 3. Call the TriggerHapticFeedback method from your script or UI button click event to trigger haptic feedback.
 
