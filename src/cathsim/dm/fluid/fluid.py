@@ -5,7 +5,7 @@ from functools import lru_cache
 from scipy.spatial import KDTree
 from typing import Union
 
-data_path = Path(__file__).parent / "export1.csv"
+data_path = Path(__file__).parent / "data.csv"
 
 
 @lru_cache(maxsize=None)
