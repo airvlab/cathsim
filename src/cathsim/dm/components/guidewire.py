@@ -130,7 +130,9 @@ class Guidewire(BaseGuidewire):
 
         stiffness = self._mjcf_root.default.joint.stiffness
         for n in range(1, self._n_bodies):
-            parent = add_body(n, parent, stiffness=stiffness, name="guidewire", OFFSET=OFFSET)
+            parent = add_body(
+                n, parent, stiffness=stiffness, name="guidewire", OFFSET=OFFSET
+            )
             stiffness *= 0.995
         self._tip_site = parent.add("site", name="tip_site", pos=[0, 0, OFFSET])
 
