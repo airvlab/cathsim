@@ -12,7 +12,7 @@
 2. Unity Hub system requirements
    OS: Windows 7 SP1+, 8, 10, 64-bit versions only; Mac OS X 10.13+; Ubuntu 16.04, 18.04, and CentOS 7.
    GPU: Graphics card with DX10 (shader model 4.0) capabilities
-3. Visual Studio for Mac Version 17.6.3 (build 421)
+3. Visual Studio for Mac Version 17.6.3 (build 421) <https://visualstudio.microsoft.com/downloads/>
 4. C# programming language 
 
 
