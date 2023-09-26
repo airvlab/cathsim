@@ -2,11 +2,8 @@
 <!-- ### [[Project Page](https://robotvisionlabs.github.io/cathsim/)] [[Paper](https://arxiv.org/abs/2208.01455)] -->
 
 
-<div align="center">
-    <a href="https://"><img height="auto" src="/misc/cathsim_dn.gif"></a>
-</div>
-
-![CathSim](./cathsim.png)
+![CathSimGif](./misc/cathsim_dn.gif)
+![CathSim](./misc/cathsim.png)
 
 ## Contents
 1. [Requirements](#requirements)
