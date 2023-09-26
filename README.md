@@ -1,5 +1,5 @@
 # CathSim: An Open-source Simulator for Endovascular Intervention
-### [[Project Page](https://robotvisionlabs.github.io/cathsim/)] [[Paper](https://arxiv.org/abs/2208.01455)]
+<!-- ### [[Project Page](https://robotvisionlabs.github.io/cathsim/)] [[Paper](https://arxiv.org/abs/2208.01455)] -->
 
 
 <div align="center">
@@ -19,7 +19,7 @@
 
 ## Requirements
 1. Ubuntu (tested with Ubuntu 22.04 LTS)
-2. Miniconda (tested with 23.5 but all versions should work)
+2. Miniconda (tested with 23.5, but all versions should work)
 3. Python 3.9
 
 If `miniconda` is not installed run the following for a quick Installation. Note: the script assumes you use `bash`.
@@ -45,15 +45,16 @@ conda activate cathsim
 
 2. Install the environment:
 
+<!-- git clone git@github.com:robotvision-ai/cathsim -->
 ```bash
-git clone git@github.com:robotvision-ai/cathsim
+# clone the repository (has to be manually for anonymous submission)
 cd cathsim
 pip install -e .
 ```
 
 ## Quickstart
 
-A quick way to have the enviromnent run with gym is to make use of the `make_dm_env` function and then wrap the resulting environment into a `DMEnvToGymWrapper` resulting in a `gym.Env`.
+A quick way to have the environment run with gym is to make use of the `make_dm_env` function and then wrap the resulting environment into a `DMEnvToGymWrapper` resulting in a `gym.Env`.
 
 ```python
 from cathsim.utils import make_dm_env
@@ -93,11 +94,11 @@ In order to train the models available run:
 bash ./scripts/train.sh
 ```
 
-The script will create a results directory on the `cwd`. The script saves the data in `<trial-name>/<phantom>/<target>/<model>` format. Each model has three subfolders `eval`, `models` and `logs`, where the evaluation data contains the `Trajectory` data resulting from the evaluation of the policy, the `models` contains the `pytorch` models and the `logs` contains the `tensorboard` logs.
+The script will create a `results` directory on the `cwd`. The script saves the data in `<trial-name>/<phantom>/<target>/<model>` format. Each model has three subfolders `eval`, `models` and `logs`, where the evaluation data contains the `Trajectory` data resulting from the evaluation of the policy, the `models` contains the `pytorch` models and the `logs` contains the `tensorboard` logs.
 
 ## Manual Control
 
-For a quick visualisation of the environment run:
+For a quick visualization of the environment run:
 ```bash
 run_env
 ```
@@ -125,20 +126,6 @@ Note: You will probably have to change the parameters of V-HACD for the best res
 - [ ] Add guidewire representation
 - [ ] Create tests for the environment 
 
-## Contributors
-
-- [Tudor Jianu](https://tudorjnu.github.io/)
-- [Baoru Huang](https://baoru.netlify.app)
-- Jingxuan Kang
-- Tuan Van Vo
-- [Mohamed E. M. K. Abdelaziz](https://memkabdelaziz.com/)
-- [Minh Nhat Vu](https://www.acin.tuwien.ac.at/staff/mnv/)
-- [Sebastiano Fichera](https://www.liverpool.ac.uk/engineering/staff/sebastiano-fichera/)
-- [Chun-Yi Lee](https://elsalab.ai/about)
-- [Olatunji Mumini Omisore](https://sites.google.com/view/moom1)
-- [Pierre Berthet-Rayne](https://caranx-medical.com/pierre-berthet-rayne-phd-ing/)
-- [Ferdinando Rodriguez y Baena](https://www.imperial.ac.uk/people/f.rodriguez)
-- [Anh Nguyen](https://cgi.csc.liv.ac.uk/~anguyen/)
 
 ## Terms of Use
 
@@ -146,15 +133,4 @@ Please review our [Terms of Use](TERMS.md) before using this project.
 
 ## License
 
-Please feel free to copy, distribute, display, perform or remix our work but for non-commercial porposes only.
-
-## Citation
-
-If you find our paper useful in your research, please consider citing:
-
-``` bibtex
-@article{jianu2022cathsim,
-  title={CathSim: An Open-source Simulator for Endovascular Intervention},
-  author={Jianu, Tudor and Huang, Baoru and Abdelaziz, Mohamed EMK and Vu, Minh Nhat and Fichera, Sebastiano and Lee, Chun-Yi and Berthet-Rayne, Pierre and Nguyen, Anh and others},
-  journal={arXiv preprint arXiv:2208.01455},
-  year={2022}
+Please feel free to copy, distribute, display, perform or remix our work but for non-commercial purposes only.
