@@ -12,7 +12,7 @@ from skimage.morphology import thin
 # set scatter marker size
 mpl.rcParams["lines.markersize"] = 1
 
-DATA_DIR = Path.cwd() / "data" / "guidewire-reconstruction-2"
+DATA_DIR = Path.cwd() / "data" / "guidewire-reconstruction"
 
 if not DATA_DIR.exists():
     raise FileNotFoundError(f"{DATA_DIR} does not exist.")
@@ -34,12 +34,21 @@ P_SIDE = np.array(
 )
 
 
-def set_limits(ax):
+def set_limits(ax, plot_mesh=False):
     mesh_path = (
         Path.cwd()
         / "src/cathsim/dm/components/phantom_assets/meshes/phantom3/visual.stl"
     )
     mesh = trimesh.load_mesh(mesh_path)
+    if plot_mesh:
+        ax.plot_trisurf(
+            mesh.vertices[:, 0],
+            mesh.vertices[:, 1],
+            mesh.vertices[:, 2],
+            triangles=mesh.faces,
+            alpha=0.1,
+            color="gray",
+        )
     ax.set_xlim(mesh.bounds[0][0], mesh.bounds[1][0])
     ax.set_ylim(mesh.bounds[0][1], mesh.bounds[1][1])
     ax.set_zlim(mesh.bounds[0][2], mesh.bounds[1][2])
@@ -233,6 +242,8 @@ def get_points(
 ):
     img1 = read_segmented_image(DATA_DIR / f"{image_num}_top.png")
     img2 = read_segmented_image(DATA_DIR / f"{image_num}_side.png")
+    actual = np.load(DATA_DIR / f"{image_num}_actual.npy")
+    # print(actual.shape)
 
     points1 = get_backbone_points(img1, spacing=spacing)
     points2 = get_backbone_points(img2, spacing=spacing)
@@ -259,7 +270,7 @@ def get_points(
     assert (
         points1.shape == points2.shape and points2.shape[0] == points_3d.shape[0]
     ), f"points1.shape = {points1.shape}, points2.shape = {points2.shape}, points_3d.shape = {points_3d.shape}"
-    return points1, points2, points_3d, np.load(DATA_DIR / f"{image_num}_geom_pos.npy")
+    return points1, points2, points_3d, actual
 
 
 def optimize_projection(
@@ -442,7 +453,59 @@ def interpolate_even_spacing(chain, spacing=0.002):
     return np.array(new_chain)
 
 
+def make_data():
+    from cathsim.dm import make_dm_env
+    import matplotlib.pyplot as plt
+    from pathlib import Path
+    import cv2
+    import random
+
+    data_path = Path.cwd() / "data"
+
+    def save_guidewire_reconstruction(
+        t: int,
+        top: np.ndarray,
+        side: np.ndarray,
+        geom_pos: np.ndarray,
+        path: Path = data_path / "guidewire-reconstruction",
+    ):
+        if not path.exists():
+            path.mkdir(parents=True)
+
+        plt.imsave(path / f"{t}_top.png", top[:, :, 0], cmap="gray")
+        plt.imsave(path / f"{t}_side.png", side[:, :, 0], cmap="gray")
+        np.save(path / f"{t}_actual", geom_pos)
+
+    env = make_dm_env(
+        phantom="phantom3",
+        use_pixels=True,
+        use_segment=True,
+        use_side=True,
+        image_size=480,
+        target_from_sites=False,
+        # apply_fluid_force=True,
+    )
+
+    def policy(time_step):
+        del time_step
+        return [0.4, random.random() * 2 - 1]
+
+    for episode in range(1):
+        time_step = env.reset()
+        for step in range(100):
+            action = policy(time_step)
+            top = time_step.observation["guidewire"]
+            side = time_step.observation["side"]
+            geom_pos = env.task.get_geom_pos(env.physics)
+            save_guidewire_reconstruction(step, top, side, geom_pos)
+            cv2.imshow("top", top)
+            cv2.waitKey(1)
+            time_step = env.step(action)
+
+
 if __name__ == "__main__":
+    # make_data()
+    # exit()
     points1, points2, points_3d, geom_pos = get_points()
     image = read_segmented_image(DATA_DIR / "23_side.png")
     # points_3d_opt = optimize_projection_2(points_3d, points1, points2)
