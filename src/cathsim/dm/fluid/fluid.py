@@ -1,6 +1,10 @@
 import numpy as np
 from pathlib import Path
 from dm_control import mujoco
+from cathsim.dm.physics_functions import (
+    get_geom_pos,
+    get_bodies_pos,
+)
 from functools import lru_cache
 from scipy.spatial import KDTree
 from typing import Union
@@ -49,34 +53,11 @@ def find_average_velocity(
     return average_velocity
 
 
-@lru_cache(maxsize=None)
-def get_bodies_id(model: mujoco.MjModel) -> list[int]:
-    model = model.copy()
-    guidewire_geom_ids = []
-    for i in range(model.nbody):
-        geom_name = model.body(i).name
-        contains_guidewire = "guidewire" in geom_name
-        is_part = "body" in geom_name
-        if contains_guidewire and is_part:
-            guidewire_geom_ids.append(model.geom(i).id)
-
-    return guidewire_geom_ids
-
-
-def get_bodies_pos(body_ids: list[int], data: mujoco.MjData) -> list[np.ndarray]:
-    data = data.copy()
-    positions = []
-    for id in body_ids:
-        positions.append(data.geom_xpos[id])
-    return positions
-
-
-def apply_fluid_force(physics):
-    ids = get_bodies_id(physics.model)
-    pos = get_bodies_pos(ids, physics.data)
+def apply_fluid_force(physics, bodies_ids: list[int]):
+    pos = get_bodies_pos(physics, bodies_ids)
     vel = find_average_velocity(pos, 3)
     torque = np.zeros_like(vel[0])
-    for id, pos, vel in zip(ids, pos, vel):
+    for id, pos, vel in zip(bodies_ids, pos, vel):
         mujoco.mj_applyFT(
             physics.model.ptr,
             physics.data.ptr,

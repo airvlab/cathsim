@@ -1,14 +1,12 @@
 import math
 from functools import lru_cache, cached_property
 import numpy as np
-import pandas as pd
 import trimesh
 import random
 from typing import Union, Optional
 
 
-from dm_control import mjcf, mujoco
-from dm_control.mujoco.wrapper.mjbindings import mjlib
+from dm_control import mjcf
 from dm_control.mujoco import wrapper, engine
 from dm_control import composer
 from dm_control.composer import variation
@@ -26,6 +24,12 @@ from cathsim.dm.visualization import (
     create_camera_matrix,
 )
 
+from cathsim.dm.physics_functions import (
+    get_guidewire_geom_ids,
+    get_guidewire_bodies_ids,
+    get_geom_pos,
+    get_bodies_pos,
+)
 
 env_config = get_env_config()
 
@@ -88,9 +92,6 @@ def sample_points(
 
         if valid_points:
             return random.choice(valid_points)
-
-
-callback_called = 0
 
 
 class Scene(composer.Arena):
@@ -499,6 +500,10 @@ class Navigate(composer.Task):
         velocities = physics.named.data.qvel
         return velocities
 
+    def get_geom_pos(self, physics):
+        """Get the bodies positions."""
+        return get_geom_pos(physics, self.guidewire_geom_ids(physics))
+
     def get_total_force(self, physics):
         """Get the force magnitude."""
         forces = physics.data.qfrc_constraint[0:3]
@@ -604,16 +609,15 @@ class Navigate(composer.Task):
         mesh = trimesh.load_mesh(self._phantom.simplified, scale=0.9)
         return sample_points(mesh, self.sampling_bounds)
 
+    def guidewire_geom_ids(self, physics):
+        """The guidewire_bodies_ids property."""
+        return get_guidewire_geom_ids(physics.model)
+
     def before_step(self, physics, action, random_state):
         if self.apply_fluid_force:
-            apply_fluid_force(physics)
+            apply_fluid_force(physics, get_guidewire_bodies_ids(physics.model))
         del random_state
         physics.set_control(action)
-
-    @cached_property
-    def guidewire_bodies_ids(self):
-        """The guidewire_bodies_ids property."""
-        return self._guidewire.bodies
 
 
 def make_dm_env(
@@ -683,6 +687,7 @@ if __name__ == "__main__":
         visualize_target=True,
         sample_target=True,
         target_from_sites=False,
+        apply_fluid_force=True,
     )
 
     def random_policy(time_step):
@@ -696,6 +701,9 @@ if __name__ == "__main__":
             if step > 30:
                 action = np.zeros_like(action)
             top = time_step.observation["guidewire"]
+            # __import__("pprint").pprint(env.task.get_guidewire_bodies_ids(env.physics))
+            # body_positions = env.task.get_geom_pos(env.physics)
+            # exit()
             cv2.imshow("top", top)
             cv2.waitKey(1)
             time_step = env.step(action)
