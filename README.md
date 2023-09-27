@@ -100,11 +100,11 @@ In order to train the models available run:
 bash ./scripts/train.sh
 ```
 
-The script will create a results directory on the `cwd`. The script saves the data in `<trial-name>/<phantom>/<target>/<model>` format. Each model has three subfolders `eval`, `models` and `logs`, where the evaluation data contains the `Trajectory` data resulting from the evaluation of the policy, the `models` contains the `pytorch` models and the `logs` contains the `tensorboard` logs.
+The script will create a `results` directory on the `cwd`. The script saves the data in `<trial-name>/<phantom>/<target>/<model>` format. Each model has three subfolders `eval`, `models` and `logs`, where the evaluation data contains the `Trajectory` data resulting from the evaluation of the policy, the `models` contains the `pytorch` models and the `logs` contains the `tensorboard` logs.
 
-## Results
+### Results
 
-### Expert Navigation Results
+#### Expert Navigation Results
 
 | Target | Input         | Force (N) ↓             | Path Length (cm) ↓      | Episode Length (s) ↓    | Safety % ↑              | Success % ↑             | SPL % ↑                 |
 |--------|---------------|-------------------------|-------------------------|-------------------------|-------------------------|-------------------------|-------------------------|
@@ -121,7 +121,7 @@ The script will create a results directory on the `cwd`. The script saves the da
 |        | Internal+Image| 2.47 ± 0.48             | 14.87 ± 0.79            | 37.80 ± 10.50           | 42 ± 08                 | 100 ± 00                | 100                     |
 |        | **ENN**       | 2.26 ± 0.33             | **14.85 ± 0.79**        | **33.77 ± 5.33**        | 45 ± 05                 | 100 ± 00                | 100                     |
 
-### Imitation Learning Results
+#### Imitation Learning Results
 
 | Target | Algorithm     | Force (N) ↓              | Path Length (cm) ↓      | Episode Length (s) ↓    | Safety % ↑              | Success % ↑             | SPL % ↑                 |
 |--------|---------------|--------------------------|-------------------------|-------------------------|-------------------------|-------------------------|-------------------------|
