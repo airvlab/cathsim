@@ -92,7 +92,7 @@ For a list of the environment libraries at the current time, see the accompanyin
 
 | ENN Model | BC Model |
 |:--------:|:--------:|
-|<img width="1604" alt="expert network architecture" src="./misc/expert_model.png"> Expert Network | <img width="1604" alt="bc network architecture" src="./misc/bc_model.png"> BC Network |
+|<img width="1604" alt="expert network architecture" src="./misc/expert_model.png"> | <img width="1604" alt="bc network architecture" src="./misc/bc_model.png"> |
 
 
 In order to train the models available run:
