@@ -6,14 +6,8 @@ build-backend = "setuptools.build_meta"
 name = "cathsim"
 version = "0.1.dev1"
 description = "Endovascular simulator for autonomy development"
-readme = "README.md"  # Point this to your README file if you have one.
-# Homepage = "https://robotvisionlabs.github.io/cathsim/"
-# Documentation = "https://readthedocs.org"
-# Repository = "https://github.com/robotvisionlabs/cathsim"
+readme = "README.md" 
 license = { file = "LICENSE" }
-authors = [
-    {name = "Tudor Jianu", email = "tudorjnu@gmail.com"}
-]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: Free for non-commercial use",

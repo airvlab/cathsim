@@ -174,4 +174,4 @@ dependencies:
       - wrapt==1.15.0
       - yarl==1.9.2
       - zipp==3.15.0
-prefix: /home/tudorjnu/.miniconda3/envs/cathsim-dev
+prefix: /home/$USER/.miniconda3/envs/cathsim-dev
