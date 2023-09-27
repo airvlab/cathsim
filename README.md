@@ -114,6 +114,7 @@ The script will create a `results` directory on the `cwd`. The script saves the 
 | Internal      | 3.33±0.46             | 20.53±4.96            | 87.25±50.56           | 26±09                 | 97±18                 | 80                      |
 | Internal+Image| 2.53±0.57             | 21.65±4.35            | 221.03±113.30         | 39±15                 | 33±47                 | 76                      |
 | **ENN**       | 2.33±0.18             | **15.78±0.17**        | **36.88±2.40**        | 45±04                 | 100±00                | **99**                  |
+> The high performance difference between ENN and the human can be attributed to the abundance of intrinsic information that ENN uses.
 
 #### Imitation Learning Results
 
@@ -123,7 +124,6 @@ The script will create a `results` directory on the `cwd`. The script saves the 
 | Image w/o. ENN| 3.61±0.61              | 25.28±15.21           | 162.55±106.85         | 16±10                 | 65±48                 | 74                      |
 | Image w. ENN  | **2.23±0.10**          | 16.06±0.33            | 43.40±1.50            | **49±03**             | 100±00                | 98                      |
 
-> The high performance difference between ENN and the human can be attributed to the abundance of intrinsic information that ENN uses.
 
 
 ## Manual Control
