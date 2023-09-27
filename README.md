@@ -101,18 +101,6 @@ run_env
 ```
 You will now see the guidewire and the aorta along with the two sites that represent the targets. You can interact with the environment using the keyboard arrows.
 
-## Mesh Processing
-
-You can use a custom aorta by making use of V-HACD convex decomposition. To do so, you can use stl2mjcf, available [here](https://github.com/tudorjnu/stl2mjcf). You can quickly install the tool with:
-
-```bash
-pip install git+git@github.com:tudorjnu/stl2mjcf.git
-```
-
-After the installation, you can use `stl2mjcf --help` to see the available commands. The resultant files can be then added to `cathsim/assets`. The `xml` will go in that folder and the resultant meshes folder will go in `cathsim/assets/meshes/`. 
-
-Note: You will probably have to change the parameters of V-HACD for the best results.
-
 
 
 ## Terms of Use
