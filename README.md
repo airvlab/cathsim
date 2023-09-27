@@ -1,5 +1,4 @@
 # CathSim: An Open-source Simulator for Endovascular Intervention
-<!-- ### [[Project Page](https://robotvisionlabs.github.io/cathsim/)] [[Paper](https://arxiv.org/abs/2208.01455)] -->
 
 <p align="center">
   <img src="./misc/cathsim_dn.gif" alt="animated" />
@@ -42,7 +41,6 @@ conda activate cathsim
 
 2. Install the environment:
 
-<!-- git clone git@github.com:robotvision-ai/cathsim -->
 ```bash
 # clone the repository (has to be manually for anonymous submission)
 cd cathsim
