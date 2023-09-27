@@ -124,6 +124,9 @@ The script will create a `results` directory on the `cwd`. The script saves the 
 | Image&#160;w/o.&#160;ENN| 3.61±0.61              | 25.28±15.21           | 162.55±106.85         | 16±10                 | 65±48                 | 74                      |
 | Image&#160;w.&#160;ENN  | **2.23±0.10**          | 16.06±0.33            | 43.40±1.50            | **49±03**             | 100±00                | 98                      |
 
+##### Path Comparison
+
+<img width="1604" alt="path comparison between human and ENN" src="./misc/path.png"> 
 
 
 ## Manual Control
