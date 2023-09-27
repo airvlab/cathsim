@@ -86,12 +86,46 @@ For a list of the environment libraries at the current time, see the accompanyin
 
 ## Training 
 
+#### Network Models
+
+| ENN Model | BC Model |
+|:--------:|:--------:|
+| <img height="293" width="auto" alt="expert network architecture" src="./misc/expert_model.png"> | <img height="293" width="auto" alt="bc network architecture" src="./misc/bc_model.png"> |
+
+
 In order to train the models available run:
 ```bash
 bash ./scripts/train.sh
 ```
 
 The script will create a `results` directory on the `cwd`. The script saves the data in `<trial-name>/<phantom>/<target>/<model>` format. Each model has three subfolders `eval`, `models` and `logs`, where the evaluation data contains the `Trajectory` data resulting from the evaluation of the policy, the `models` contains the `pytorch` models and the `logs` contains the `tensorboard` logs.
+
+### Results
+
+#### Expert Navigation Results
+
+| Input         | Force&#160;(N)&#160;↓             | Path&#160;Length&#160;(cm)&#160;↓      | Episode&#160;Length&#160;(s)&#160;↓    | Safety&#160;%&#160;↑              | Success&#160;%&#160;↑             | SPL&#160;%&#160;↑                 |
+|:---------------|--------------------------:|-------------------------:|-------------------------:|-------------------------:|-------------------------:|-------------------------:|
+| Human         | **1.02±0.22**         | 28.82±11.80           | 146.30±62.83          | **83±04**             | 100±00                | 62                      |
+| Image         | 3.61±0.61             | 25.28±15.21           | 162.55±106.85         | 16±10                 | 65±48                 | 74                      |
+| Image+Mask    | 3.36±0.41             | 18.55±2.91            | 77.67±21.83           | 25±07                 | 100±00                | 86                      |
+| Internal      | 3.33±0.46             | 20.53±4.96            | 87.25±50.56           | 26±09                 | 97±18                 | 80                      |
+| Internal+Image| 2.53±0.57             | 21.65±4.35            | 221.03±113.30         | 39±15                 | 33±47                 | 76                      |
+| **ENN**       | 2.33±0.18             | **15.78±0.17**        | **36.88±2.40**        | 45±04                 | 100±00                | **99**                  |
+> ENN outperforms human surgeon, however it uses extra data such as the joint positions and joint velocities, compared to human which is relies only on the 2D image.
+
+#### Imitation Learning Results
+
+| Input         | Force&#160;(N)&#160;↓  | Path&#160;Length&#160;(cm)&#160;↓  | Episode&#160;Length&#160;(s)&#160;↓    | Safety&#160;%&#160;↑              | Success&#160;%&#160;↑             | SPL&#160;%&#160;↑                 |
+|:--------------|-----------------------:|-------------------------:|-------------------------:|-------------------------:|-------------------------:|-------------------------:|
+| ENN           | 2.33±0.18              | **15.78±0.17**        | **36.88±2.40**        | 45±04                 | 100±00                | **99**                  |
+| Image&#160;w/o.&#160;ENN| 3.61±0.61              | 25.28±15.21           | 162.55±106.85         | 16±10                 | 65±48                 | 74                      |
+| Image&#160;w.&#160;ENN  | **2.23±0.10**          | 16.06±0.33            | 43.40±1.50            | **49±03**             | 100±00                | 98                      |
+
+##### Path Comparison
+
+<img width="1604" alt="path comparison between human and ENN" src="./misc/path.png"> 
+
 
 ## Manual Control
 
