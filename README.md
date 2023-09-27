@@ -114,7 +114,7 @@ The script will create a `results` directory on the `cwd`. The script saves the 
 | Internal      | 3.33±0.46             | 20.53±4.96            | 87.25±50.56           | 26±09                 | 97±18                 | 80                      |
 | Internal+Image| 2.53±0.57             | 21.65±4.35            | 221.03±113.30         | 39±15                 | 33±47                 | 76                      |
 | **ENN**       | 2.33±0.18             | **15.78±0.17**        | **36.88±2.40**        | 45±04                 | 100±00                | **99**                  |
-> The high performance difference between ENN and the human can be attributed to the abundance of intrinsic information that ENN uses.
+> ENN outperforms human surgeon, however it uses extra data such as the joint positions and joint velocities, compared to human which is relies only on the 2D image.
 
 #### Imitation Learning Results
 
