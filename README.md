@@ -88,12 +88,49 @@ For a list of the environment libraries at the current time, see the accompanyin
 
 ## Training 
 
+#### Network Models
+
+| ENN Model | BC Model |
+|:--------:|:--------:|
+|<img width="1604" alt="expert network architecture" src="./misc/expert_model.png"> Expert Network | <img width="1604" alt="bc network architecture" src="./misc/bc_model.png"> BC Network |
+
+
 In order to train the models available run:
 ```bash
 bash ./scripts/train.sh
 ```
 
 The script will create a results directory on the `cwd`. The script saves the data in `<trial-name>/<phantom>/<target>/<model>` format. Each model has three subfolders `eval`, `models` and `logs`, where the evaluation data contains the `Trajectory` data resulting from the evaluation of the policy, the `models` contains the `pytorch` models and the `logs` contains the `tensorboard` logs.
+
+## Results
+
+### Expert Navigation Results
+
+| Target | Input         | Force (N) ↓             | Path Length (cm) ↓      | Episode Length (s) ↓    | Safety % ↑              | Success % ↑             | SPL % ↑                 |
+|--------|---------------|-------------------------|-------------------------|-------------------------|-------------------------|-------------------------|-------------------------|
+| BCA    | Human         | **1.02 ± 0.22**         | 28.82 ± 11.80           | 146.30 ± 62.83          | **83 ± 04**             | 100 ± 00                | 62                      |
+|        | Image         | 3.61 ± 0.61             | 25.28 ± 15.21           | 162.55 ± 106.85         | 16 ± 10                 | 65 ± 48                 | 74                      |
+|        | Image+Mask    | 3.36 ± 0.41             | 18.55 ± 2.91            | 77.67 ± 21.83           | 25 ± 07                 | 100 ± 00                | 86                      |
+|        | Internal      | 3.33 ± 0.46             | 20.53 ± 4.96            | 87.25 ± 50.56           | 26 ± 09                 | 97 ± 18                 | 80                      |
+|        | Internal+Image| 2.53 ± 0.57             | 21.65 ± 4.35            | 221.03 ± 113.30         | 39 ± 15                 | 33 ± 47                 | 76                      |
+|        | **ENN**       | 2.33 ± 0.18             | **15.78 ± 0.17**        | **36.88 ± 2.40**        | 45 ± 04                 | 100 ± 00                | **99**                  |
+| LCCA   | Human         | **1.28 ± 0.30**         | 20.70 ± 3.38            | 97.36 ± 23.01           | **77 ± 06**             | 100 ± 00                | 78                      |
+|        | Image         | 4.02 ± 0.69             | 24.46 ± 5.66            | 220.30 ± 114.17         | 14 ± 14                 | 33 ± 47                 | 69                      |
+|        | Image+Mask    | 3.00 ± 0.29             | 16.32 ± 2.80            | 48.90 ± 12.73           | 33 ± 06                 | 100 ± 00                | 96                      |
+|        | Internal      | 2.69 ± 0.80             | 22.47 ± 9.49            | 104.37 ± 97.29          | 39 ± 17                 | 83 ± 37                 | 79                      |
+|        | Internal+Image| 2.47 ± 0.48             | 14.87 ± 0.79            | 37.80 ± 10.50           | 42 ± 08                 | 100 ± 00                | 100                     |
+|        | **ENN**       | 2.26 ± 0.33             | **14.85 ± 0.79**        | **33.77 ± 5.33**        | 45 ± 05                 | 100 ± 00                | 100                     |
+
+### Imitation Learning Results
+
+| Target | Algorithm     | Force (N) ↓              | Path Length (cm) ↓      | Episode Length (s) ↓    | Safety % ↑              | Success % ↑             | SPL % ↑                 |
+|--------|---------------|--------------------------|-------------------------|-------------------------|-------------------------|-------------------------|-------------------------|
+| BCA    | ENN           | 2.33 ± 0.18              | **15.78 ± 0.17**        | **36.88 ± 2.40**        | 45 ± 04                 | 100 ± 00                | **99**                  |
+|        | Image w/o. ENN| 3.61 ± 0.61              | 25.28 ± 15.21           | 162.55 ± 106.85         | 16 ± 10                 | 65 ± 48                 | 74                      |
+|        | Image w. ENN  | **2.23 ± 0.10**          | 16.06 ± 0.33            | 43.40 ± 1.50            | **49 ± 03**             | 100 ± 00                | 98                      |
+| LCCA   | ENN           | **2.26 ± 0.33**          | 14.85 ± 0.79            | 33.77 ± 5.33            | **45 ± 05**             | 100 ± 00                | 100                     |
+|        | Image w/o ENN | 4.02 ± 0.69              | 24.46 ± 5.66            | 220.30 ± 114.17         | 14 ± 14                 | 33 ± 47                 | 69                      |
+|        | Image w. ENN  | 2.51 ± 0.21              | **14.71 ± 0.20**        | **33.10 ± 2.07**        | 43 ± 04                 | 100 ± 00                | 100                     |
 
 ## Manual Control
 
@@ -102,6 +139,7 @@ For a quick visualisation of the environment run:
 run_env
 ```
 You will now see the guidewire and the aorta along with the two sites that represent the targets. You can interact with the environment using the keyboard arrows.
+
 
 ## Mesh Processing
 
