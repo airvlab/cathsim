@@ -10,7 +10,6 @@
 3. [Quickstart](#quickstart)
 4. [Training](#training)
 5. [Manual Control](#manual-control)
-6. [Mesh Processing](#mesh-processing)
 
 
 ## Requirements
