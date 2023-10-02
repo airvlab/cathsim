@@ -619,6 +619,9 @@ class Navigate(composer.Task):
         del random_state
         physics.set_control(action)
 
+    def get_from_physics(self, physics, fn: callable):
+        return fn(physics)
+
 
 def make_dm_env(
     phantom: str = "phantom3",
