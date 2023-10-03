@@ -1,7 +1,5 @@
 import numpy as np
 
-from scipy.interpolate import CubicSpline
-
 from shape_reconstruction import (
     P_TOP,
     P_SIDE,
@@ -33,49 +31,47 @@ def get_points(top: np.ndarray, side: np.ndarray, spacing: int = 15):
     return points_3d
 
 
-def arc_length(x, y, z):
-    """Calculate the arc length of the curve defined by vectors x, y, z."""
-    dx = np.diff(x)
-    dy = np.diff(y)
-    dz = np.diff(z)
-    return np.sum(np.sqrt(dx**2 + dy**2 + dz**2))
+def sample_points(curve, distance=0.002):
+    cs_x, cs_y, cs_z, t = curve
+    new_points = [np.array([cs_x(t[0]), cs_y(t[0]), cs_z(t[0])])]
+    last_point = new_points[0]
+    t_current = t[0]
 
+    while t_current < t[-1]:
+        t_search = t_current
+        dt = 0.001  # Initial step for parameter t
 
-def sample_points_on_curve(points, distance=2.0):
-    total_length = arc_length(points[:, 0], points[:, 1], points[:, 2])
-
-    num_points = int(np.floor(total_length / distance))
-
-    # Create parameter vector
-    t = np.linspace(0, 1, len(points))
-
-    # Create cubic splines for x, y, z
-    cs_x = CubicSpline(t, points[:, 0], bc_type="natural")
-    cs_y = CubicSpline(t, points[:, 1], bc_type="natural")
-    cs_z = CubicSpline(t, points[:, 2], bc_type="natural")
-
-    # Initialize variables
-    new_points = []
-    last_point = points[0]
-    t_current = 0
-    dt = 0.001  # Step for parameter t
-
-    # Resample curve
-    for _ in range(num_points):
-        found = False
-        while not found:
-            t_current += dt
-            if t_current > 1.0:
+        # Finding t corresponding to the next point at 'distance' from the last point
+        while True:
+            t_search += dt
+            if t_search >= t[-1]:
+                # Check the distance to the end point
+                end_point = np.array([cs_x(t[-1]), cs_y(t[-1]), cs_z(t[-1])])
+                if np.linalg.norm(end_point - last_point) >= distance:
+                    new_points.append(end_point)
                 break  # End of the curve
 
-            candidate_point = np.array(
-                [cs_x(t_current), cs_y(t_current), cs_z(t_current)]
-            )
-            distance_to_last = np.linalg.norm(candidate_point - last_point)
+            candidate_point = np.array([cs_x(t_search), cs_y(t_search), cs_z(t_search)])
+            if np.linalg.norm(candidate_point - last_point) >= distance:
+                # Refine t_search for more accurate distance
+                for _ in range(10):  # Number of refinement steps
+                    dt *= 0.1  # Reduce the step size
+                    while np.linalg.norm(candidate_point - last_point) >= distance:
+                        t_search -= dt
+                        candidate_point = np.array(
+                            [cs_x(t_search), cs_y(t_search), cs_z(t_search)]
+                        )
+                break
 
-            if distance_to_last >= distance:
-                found = True
-                new_points.append(candidate_point)
-                last_point = candidate_point
+        new_points.append(candidate_point)
+        last_point = candidate_point
+        t_current = t_search
 
     return np.array(new_points)
+
+
+def filter_points(
+    generated: np.ndarray, actual: np.ndarray
+) -> tuple[np.ndarray, np.ndarray]:
+    min_len = min(generated.shape[0], actual.shape[0])
+    return generated[min_len], actual[min_len]

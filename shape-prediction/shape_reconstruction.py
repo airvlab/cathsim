@@ -4,7 +4,6 @@ import cv2
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
-import trimesh
 from cathsim.dm.visualization import point2pixel
 from scipy import interpolate, optimize
 from skimage.morphology import thin
@@ -12,7 +11,7 @@ from skimage.morphology import thin
 # set scatter marker size
 mpl.rcParams["lines.markersize"] = 1
 
-DATA_DIR = Path.cwd() / "data" / "guidewire-reconstruction"
+DATA_DIR = Path.cwd() / "data"
 
 # if not DATA_DIR.exists():
 #     raise FileNotFoundError(f"{DATA_DIR} does not exist.")
@@ -34,28 +33,12 @@ P_SIDE = np.array(
 )
 
 
-def set_limits(ax, plot_mesh=False):
-    mesh_path = (
-        Path.cwd()
-        / "src/cathsim/dm/components/phantom_assets/meshes/phantom3/visual.stl"
-    )
-    mesh = trimesh.load_mesh(mesh_path)
-    if plot_mesh:
-        ax.plot_trisurf(
-            mesh.vertices[:, 0],
-            mesh.vertices[:, 1],
-            mesh.vertices[:, 2],
-            triangles=mesh.faces,
-            alpha=0.1,
-            color="gray",
-        )
-    ax.set_xlim(mesh.bounds[0][0], mesh.bounds[1][0])
-    ax.set_ylim(mesh.bounds[0][1], mesh.bounds[1][1])
-    ax.set_zlim(mesh.bounds[0][2], mesh.bounds[1][2])
-
-
 def read_segmented_image(file_path):
-    return cv2.imread(file_path.as_posix(), 0)
+    file_path = file_path.as_posix()
+    image = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
+    image = np.where(image > 100, 1, 0)
+
+    return image
 
 
 def find_endpoints(skeleton):
@@ -70,8 +53,18 @@ def find_endpoints(skeleton):
     return endpoints
 
 
-def get_backbone_points(image, spacing=1):
+def get_backbone_points(image, spacing=1, debug=False):
     skeleton = thin(image)
+
+    if debug:
+        fig, ax = plt.subplots(1, 2)
+        ax[0].set_title("Original image")
+        ax[0].imshow(image, cmap="gray")
+        ax[0].axis("off")
+        ax[1].set_title("Skeleton")
+        ax[1].imshow(skeleton, cmap="gray")
+        ax[1].axis("off")
+        plt.show()
 
     def neighbors(x, y, shape):
         for i in range(max(0, x - 1), min(shape[0], x + 2)):
@@ -79,6 +72,13 @@ def get_backbone_points(image, spacing=1):
                 yield i, j
 
     endpoint = find_endpoints(skeleton)[0]
+
+    if debug:
+        plt.title("Skeleton with endpoint")
+        plt.imshow(skeleton, cmap="gray")
+        plt.scatter(endpoint[0], endpoint[1], c="r", s=10)
+        plt.axis("off")
+        plt.show()
 
     visited = set()
     path = []
@@ -245,14 +245,52 @@ def visualize_points_2d(image, points):
     plt.show()
 
 
+def get_equidistant_3d_points_from_images(
+    top: np.ndarray, side: np.ndarray, pixel_spacing: float = 4, spacing: float = 0.002
+):
+    single_image = False
+    if len(top.shape) == 2:
+        single_image = True
+        top = np.expand_dims(top, axis=0)
+        side = np.expand_dims(side, axis=0)
+
+    sampled_points_3d = []
+    for i in range(top.shape[0]):
+        points1 = get_backbone_points(top[i], spacing=pixel_spacing)
+        points2 = get_backbone_points(side[i], spacing=pixel_spacing)
+        min_length = min(len(points1), len(points2))
+        points1 = points1[:min_length]
+        points2 = points2[:min_length]
+
+        points_3d_h = triangulate_points(P_TOP, P_SIDE, points1, points2)
+        mask = valid_points(points_3d_h)
+        if mask is not None:
+            points1 = points1[mask]
+            points2 = points2[mask]
+            points_3d_h = points_3d_h[mask]
+
+        if len(points_3d_h) == 0:
+            sampled_points_3d.append(None)
+            continue
+        points_3d = points_3d_h[:, :3] / points_3d_h[:, 3, np.newaxis]
+
+        sampled_points_3d.append(interpolate_even_spacing(points_3d, spacing=spacing))
+
+    if single_image:
+        return sampled_points_3d[0]
+    return sampled_points_3d
+
+
 def get_points(
     image_num: int = 23, spacing: int = 30, size: int = 10, debug: bool = False
 ):
-    img1 = read_segmented_image(DATA_DIR / f"{image_num}_top.png")
-    img2 = read_segmented_image(DATA_DIR / f"{image_num}_side.png")
+    img1 = read_segmented_image(DATA_DIR / f"{image_num}_top.jpg")
+    img2 = read_segmented_image(DATA_DIR / f"{image_num}_side.jpg")
 
+    print(f"Image 1 (img1.shape): max: {np.max(img1)}, min: {np.min(img1)}")
+    print(f"Image 2 (img2.shape): max: {np.max(img2)}, min: {np.min(img2)}")
     actual = np.load(DATA_DIR / f"{image_num}_actual.npy")
-    # print(actual.shape)
+    print(actual.shape)
 
     points1 = get_backbone_points(img1, spacing=spacing)
     points2 = get_backbone_points(img2, spacing=spacing)
@@ -276,6 +314,7 @@ def get_points(
         combined = np.hstack([img1_w_points, img2_w_points])
         plt.imshow(combined)
         plt.axis("off")
+        plt.show()
     assert (
         points1.shape == points2.shape and points2.shape[0] == points_3d.shape[0]
     ), f"points1.shape = {points1.shape}, points2.shape = {points2.shape}, points_3d.shape = {points_3d.shape}"
@@ -512,29 +551,13 @@ def make_data():
 
 
 if __name__ == "__main__":
-    # make_data()
     points1, points2, points_3d, geom_pos = get_points(50)
     exit()
     image = read_segmented_image(DATA_DIR / "23_side.png")
-    # points_3d_opt = optimize_projection_2(points_3d, points1, points2)
     fig, ax = make_3d_curve(points_3d)
-    # equidistant_points = interpolate_even_spacing(points_3d)
-    # fig = plt.figure()
-    # ax = fig.add_subplot(111, projection='3d')
     set_limits(ax)
-    # ax.scatter(points_3d[:, 0], points_3d[:, 1], points_3d[:, 2], c='r', label='Original points', s=1)
-    # ax.scatter(equidistant_points[:, 0], equidistant_points[:, 1], equidistant_points[:, 2], c='b', label='Equidistant points', s=1)
     ax.scatter(
         geom_pos[:, 0], geom_pos[:, 1], geom_pos[:, 2], c="g", label="Geom points", s=1
     )
     ax.legend(ncol=3)
     plt.show()
-
-    # points_3d_opt = optimize_projection(points_3d, points1, points2)
-    # side_actual = plot_over_image(image, point2pixel(geom_pos, P_SIDE), alternate_color=True, size=3)
-    # side_points = plot_over_image(image, points2, alternate_color=True, size=3)
-    # side_reprojected_opt = plot_over_image(image, point2pixel(points_3d_opt, P_SIDE), alternate_color=True, size=3)
-    # combined = np.hstack([side_actual, side_points, side_reprojected_opt])
-    # plt.imshow(combined)
-    # plt.axis("off")
-    # plt.show()

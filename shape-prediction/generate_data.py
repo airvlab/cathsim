@@ -14,6 +14,7 @@ from cathsim.dm.physics_functions import get_guidewire_geom_ids
 from stable_baselines3 import SAC
 
 import torch as th
+import matplotlib.pyplot as plt
 import numpy as np
 import cv2
 
@@ -116,12 +117,12 @@ def save_data(step, top, side, actual):
     path = Path.cwd() / "data"
     if not path.exists():
         path.mkdir(parents=True, exist_ok=True)
-    cv2.imwrite((path / f"{step}_top.jpg").as_posix(), top)
-    cv2.imwrite((path / f"{step}_side.jpg").as_posix(), side)
+    plt.imsave((path / f"{step}_top.jpg").as_posix(), top, cmap="gray")
+    plt.imsave((path / f"{step}_side.jpg").as_posix(), side, cmap="gray")
     np.save((path / f"{step}_actual.npy").as_posix(), actual)
 
 
-def generate_data(n_samples: int = 200):
+def generate_data(n_samples: int = 50):
     path = Path.cwd() / "data"
     if not path.exists():
         path.mkdir(parents=True, exist_ok=True)
@@ -141,16 +142,17 @@ def generate_data(n_samples: int = 200):
             observation, reward, terminated, truncated, info = env.step(action)
             done = terminated or truncated
             print(
-                f"Step {step} terminated: {terminated}, truncated: {truncated}, done: {done}",
+                f"Step {current_n_samples} terminated: {terminated}, truncated: {truncated}, done: {done}",
                 flush=True,
                 end="\r",
             )
             top, side = get_images(env)
             geom_pos = get_geom_pos(env)
             geom_pos = np.array(geom_pos)
-            save_data(step, top, side, geom_pos)
+            save_data(current_n_samples, top, side, geom_pos)
             visualize(top, side, geom_pos)
             step += 1
+            current_n_samples += 1
 
 
 if __name__ == "__main__":

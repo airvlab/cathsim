@@ -1,6 +1,7 @@
 # Folders
 logs/
 results/
+./shape-prediction/models/
 # data/
 .sync*
 
