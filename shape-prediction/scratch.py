@@ -1,10 +1,9 @@
 import numpy as np
+from scipy.interpolate import UnivariateSpline
 from pathlib import Path
-from scipy.interpolate import CubicSpline
 import matplotlib.pyplot as plt
 from shape_reconstruction import set_limits, P_TOP, P_SIDE
 from cathsim.dm.visualization import point2pixel
-from scipy.optimize import minimize_scalar
 from scipy import optimize
 import cv2
 
@@ -12,105 +11,273 @@ from utils import get_points, sample_points_on_curve
 
 # Load data
 DATA_PATH = Path("data/guidewire-reconstruction/")
-image_num = 23
-points1, points2, points_3d, geom_pos = get_points(image_num)
+image_num = 50
+points1, points2, points_3d, geom_pos = get_points(image_num, spacing=4)
 top = plt.imread(DATA_PATH / f"{image_num}_top.png")
 side = plt.imread(DATA_PATH / f"{image_num}_side.png")
 
 iteration = 0
 
 
-def get_curve(points_2D):
-    """Get cubic spline interpolation of 2D points."""
-    t = np.linspace(0, 1, len(points_2D))
-    cs_x = CubicSpline(t, points_2D[:, 0], bc_type="natural")
-    cs_y = CubicSpline(t, points_2D[:, 1], bc_type="natural")
-    return cs_x, cs_y
+def arc_length(x, y, z):
+    """Calculate the arc length of the curve defined by vectors x, y, z."""
+    dx = np.diff(x)
+    dy = np.diff(y)
+    dz = np.diff(z)
+    return np.sum(np.sqrt(dx**2 + dy**2 + dz**2))
+
+
+def get_curve_2d(points_2D, s=1.0):
+    """Get smooth spline interpolation of 2D points."""
+    # Compute the cumulative arc length as the parameter
+    t = np.zeros(len(points_2D))
+    for i in range(1, len(points_2D)):
+        t[i] = t[i - 1] + np.linalg.norm(points_2D[i] - points_2D[i - 1])
+
+    # Create smoothing splines for x, y
+    cs_x = UnivariateSpline(t, points_2D[:, 0], s=s)
+    cs_y = UnivariateSpline(t, points_2D[:, 1], s=s)
+
+    return cs_x, cs_y, t
+
+
+def plot_curve_on_image(ax, curve):
+    cs_x, cs_y, t = curve
+    t_new = np.linspace(0, t[-1], 1000)
+    curve_points_x = cs_x(t_new)
+    curve_points_y = cs_y(t_new)
+
+    ax.plot(curve_points_x, curve_points_y, "r-", linewidth=1)
 
 
 def get_distance_to_curve(points_2D, curve):
-    """Get the distance from each 2D point to the curve defined by cubic splines."""
-    cs_x, cs_y = curve
+    cs_x, cs_y, t = curve
+    t_new = np.linspace(0, t[-1], 1000)
+    curve_points = np.vstack((cs_x(t_new), cs_y(t_new))).T
+
     distances = []
-
-    for point in points_2D:
-        # Objective function to minimize
-        def objective(t):
-            return np.sqrt((cs_x(t) - point[0]) ** 2 + (cs_y(t) - point[1]) ** 2)
-
-        # Minimize the objective function to find closest point on the curve
-        res = minimize_scalar(objective, bounds=(0, 1), method="bounded")
-
-        # The minimum distance from the point to the curve
-        min_distance = res.fun
-        distances.append(min_distance)
-
-    distances = np.array(distances)
+    for point_2D in points_2D:
+        distance_array = np.linalg.norm(curve_points - point_2D, axis=1)
+        distances.append(np.min(distance_array))
     return distances
 
 
-def fn_loss(points, line):
-    return get_distance_to_curve(points, line)
+def get_curve_3D(points, s=1.0):
+    """Get smooth spline interpolation of 3D points."""
+    # Compute the cumulative arc length as the parameter
+    t = np.zeros(len(points))
+    for i in range(1, len(points)):
+        t[i] = t[i - 1] + np.linalg.norm(points[i] - points[i - 1])
+
+    # Create smoothing splines for x, y, z
+    cs_x = UnivariateSpline(t, points[:, 0], s=s)
+    cs_y = UnivariateSpline(t, points[:, 1], s=s)
+    cs_z = UnivariateSpline(t, points[:, 2], s=s)
+
+    return cs_x, cs_y, cs_z, t
 
 
-def fn_aggregate(error1, error2):
-    return np.sum(error1) + np.sum(error2)
+def plot_3d_curve(ax, curve):
+    cs_x, cs_y, cs_z, t = curve
+    t_new = np.linspace(0, t[-1], 84)
+    curve_points_x = cs_x(t_new)
+    curve_points_y = cs_y(t_new)
+    curve_points_z = cs_z(t_new)
+
+    ax.plot3D(curve_points_x, curve_points_y, curve_points_z, "r-", linewidth=1)
 
 
-def fn_constraint(points):
+def get_distance_to_curve3d(points_3D, curve):
+    cs_x, cs_y, cs_z, t = curve
+    t_new = np.linspace(0, t[-1], 1000)  # Adjust the number of points as needed
+    curve_points = np.vstack((cs_x(t_new), cs_y(t_new), cs_z(t_new))).T
+
+    distances = []
+    for point_3D in points_3D:
+        distance_array = np.linalg.norm(curve_points - point_3D, axis=1)
+        distances.append(np.min(distance_array))
+    return distances
+
+
+def sample_points(curve, distance=0.002):
+    cs_x, cs_y, cs_z, t = curve
+    new_points = [np.array([cs_x(t[0]), cs_y(t[0]), cs_z(t[0])])]
+    last_point = new_points[0]
+    t_current = t[0]
+
+    while t_current < t[-1]:
+        t_search = t_current
+        dt = 0.001  # Initial step for parameter t
+
+        # Finding t corresponding to the next point at 'distance' from the last point
+        while True:
+            t_search += dt
+            if t_search >= t[-1]:
+                # Check the distance to the end point
+                end_point = np.array([cs_x(t[-1]), cs_y(t[-1]), cs_z(t[-1])])
+                if np.linalg.norm(end_point - last_point) >= distance:
+                    new_points.append(end_point)
+                break  # End of the curve
+
+            candidate_point = np.array([cs_x(t_search), cs_y(t_search), cs_z(t_search)])
+            if np.linalg.norm(candidate_point - last_point) >= distance:
+                # Refine t_search for more accurate distance
+                for _ in range(10):  # Number of refinement steps
+                    dt *= 0.1  # Reduce the step size
+                    while np.linalg.norm(candidate_point - last_point) >= distance:
+                        t_search -= dt
+                        candidate_point = np.array(
+                            [cs_x(t_search), cs_y(t_search), cs_z(t_search)]
+                        )
+                break
+
+        new_points.append(candidate_point)
+        last_point = candidate_point
+        t_current = t_search
+
+    return np.array(new_points)
+
+
+def bound_points(points):
+    points = points[points[:, 0] < top.shape[1]]
+    points = points[points[:, 1] < top.shape[0]]
+    points = points[points[:, 0] > 0]
+    points = points[points[:, 1] > 0]
+    return points
+
+
+def visualize_points_2d(images: list, point_sets: list):
+    images = [image.copy() for image in images]
+    for i in range(len(images)):
+        for point in point_sets[i]:
+            cv2.circle(images[i], tuple(point.astype(int)), 1, (0, 255, 0), -1)
+    combined = np.concatenate(images, axis=1)
+    cv2.imshow("combined", combined)
+    cv2.waitKey(1)
+
+
+def visualize_2d(
+    images: tuple[np.ndarray], point_sets: tuple[list[np.ndarray]], labels: list
+):
+    fig, ax = plt.subplots(1, len(images))
+    for i, (image, points, labels) in enumerate(zip(images, point_sets, labels)):
+        for p in points:
+            ax[i].plot(p[:, 0], p[:, 1], ".", label=labels)
+        ax[i].imshow(image)
+        ax[i].axis("off")
+    fig.legend(ncol=3, loc="upper center", bbox_to_anchor=(0.1, 1.1))
+    plt.show()
+
+
+def visualize_3d(
+    point_sets: list,
+    labels: list,
+    colors: list = ["r", "g"],
+):
+    fig = plt.figure(figsize=(4, 3.0))
+    ax = fig.add_subplot(111, projection="3d")
+    for points, label in zip(point_sets, labels):
+        if label == "Actual":
+            continue
+            ax.plot(
+                points[:, 0],
+                points[:, 1],
+                points[:, 2],
+                # ".",
+                label=label,
+                color=colors.pop(0),
+            )
+        else:
+            ax.scatter(
+                points[:, 0],
+                points[:, 1],
+                points[:, 2],
+                ".",
+                label=label,
+                s=5,
+                color=colors.pop(0),
+            )
+            # make a lineplot of the curve
+            ax.plot(points[:, 0], points[:, 1], points[:, 2], color="r")
+
+    set_limits(ax)
+
+    ax.view_init(elev=0, azim=180)
+    # make tick labels invisible
+    ax.xaxis.set_ticklabels([])
+    ax.yaxis.set_ticklabels([])
+    ax.zaxis.set_ticklabels([])
+    # fig.legend(
+    #     ncol=1,
+    #     loc="outside left center",
+    #     markerscale=5,
+    #     # text size
+    #     prop={"size": 8},
+    #     # bbox_to_anchor=(
+    #     #     -0.0,
+    #     #     0.5,
+    #     # ),
+    # )
+    fig.savefig(
+        "./data/figures/3d.png",
+        dpi=300 * 4,
+        bbox_inches="tight",
+        pad_inches=0,
+    )
+    # plt.show()
+
+
+def visualize_curves_2d(images: list, curves: list):
+    fig, ax = plt.subplots(1, len(images))
+    for i, (image, curve) in enumerate(zip(images, curves)):
+        plot_curve_on_image(ax[i], curve)
+        ax[i].imshow(image)
+        ax[i].axis("off")
+    fig.legend(ncol=3, loc="upper center", bbox_to_anchor=(0.1, 1.1))
+    plt.show()
+
+
+def distances_to_curve(point_sets: list, curve: list, labels: list):
+    string = ""
+    for points, curve, label in zip(point_sets, curve, labels):
+        if points.shape[1] == 2:
+            distances = get_distance_to_curve(points, curve)
+        else:
+            distances = get_distance_to_curve3d(points, curve)
+        string += f"{label}: \n\
+        \tMean: {np.mean(distances).round(4)} \n\
+        \tMedian: {np.median(distances).round(4)} \n\
+        \tMax: {np.max(distances).round(4)} \n\
+        \tMin: {np.min(distances).round(4)} \n"
+    return string
+
+
+def curve_constraint(points, curve3d):
     points = points.reshape(-1, 3)
-    return np.sum(np.linalg.norm(np.diff(points, axis=0), axis=1) - 0.002)
+    return np.sum(get_distance_to_curve3d(points, curve3d))
 
 
 def objective_function(
     params: np.ndarray,
-    line1: np.ndarray,
-    line2: np.ndarray,
-    fn_loss: callable = fn_loss,
-    fn_aggregate: callable = fn_aggregate,
+    curve1: np.ndarray,
+    curve2: np.ndarray,
+    curve3d: np.ndarray,
 ) -> float:
-    global iteration
+    def fn_loss(points, line):
+        distance_to_curve = get_distance_to_curve(points, line)
+        return distance_to_curve
 
     points_3d = params.reshape(-1, 3)
 
     projected_points1 = point2pixel(points_3d, P_TOP)
     projected_points2 = point2pixel(points_3d, P_SIDE)
 
-    # overlap points in top and side view
-    top_copy = top.copy()
-    side_copy = side.copy()
-    for point in projected_points1:
-        cv2.circle(top_copy, tuple(point.astype(int)), 1, (0, 255, 0), -1)
-    for point in projected_points2:
-        cv2.circle(side_copy, tuple(point.astype(int)), 1, (0, 255, 0), -1)
+    error1 = fn_loss(projected_points1, curve1)
+    error2 = fn_loss(projected_points2, curve2)
 
-    combined = np.concatenate((top_copy, side_copy), axis=1)
-
-    cv2.imshow("combined", combined)
-    cv2.waitKey(1)
-
-    error1 = 2 * fn_loss(projected_points1, line1)
-    error2 = 2 * fn_loss(projected_points2, line2)
-
-    if fn_aggregate is None:
-        total_error = error1 + error2
-    else:
-        total_error = fn_aggregate(error1, error2)
-
-    # constraint = fn_constraint(points_3d)
-    # total_error += 0.2 * constraint
-
-    print(f"Iteration {iteration}: {total_error}", end="\r")
-    iteration += 1
+    total_error = np.sum(error1) + np.sum(error2)
 
     return total_error
-
-
-def constraint_function(
-    params: np.ndarray,
-):
-    points_3d = params.reshape(-1, 3)
-    return np.sum(np.linalg.norm(np.diff(points_3d, axis=0), axis=1) - 0.002)
 
 
 def optimize_projection(
@@ -118,73 +285,179 @@ def optimize_projection(
     points1: np.ndarray,
     points2: np.ndarray,
 ) -> np.ndarray:
-    curve1 = get_curve(points1)
-    curve2 = get_curve(points2)
-    resampled_points = resample_curve_equidistant(points_3d, distance=0.002)
+    def callback(intermediate_result):
+        global iteration
+
+        params = intermediate_result.x  # extract current parameters from OptimizeResult
+        points_3d = params.reshape(-1, 3)
+        projected_points1 = point2pixel(points_3d, P_TOP)
+        projected_points2 = point2pixel(points_3d, P_SIDE)
+
+        visualize_points_2d([top, side], [projected_points1, projected_points2])
+
+        error1 = get_distance_to_curve(projected_points1, curve1)
+        error2 = get_distance_to_curve(projected_points2, curve2)
+        total_error = np.sum(error1) + np.sum(error2)
+
+        d = distances_to_curve(
+            [projected_points1, projected_points2, points_3d],
+            [curve1, curve2, curve3d],
+            ["Top", "Side", "3D"],
+        )
+        print(f"Iteration {iteration}: {total_error}\n{d}", end="\r")
+        iteration += 1
+
+    def fn_constraint(points):
+        def equidistance_constraint(points):
+            points = points.reshape(-1, 3)
+            distances = np.linalg.norm(np.diff(points, axis=0), axis=1)
+            return np.sum(np.abs(distances - 0.002))
+
+        return equidistance_constraint(points)
+
+    def tip_constraint(points):
+        points = points.reshape(-1, 3)
+        return np.linalg.norm(points[0] - points_3d[0])
+
+    curve1 = get_curve_2d(points1)
+    curve2 = get_curve_2d(points2)
+    curve3d = get_curve_3D(points_3d)
+
+    def dist_constraint(points):
+        points = points.reshape(-1, 3)
+        distances = np.array(get_distance_to_curve3d(points, curve3d))
+        return np.sum(np.maximum(0.1 - distances, 0))
+
+    resampled_points = sample_points(curve3d)
 
     params_init = resampled_points.flatten()
 
     params_opt = optimize.minimize(
         objective_function,
         params_init,
-        args=(curve1, curve2),
-        method="SLSQP",
+        args=(curve1, curve2, curve3d),
+        method="trust-constr",
         options={
-            # 'maxiter': 10,
+            "maxiter": 100,
             "disp": True,
-            # 'eps': 1e-6,
-            # 'gtol': 1e-6,
         },
-        constraints={"type": "eq", "fun": constraint_function},
+        constraints=(
+            {"type": "eq", "fun": fn_constraint},
+            {"type": "eq", "fun": tip_constraint},
+            # {"type": "ineq", "fun": dist_constraint},
+        ),
+        callback=callback,
     )
 
     print(f"Optimization result: {params_opt}")
+
     points_3d_opt = params_opt.x.reshape(-1, 3)
 
     return points_3d_opt
 
 
-if __name__ == "__main__":
-    original_top = point2pixel(geom_pos, P_TOP)
-    # bound the points to the image
-    original_top = original_top[original_top[:, 0] < top.shape[1]]
-    original_top = original_top[original_top[:, 1] < top.shape[0]]
-    original_top = original_top[original_top[:, 0] > 0]
-    original_top = original_top[original_top[:, 1] > 0]
+def visualize_points_2d_matplotlib(
+    images: list, point_sets: list, labels: list, titles: list
+):
+    fig, ax = plt.subplots(1, len(images))
+    images = [image.copy() for image in images]
+    for i in range(len(images)):
+        for j, point in enumerate(point_sets[i]):
+            ax[i].plot(point[:, 0], point[:, 1], ".", label=labels[j])
+        ax[i].imshow(images[i])
+        ax[i].axis("off")
+        ax[i].set_title(titles[i])
+    handles, labels = ax[0].get_legend_handles_labels()
+    # reduce the space between legend and the figure
+    fig.legend(
+        handles,
+        labels,
+        ncol=len(labels),
+        # loc="upper center",
+        markerscale=5,
+        # frameon=True,
+        # bbox_to_anchor=(0.26, 1, 1, 0),
+        loc="outside upper center",
+        # mode="expand",
+        borderaxespad=0.0,
+    )
+    fig.tight_layout()
+    # fig.savefig("./data/figures/reprojection.png", dpi=300)
+    plt.show()
 
-    generated = sample_points_on_curve(points_3d, distance=0.002)
-    reprojected = point2pixel(generated, P_TOP)
-    curve = get_curve(points1)
-    print(curve)
-    # generate the curve
+
+if __name__ == "__main__":
+    top_actual = point2pixel(geom_pos, P_TOP)
+    top_actual = bound_points(top_actual)
+    side_actual = point2pixel(geom_pos, P_SIDE)
+    side_actual = bound_points(side_actual)
+
+    curve_3d = get_curve_3D(points_3d)
+    generated = sample_points(curve_3d, distance=0.014)
+    top_reprojected = point2pixel(generated, P_TOP)
+    side_reprojected = point2pixel(generated, P_SIDE)
+
+    # visualize_points_2d_matplotlib(
+    #     [top, side],
+    #     ([top_actual, top_reprojected], [side_actual, side_reprojected]),
+    #     ["Actual", "Reprojected"],
+    #     ["Top", "Side"],
+    # )
+
+    # visualize_2d(
+    #     [top, side],
+    #     ([top_actual, side_actual], [top_reprojected, side_reprojected]),
+    #     ["Original", "Reprojected"],
+    # )
+
+    visualize_3d([geom_pos, generated], ["Actual", "Generated"])
+    exit()
+
+    top_curve = get_curve_2d(top_actual)
+    top_distances = get_distance_to_curve(top_actual, top_curve)
+    top_distances_reproj = get_distance_to_curve(top_reprojected, top_curve)
+
+    side_curve = get_curve_2d(side_actual)
+    side_distances = get_distance_to_curve(side_actual, side_curve)
+    side_distances_reproj = get_distance_to_curve(side_reprojected, side_curve)
+
+    visualize_curves_2d([top, side], [top_curve, side_curve])
+    # exit()
+    print(
+        f"Top view: \n\tOriginal: {np.mean(top_distances)} \
+        \tReprojected: {np.mean(top_distances_reproj)}"
+    )
+    print(
+        f"Side view: \n\tOriginal: {np.mean(side_distances)} \
+        \tReprojected: {np.mean(side_distances_reproj)}"
+    )
+    print(
+        f"3D curve distances: {np.mean(get_distance_to_curve3d(points_3d, curve_3d))}"
+    )
+    distances_to_curve(
+        [top_actual, side_actual, points_3d],
+        [top_curve, side_curve, curve_3d],
+        ["Top", "Side", "3D"],
+    )
 
     # distances_original = get_distance_to_curve(points1, curve)
     # distances_reproj = get_distance_to_curve(reprojected, curve)
     reproj_opt = optimize_projection(points_3d, points1, points2)
+    print(
+        "Mean offset before:",
+        np.mean(points_3d - geom_pos[: len(points_3d)]),
+    )
+    print(
+        "Mean offset after:",
+        np.mean(reproj_opt - geom_pos[: len(reproj_opt)]),
+    )
     reproj_opt_top = point2pixel(reproj_opt, P_TOP)
     reproj_opt_side = point2pixel(reproj_opt, P_SIDE)
-    print(reproj_opt.shape)
 
-    # fig, ax = plt.subplots(1, 2)
-    # ax[0].imshow(top)
-    # ax[0].plot(original_top[:, 0], original_top[:, 1], "r.", label="Original")
-    # ax[0].plot(reproj_opt_top[:, 0], reproj_opt_top[:, 1], "b.", label="Reprojected")
-    # ax[0].set_title("Top view")
-    # ax[0].axis("off")
-    # ax[1].imshow(side)
-    # ax[1].plot(points2[:, 0], points2[:, 1], "r.", label="Original")
-    # ax[1].plot(reproj_opt_side[:, 0], reproj_opt_side[:, 1], "b.", label="Reprojected")
-    # ax[1].set_title("Side view")
-    # ax[1].axis("off")
-    #
-    # fig.legend(ncol=3, loc="upper center", bbox_to_anchor=(0.1, 1.1))
-    # plt.show()
-
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection="3d")
-    ax.plot(geom_pos[:, 0], geom_pos[:, 1], geom_pos[:, 2], "r.", label="Original")
-    ax.plot(
-        reproj_opt[:, 0], reproj_opt[:, 1], reproj_opt[:, 2], "b.", label="Reprojected"
+    visualize_2d(
+        [top, side],
+        ([top_actual, side_actual], [reproj_opt_top, reproj_opt_side]),
+        ["Actual", "Reprojected"],
     )
-    set_limits(ax)
-    plt.show()
+
+    visualize_3d([geom_pos, reproj_opt], ["Original", "Reprojected"])

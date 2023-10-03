@@ -237,11 +237,20 @@ def aggregate_error(error1, error2):
     return np.sum(error1) + np.sum(error2)
 
 
+def visualize_points_2d(image, points):
+    plt.imshow(image, cmap="gray")
+    plt.scatter(points[:, 0], points[:, 1], c="r", s=10)
+    plt.axis("off")
+    plt.savefig("top_points.png", bbox_inches="tight", pad_inches=0)
+    plt.show()
+
+
 def get_points(
-    image_num: int = 23, spacing: int = 15, size: int = 10, debug: bool = False
+    image_num: int = 23, spacing: int = 30, size: int = 10, debug: bool = False
 ):
     img1 = read_segmented_image(DATA_DIR / f"{image_num}_top.png")
     img2 = read_segmented_image(DATA_DIR / f"{image_num}_side.png")
+
     actual = np.load(DATA_DIR / f"{image_num}_actual.npy")
     # print(actual.shape)
 
@@ -483,7 +492,6 @@ def make_data():
         use_side=True,
         image_size=480,
         target_from_sites=False,
-        # apply_fluid_force=True,
     )
 
     def policy(time_step):
@@ -505,8 +513,8 @@ def make_data():
 
 if __name__ == "__main__":
     # make_data()
-    # exit()
-    points1, points2, points_3d, geom_pos = get_points()
+    points1, points2, points_3d, geom_pos = get_points(50)
+    exit()
     image = read_segmented_image(DATA_DIR / "23_side.png")
     # points_3d_opt = optimize_projection_2(points_3d, points1, points2)
     fig, ax = make_3d_curve(points_3d)
