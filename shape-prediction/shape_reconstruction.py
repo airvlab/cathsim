@@ -14,8 +14,8 @@ mpl.rcParams["lines.markersize"] = 1
 
 DATA_DIR = Path.cwd() / "data" / "guidewire-reconstruction"
 
-if not DATA_DIR.exists():
-    raise FileNotFoundError(f"{DATA_DIR} does not exist.")
+# if not DATA_DIR.exists():
+#     raise FileNotFoundError(f"{DATA_DIR} does not exist.")
 
 P_TOP = np.array(
     [

@@ -2,11 +2,13 @@ import numpy as np
 from pathlib import Path
 from scipy.interpolate import CubicSpline
 import matplotlib.pyplot as plt
-from shape_reconstruction import get_points, set_limits, P_TOP, P_SIDE
+from shape_reconstruction import set_limits, P_TOP, P_SIDE
 from cathsim.dm.visualization import point2pixel
 from scipy.optimize import minimize_scalar
 from scipy import optimize
 import cv2
+
+from utils import get_points, sample_points_on_curve
 
 # Load data
 DATA_PATH = Path("data/guidewire-reconstruction/")
@@ -18,60 +20,12 @@ side = plt.imread(DATA_PATH / f"{image_num}_side.png")
 iteration = 0
 
 
-def arc_length(x, y, z):
-    """Calculate the arc length of the curve defined by vectors x, y, z."""
-    dx = np.diff(x)
-    dy = np.diff(y)
-    dz = np.diff(z)
-    return np.sum(np.sqrt(dx**2 + dy**2 + dz**2))
-
-
 def get_curve(points_2D):
     """Get cubic spline interpolation of 2D points."""
     t = np.linspace(0, 1, len(points_2D))
     cs_x = CubicSpline(t, points_2D[:, 0], bc_type="natural")
     cs_y = CubicSpline(t, points_2D[:, 1], bc_type="natural")
     return cs_x, cs_y
-
-
-def resample_curve_equidistant(points, distance=2.0):
-    total_length = arc_length(points[:, 0], points[:, 1], points[:, 2])
-
-    num_points = int(np.floor(total_length / distance))
-
-    # Create parameter vector
-    t = np.linspace(0, 1, len(points))
-
-    # Create cubic splines for x, y, z
-    cs_x = CubicSpline(t, points[:, 0], bc_type="natural")
-    cs_y = CubicSpline(t, points[:, 1], bc_type="natural")
-    cs_z = CubicSpline(t, points[:, 2], bc_type="natural")
-
-    # Initialize variables
-    new_points = []
-    last_point = points[0]
-    t_current = 0
-    dt = 0.001  # Step for parameter t
-
-    # Resample curve
-    for _ in range(num_points):
-        found = False
-        while not found:
-            t_current += dt
-            if t_current > 1.0:
-                break  # End of the curve
-
-            candidate_point = np.array(
-                [cs_x(t_current), cs_y(t_current), cs_z(t_current)]
-            )
-            distance_to_last = np.linalg.norm(candidate_point - last_point)
-
-            if distance_to_last >= distance:
-                found = True
-                new_points.append(candidate_point)
-                last_point = candidate_point
-
-    return np.array(new_points)
 
 
 def get_distance_to_curve(points_2D, curve):
@@ -198,7 +152,7 @@ if __name__ == "__main__":
     original_top = original_top[original_top[:, 0] > 0]
     original_top = original_top[original_top[:, 1] > 0]
 
-    generated = resample_curve_equidistant(points_3d, distance=0.002)
+    generated = sample_points_on_curve(points_3d, distance=0.002)
     reprojected = point2pixel(generated, P_TOP)
     curve = get_curve(points1)
     print(curve)
