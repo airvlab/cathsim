@@ -8,6 +8,7 @@ data_2/
 data_3/
 data/
 models/
+lightning_logs/
 
 
 # Byte-compiled / optimized / DLL files
