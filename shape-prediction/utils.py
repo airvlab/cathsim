@@ -75,3 +75,31 @@ def filter_points(
 ) -> tuple[np.ndarray, np.ndarray]:
     min_len = min(generated.shape[0], actual.shape[0])
     return generated[min_len], actual[min_len]
+
+
+def nearest_point_distance(curveA, curveB, tA, tB, num_samples=1000):
+    """Compute the average distance between the nearest points of two curves."""
+
+    # Sample points along the curves
+    tA_dense = np.linspace(tA[0], tA[-1], num_samples)
+    tB_dense = np.linspace(tB[0], tB[-1], num_samples)
+
+    samplesA = np.vstack(
+        [curveA[0](tA_dense), curveA[1](tA_dense), curveA[2](tA_dense)]
+    ).T
+    samplesB = np.vstack(
+        [curveB[0](tB_dense), curveB[1](tB_dense), curveB[2](tB_dense)]
+    ).T
+
+    # For each point on curve A, find the nearest point on curve B and compute the distance
+    distances = []
+    for pointA in samplesA:
+        distance = np.linalg.norm(samplesB - pointA, axis=1)
+        distances.append(np.min(distance))
+
+    # For each point on curve B, find the nearest point on curve A and compute the distance
+    for pointB in samplesB:
+        distance = np.linalg.norm(samplesA - pointB, axis=1)
+        distances.append(np.min(distance))
+
+    return np.mean(distances)

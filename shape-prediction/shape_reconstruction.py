@@ -8,6 +8,8 @@ from cathsim.dm.visualization import point2pixel
 from scipy import interpolate, optimize
 from skimage.morphology import thin
 
+from visualization import set_limits
+
 # set scatter marker size
 mpl.rcParams["lines.markersize"] = 1
 
@@ -551,7 +553,14 @@ def make_data():
 
 
 if __name__ == "__main__":
-    points1, points2, points_3d, geom_pos = get_points(50)
+    points1, points2, points_3d, geom_pos = get_points(40)
+    reconstructed_top = point2pixel(geom_pos, P_TOP)
+    image = read_segmented_image(DATA_DIR / "40_top.jpg")
+    plt.imshow(image, cmap="gray")
+    plt.scatter(reconstructed_top[0, 0], reconstructed_top[0, 1], c="r", s=1)
+    plt.axis("off")
+    plt.show()
+
     exit()
     image = read_segmented_image(DATA_DIR / "23_side.png")
     fig, ax = make_3d_curve(points_3d)

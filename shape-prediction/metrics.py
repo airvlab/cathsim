@@ -1,4 +1,5 @@
 import numpy as np
+from collections import OrderedDict
 
 from scipy.spatial.distance import (
     cdist,
@@ -6,6 +7,33 @@ from scipy.spatial.distance import (
 )
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.metrics import mean_squared_error
+
+
+class Metric:
+    def __init__(
+        self,
+        name: str,
+        func: callable,
+        unit: str = None,
+        agg_func: callable = None,
+    ):
+        self.name = name
+        self.func = func
+        self.value = None
+        self.unit = unit
+        self.agg_func = agg_func
+
+    def __repr__(self):
+        repr = f"{self.name}: {self.value:.3f}"
+        if self.std_dev is not None:
+            repr += f" ± {self.std_dev:.3f}"
+        if self.unit is not None:
+            repr += f" {self.unit}"
+
+    def compute(self, pred, actual):
+        self.value = self.func(pred, actual)
+        if self.agg_func is not None:
+            self.value, self.std_dev = self.agg_func(self.value)
 
 
 def get_stats(pred: list, actual: list, metrics: dict = None, round: int = 3) -> dict:
@@ -26,8 +54,8 @@ def get_stats(pred: list, actual: list, metrics: dict = None, round: int = 3) ->
         result = []
         for i in range(len(pred)):
             result.append(metric(pred[i], actual[i]))
-        stats[name] = np.round(np.mean(result), round)
 
+        stats[name] = np.round(np.mean(result) * 1000, round)
     return stats
 
 
@@ -271,9 +299,7 @@ def dice_coefficient(pred, actual, threshold=0.5):
     intersection = np.sum(pred_binary * actual_binary)
     union = np.sum(pred_binary) + np.sum(actual_binary)
 
-    return (2.0 * intersection) / (
-        union + 1e-10
-    )  # added epsilon to avoid division by zero
+    return (2.0 * intersection) / (union + 1e-10)
 
 
 def euclidean_distance(pt1, pt2):
@@ -334,17 +360,38 @@ def frechet_distance(pred, actual):
     return calculate_frechet_distance(pred, actual, 0, 0, memo)
 
 
-METRICS = {
-    "mse": mse,
-    "hausdorff_distance": hausdorff_distance,
-    "mae": mae,
-    "med": med,
-    "maxed": maxed,
-    "sdd": sdd,
-    "segment_cosine_similarity": segment_cosine_similarity,
-    "mean_angle_difference": mean_angle_difference,
-    "cumulative_distance": cumulative_distance,
-    "curve_length_difference": curve_length_difference,
-    "dice_coefficient": dice_coefficient,
-    "frechet_distance": frechet_distance,
-}
+def mean_tip_displacement(pred, actual):
+    """
+    Mean Tip Displacement
+
+    Description:
+        Measures the average distance between the tips of the predicted and actual sets.
+
+    Interpretation:
+        Lower values are better. A value of 0 indicates a perfect match.
+
+    Args:
+        pred (np.ndarray): Predicted points.
+        actual (np.ndarray): Actual points.
+
+    Returns:
+        float: The mean tip displacement.
+    """
+    return np.mean(np.linalg.norm(pred[0] - actual[0]))
+
+
+METRICS = OrderedDict(
+    mse=mse,
+    hausdorff_distance=hausdorff_distance,
+    mae=mae,
+    med=med,
+    maxed=maxed,
+    sdd=sdd,
+    segment_cosine_similarity=segment_cosine_similarity,
+    mean_angle_difference=mean_angle_difference,
+    cumulative_distance=cumulative_distance,
+    curve_length_difference=curve_length_difference,
+    dice_coefficient=dice_coefficient,
+    frechet_distance=frechet_distance,
+    mean_tip_displacement=mean_tip_displacement,
+)

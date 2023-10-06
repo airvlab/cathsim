@@ -1,31 +1,19 @@
+from visualization import visualize_3d
+
 from pathlib import Path
 
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
 
-from torch.utils import data
-
-from metrics import (
-    mean_squared_error,
-)
 
 from models import (
     ShapePredictionLightning,
 )
 
-from dataset import TransitionsDataset
+from dataset import get_dataloader
 
 
-def train():
-    EPOCHS = 30
-    BATCH_SIZE = 16
-
-    path = Path.cwd() / Path("transitions_bodies-sample/")
-    dataset = TransitionsDataset(path)
-    dataloader = data.DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
-
-    model = ShapePredictionLightning()
-
+def get_logger(BATCH_SIZE):
     wandb_logger = WandbLogger(
         project="shape",
         name="nadam",
@@ -35,28 +23,60 @@ def train():
     )
     wandb_logger.experiment.config["batch_size"] = BATCH_SIZE
 
-    trainer = pl.Trainer(max_epochs=EPOCHS, logger=wandb_logger)
+    return wandb_logger
+
+
+def debug():
+    BATCH_SIZE = 32
+
+    dataloader = get_dataloader(Path.cwd() / Path("data"), batch_size=2)
+    model = ShapePredictionLightning(learning_rate=1e-4)
+
+    trainer = pl.Trainer(fast_dev_run=2)
+    trainer.fit(model, dataloader)
+
+
+def train():
+    EPOCHS = 1000
+    BATCH_SIZE = 16
+
+    path = Path.cwd() / Path("data_3")
+    dataloader = get_dataloader(path, batch_size=BATCH_SIZE)
+
+    model = ShapePredictionLightning(learning_rate=1e-4)
+
+    # wandb_logger = get_logger(BATCH_SIZE)
+
+    trainer = pl.Trainer(max_epochs=EPOCHS)
     trainer.fit(model, dataloader, ckpt_path="last")
 
 
 def test():
-    ckpt_path = Path(
-        "scratch/shape_prediction/shape/dev/checkpoints/epoch=29-step=74910.ckpt"
-    )
+    version = 0
+    ckpt_path = Path.cwd() / f"lightning_logs/version_{version}/checkpoints"
+    ckpt_path = ckpt_path.glob("*.ckpt")
+    ckpt_path = list(ckpt_path)[0]
     model = ShapePredictionLightning.load_from_checkpoint(ckpt_path, map_location="cpu")
 
     BATCH_SIZE = 32
 
-    dataset = TransitionsDataset(Path.cwd() / "data")
-    dataloader = data.DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
+    dataloader = get_dataloader(Path.cwd() / Path("data"), batch_size=BATCH_SIZE)
 
     for batch in dataloader:
-        obs, guidewire_geom_pos = batch
-        guidewire_geom_pos_pred = model(obs)
+        top, points = batch
+        points_pred = model(top)
         for indice in range(10):
-            pos = guidewire_geom_pos[indice].detach().numpy()
-            pos_pred = guidewire_geom_pos_pred[indice].detach().numpy()
+            point = points[indice].detach().numpy()
+            point_pred = points_pred[indice].detach().numpy()
+            point_pred = point_pred[: point.shape[0]]
+            visualize_3d([point, point_pred], ["actual", "pred"])
+            print("Predicted shape: ", point_pred.shape)
+            print("Actual shape: ", point.shape)
+
+        exit()
 
 
 if __name__ == "__main__":
+    # debug()
     train()
+    # test()

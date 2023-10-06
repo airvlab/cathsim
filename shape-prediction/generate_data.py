@@ -30,18 +30,18 @@ SCENE = make_scene([1, 2])
 
 
 def get_policy(**kwargs):
-    model_path = Path.cwd() / "models" / "sac.zip"
-    # model = SAC.load(
-    #     model_path,
-    #     print_system_info=True,
-    #     custom_objects={
-    #         "policy_kwargs": dict(
-    #             features_extractor_class=CustomExtractor,
-    #         ),
-    #     },
-    #     **kwargs,
-    # )
-    return None
+    model_path = Path.cwd() / "models" / "sac_0"
+    model = SAC.load(
+        model_path,
+        print_system_info=True,
+        custom_objects={
+            "policy_kwargs": dict(
+                features_extractor_class=CustomExtractor,
+            ),
+        },
+        **kwargs,
+    )
+    return model.policy
 
 
 def get_env():
@@ -56,7 +56,7 @@ def get_env():
     )
     env = MultiInputImageWrapper(
         env,
-        grayscale=True,
+        grayscale=False,
     )
     return env
 
@@ -68,13 +68,20 @@ def process_observation(observation):
 def get_images(env):
     physics = env.unwrapped.physics
 
-    top = physics.render(480, 480, camera_id=0, scene_option=SCENE, segmentation=True)
-    side = physics.render(480, 480, camera_id=2, scene_option=SCENE, segmentation=True)
+    top_real = physics.render(480, 480, camera_id=0)
+    side_real = physics.render(480, 480, camera_id=2)
 
-    top = filter_mask(top)
-    side = filter_mask(side)
+    top_mask = physics.render(
+        480, 480, camera_id=0, scene_option=SCENE, segmentation=True
+    )
+    side_mask = physics.render(
+        480, 480, camera_id=2, scene_option=SCENE, segmentation=True
+    )
 
-    return top, side
+    top_mask = filter_mask(top_mask)
+    side_mask = filter_mask(side_mask)
+
+    return top_real, side_real, top_mask, side_mask
 
 
 def get_geom_pos(env):
@@ -100,60 +107,78 @@ def plot_on_image(image, points, P, color=(0, 0, 255)):
     return image
 
 
-def visualize(top, side, geom_pos):
+def visualize(top, side, top_mask, side_mask, geom_pos):
     top = top.copy()
     side = side.copy()
+    top_mask = top_mask.copy()
+    side_mask = side_mask.copy()
     geom_pos = geom_pos.copy()
 
-    top = plot_on_image(top, geom_pos, P_TOP)
-    side = plot_on_image(side, geom_pos, P_SIDE)
+    top_mask = plot_on_image(top_mask, geom_pos, P_TOP)
+    side_mask = plot_on_image(side_mask, geom_pos, P_SIDE)
 
     combined = np.hstack((top, side))
+    combined_mask = np.hstack((top_mask, side_mask))
     cv2.imshow("combined", combined)
+    cv2.waitKey(1)
+    cv2.imshow("combined", combined_mask)
     cv2.waitKey(1)
 
 
-def save_data(step, top, side, actual):
-    path = Path.cwd() / "data"
+def save_data(step, top_real, side_real, top_mask, side_mask, actual):
+    path = Path.cwd() / "data_2"
     if not path.exists():
         path.mkdir(parents=True, exist_ok=True)
-    plt.imsave((path / f"{step}_top.jpg").as_posix(), top, cmap="gray")
-    plt.imsave((path / f"{step}_side.jpg").as_posix(), side, cmap="gray")
+
+    top_real = cv2.cvtColor(top_real, cv2.COLOR_RGB2GRAY)
+    side_real = cv2.cvtColor(side_real, cv2.COLOR_RGB2GRAY)
+
+    plt.imsave((path / f"{step}_top_real.jpg").as_posix(), top_real, cmap="gray")
+    plt.imsave((path / f"{step}_side_real.jpg").as_posix(), side_real, cmap="gray")
+    plt.imsave((path / f"{step}_top.jpg").as_posix(), top_mask, cmap="gray")
+    plt.imsave((path / f"{step}_side.jpg").as_posix(), side_mask, cmap="gray")
     np.save((path / f"{step}_actual.npy").as_posix(), actual)
 
 
-def generate_data(n_samples: int = 50):
-    path = Path.cwd() / "data"
+def save_data_simple(path, step, top_mask, side_mask, actual):
+    plt.imsave((path / f"{step}_top.jpg").as_posix(), top_mask, cmap="gray")
+    plt.imsave((path / f"{step}_side.jpg").as_posix(), side_mask, cmap="gray")
+    np.save((path / f"{step}_actual.npy").as_posix(), actual)
+
+
+def generate_data(n_samples: int = 200, resume: bool = False):
+    path = Path.cwd() / "data_3"
     if not path.exists():
         path.mkdir(parents=True, exist_ok=True)
 
     env = get_env()
-    policy = get_policy()
+    policy = get_policy(env=env)
 
     current_n_samples = 0
+    if resume:
+        print("Resuming data generation...")
+        current_n_samples = len(list(path.glob("*.npy")))
+    n_samples += current_n_samples
     while current_n_samples < n_samples:
         observation, _ = env.reset()
         done = False
-        step = 0
-        # while not done:
-        for _ in range(50):
-            # action, _ = policy(observation)
-            action = [0.5, 0]
+        while True:
+            # action, _ = policy.predict(observation)
+            action, _ = policy.predict(observation)
             observation, reward, terminated, truncated, info = env.step(action)
             done = terminated or truncated
-            print(
-                f"Step {current_n_samples} terminated: {terminated}, truncated: {truncated}, done: {done}",
-                flush=True,
-                end="\r",
-            )
-            top, side = get_images(env)
+            print(f"Step {current_n_samples}", flush=True, end="\r")
+            top_real, side_real, top_mask, side_mask = get_images(env)
             geom_pos = get_geom_pos(env)
             geom_pos = np.array(geom_pos)
-            save_data(current_n_samples, top, side, geom_pos)
-            visualize(top, side, geom_pos)
-            step += 1
+
+            save_data_simple(path, current_n_samples, top_mask, side_mask, geom_pos)
+            # visualize(top_real, side_real, top_mask, side_mask, geom_pos)
             current_n_samples += 1
+            if done:
+                break
 
 
 if __name__ == "__main__":
-    generate_data()
+    for i in range(20):
+        generate_data(resume=True)

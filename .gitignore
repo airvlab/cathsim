@@ -4,6 +4,10 @@ results/
 ./shape-prediction/models/
 # data/
 .sync*
+data_2/
+data_3/
+data/
+models/
 
 
 # Byte-compiled / optimized / DLL files

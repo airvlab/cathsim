@@ -1,6 +1,5 @@
 from pathlib import Path
 from tqdm import tqdm
-from typing import List, Dict, Any, Tuple, Union
 import numpy as np
 
 import pytorch_lightning as pl
@@ -9,63 +8,16 @@ from torch import nn
 from torch import optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.nn import functional as F
-from torch.utils import data
-from torchvision import transforms
-from functools import reduce
-from cathsim.rl.data import Trajectory
-from pytorch_lightning.loggers import WandbLogger
-import matplotlib.pyplot as plt
-import trimesh
-
-image_transforms = transforms.Compose(
-    [
-        transforms.Lambda(lambda image: image.permute(2, 0, 1)),
-        transforms.Normalize((0.5,), (0.5,)),
-    ]
-)
 
 
-class TransitionsDataset(data.Dataset):
-    def __init__(self, path: Path, transform: callable = None):
-        trajectories = [
-            Trajectory.load(t).to_array().flatten() for t in list(path.iterdir())
-        ]
-        trajectories = [
-            self.preprocess_trajectory(trajectory) for trajectory in trajectories
-        ]
-        trajectories = reduce(
-            lambda acc, trajectory: acc + trajectory, trajectories, []
-        )
-        self.transform = transform
-        self.trajectories = trajectories
-
-    @staticmethod
-    def preprocess_trajectory(
-        trajectory: Trajectory,
-    ) -> List[Tuple[List[Any], List[Any]]]:
-        obs_key = "next_obs-pixels"
-        info_key = "info-guidewire_geom_pos"
-
-        transitions = []
-        for i in range(len(trajectory.data[obs_key])):
-            obs = trajectory.data[obs_key][i]
-            guidewire_geom_pos = trajectory.data[info_key][i]
-            transitions.append((obs, guidewire_geom_pos))
-
-        return transitions
-
-    def __len__(self):
-        return len(self.trajectories)
-
-    def __getitem__(self, index):
-        image, guidewire_geom_pos = self.trajectories[index]
-
-        image = torch.from_numpy(np.array(image)).float()
-        if self.transform:
-            image = self.transform(image)
-        guidewire_geom_pos = torch.from_numpy(np.array(guidewire_geom_pos)).float()
-
-        return image, guidewire_geom_pos
+def pad_tensor(tensor, max_length, padding_value=-999):
+    """Pad tensor to max_length with padding_value."""
+    padding_len = max_length - tensor.size(0)
+    padding_dims = (0, 0, 0, padding_len)  # (left, right, top, bottom) for 2D padding
+    padded_tensor = torch.nn.functional.pad(
+        tensor, padding_dims, "constant", padding_value
+    )
+    return padded_tensor
 
 
 class ShapePredictionCNN(nn.Module):
@@ -76,7 +28,7 @@ class ShapePredictionCNN(nn.Module):
             # Conv layer 1
             nn.Conv2d(
                 in_channels=1, out_channels=32, kernel_size=3, stride=1, padding=1
-            ),  # Adjusted in_channels to 1
+            ),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),
             # Conv layer 2
@@ -117,6 +69,7 @@ class ShapePredictionLightning(pl.LightningModule):
         super(ShapePredictionLightning, self).__init__()
         self.model = ShapePredictionCNN()
         self.learning_rate = learning_rate
+        self.example_input_array = torch.rand(1, 1, 84, 84)
 
     def forward(self, x):
         return self.model(x)
@@ -132,17 +85,46 @@ class ShapePredictionLightning(pl.LightningModule):
         return loss
 
     @staticmethod
-    def custom_loss(predicted, target, alpha=1_000, beta=1):
-        huber_loss = F.smooth_l1_loss(predicted, target)
+    def custom_loss(
+        predicted, target, max_length=84, alpha=1_000, beta=1, padding_value=-999
+    ):
+        # Pad the target points
+        padded_target = [pad_tensor(t, max_length, padding_value) for t in target]
+        padded_target = torch.stack(padded_target).to(predicted.device)
 
-        diff = predicted[:, 1:, :] - predicted[:, :-1, :]
+        # Mask for valid points
+        valid_mask = (padded_target != padding_value).all(dim=-1)
+        expanded_mask = valid_mask.unsqueeze(-1).expand_as(predicted)
+
+        # Mask the predictions and the target
+        masked_pred = predicted[expanded_mask].view(-1, 3)
+        masked_target = padded_target[expanded_mask].view(-1, 3)
+
+        # Compute the huber loss
+        huber_loss = F.smooth_l1_loss(masked_pred, masked_target)
+
+        # Regularization
+        diff = masked_pred[1:] - masked_pred[:-1]
         distances = torch.norm(diff, dim=-1)
         deviation = torch.abs(distances - 0.002)
         reg_loss = torch.mean(deviation)
 
+        # Combined loss
         combined_loss = alpha * huber_loss + beta * reg_loss
-
         return alpha * huber_loss, beta * reg_loss, combined_loss
+
+    # @staticmethod
+    # def custom_loss(predicted, target, alpha=1_000, beta=1):
+    #     huber_loss = F.smooth_l1_loss(predicted, target)
+    #
+    #     diff = predicted[:, 1:, :] - predicted[:, :-1, :]
+    #     distances = torch.norm(diff, dim=-1)
+    #     deviation = torch.abs(distances - 0.002)
+    #     reg_loss = torch.mean(deviation)
+    #
+    #     combined_loss = alpha * huber_loss + beta * reg_loss
+    #
+    #     return alpha * huber_loss, beta * reg_loss, combined_loss
 
     def configure_optimizers(self):
         optimizer = optim.NAdam(self.model.parameters(), lr=self.learning_rate)
@@ -157,3 +139,11 @@ class ShapePredictionLightning(pl.LightningModule):
             "lr_scheduler": scheduler,
             "monitor": "train_loss",
         }
+
+
+def get_model():
+    pass
+
+
+if __name__ == "__main__":
+    pass
