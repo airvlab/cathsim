@@ -5,6 +5,8 @@ from dm_control import mjcf
 from cathsim.dm.utils import normalize_rgba, get_env_config
 from cathsim.dm.components.base_models import BasePhantom
 
+from functools import cached_property
+
 phantom_config = get_env_config("phantom")
 phantom_default = phantom_config["default"]
 
@@ -78,7 +80,6 @@ class Phantom(BasePhantom):
     def set_scale(self, scale: tuple):
         """Changes the scale of the phantom.
 
-
         Args:
             scale (tuple): The scale to set
         """
@@ -91,7 +92,7 @@ class Phantom(BasePhantom):
     def get_rgba(self) -> list:
         return self.rgba
 
-    @property
+    @cached_property
     def sites(self) -> dict:
         """
         Gets the sites from the mesh. Useful for declaring navigation targets or areas of interest.

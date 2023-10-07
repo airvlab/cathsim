@@ -1,12 +1,11 @@
 import math
+from functools import lru_cache, cached_property
 import numpy as np
 import trimesh
 import random
-from typing import Union, Optional, Tuple
-from scipy.spatial import transform
+from typing import Union, Optional
 
 
-from dm_control import mujoco
 from dm_control import mjcf
 from dm_control.mujoco import wrapper, engine
 from dm_control import composer
@@ -16,6 +15,7 @@ from dm_control.composer.observation import observable
 
 from cathsim.dm.components import Phantom
 from cathsim.dm.components import Guidewire, Tip
+from cathsim.dm.fluid import apply_fluid_force
 from cathsim.dm.utils import distance
 from cathsim.dm.observables import CameraObservable
 from cathsim.dm.utils import filter_mask, get_env_config
@@ -24,6 +24,12 @@ from cathsim.dm.visualization import (
     create_camera_matrix,
 )
 
+from cathsim.dm.physics_functions import (
+    get_guidewire_geom_ids,
+    get_guidewire_bodies_ids,
+    get_geom_pos,
+    get_bodies_pos,
+)
 
 env_config = get_env_config()
 
@@ -116,10 +122,14 @@ class Scene(composer.Arena):
     def _add_cameras(self):
         """Add cameras to the scene."""
         self.top_camera = self.add_camera(
-            "top_camera", [-0.03, 0.125, 0.25], quat=[1, 0, 0, 0],
+            "top_camera",
+            [-0.03, 0.125, 0.25],
+            quat=[1, 0, 0, 0],
         )
         self.top_camera_close = self.add_camera(
-            "top_camera_close", [-0.03, 0.125, 0.065], quat=[1, 0, 0, 0],
+            "top_camera_close",
+            [-0.03, 0.125, 0.065],
+            quat=[1, 0, 0, 0],
         )
         self.side_camera = self.add_camera(
             "side", [-0.22, 0.105, 0.03], quat=[0.5, 0.5, -0.5, -0.5]
@@ -240,7 +250,7 @@ class Navigate(composer.Task):
 
     Args:
         phantom: The phantom entity to use
-        guidewire: The guidewire entity to use
+        guidewire: the guidewire entity to use
         tip: The tip entity to use for the tip ( default : None )
         delta: Minimum distance threshold for the success reward ( default : 0.004 )
         dense_reward: If True, the reward is the distance to the target ( default : True )
@@ -269,6 +279,7 @@ class Navigate(composer.Task):
         use_segment: bool = False,
         use_phantom_segment: bool = False,
         image_size: int = 80,
+        apply_fluid_force: bool = False,
         sample_target: bool = False,
         visualize_sites: bool = False,
         visualize_target: bool = False,
@@ -284,6 +295,7 @@ class Navigate(composer.Task):
         self.use_segment = use_segment
         self.use_phantom_segment = use_phantom_segment
         self.image_size = image_size
+        self.apply_fluid_force = apply_fluid_force
         self.visualize_sites = visualize_sites
         self.visualize_target = visualize_target
         self.sample_target = sample_target
@@ -291,16 +303,12 @@ class Navigate(composer.Task):
         self.sampling_bounds = (0.0954, 0.1342)
         self.random_init_distance = random_init_distance
 
-        # Setup arena and attachments
         self._setup_arena_and_attachments(phantom, guidewire, tip)
 
-        # Configure initial poses and variators
         self._configure_poses_and_variators()
 
-        # Setup observables
         self._setup_observables()
 
-        # Visualization
         self._setup_visualizations()
 
         self.control_timestep = env_config["num_substeps"] * self.physics_timestep
@@ -492,6 +500,10 @@ class Navigate(composer.Task):
         velocities = physics.named.data.qvel
         return velocities
 
+    def get_geom_pos(self, physics):
+        """Get the bodies positions."""
+        return get_geom_pos(physics, self.guidewire_geom_ids(physics))
+
     def get_total_force(self, physics):
         """Get the force magnitude."""
         forces = physics.data.qfrc_constraint[0:3]
@@ -539,14 +551,13 @@ class Navigate(composer.Task):
         image_size: Optional[int] = None,
         camera_name: str = "top_camera",
     ) -> np.ndarray:
-
         cameras = self._arena.mjcf_model.find_all("camera")
         camera = next((cam for cam in cameras if cam.name == camera_name), None)
 
         if camera is None:
             raise ValueError(f"No camera found with the name: {camera_name}")
 
-        assert (camera.quat is not None), "Camera quaternion is None"
+        assert camera.quat is not None, "Camera quaternion is None"
 
         image_size = image_size or self.image_size
         camera_matrix = create_camera_matrix(
@@ -598,29 +609,18 @@ class Navigate(composer.Task):
         mesh = trimesh.load_mesh(self._phantom.simplified, scale=0.9)
         return sample_points(mesh, self.sampling_bounds)
 
-    def get_guidewire_geom_pos(self, physics: engine.Physics) -> list[np.ndarray]:
-        """Get the guidewire geometry positions.
+    def guidewire_geom_ids(self, physics):
+        """The guidewire_bodies_ids property."""
+        return get_guidewire_geom_ids(physics.model)
 
-        Args:
-            physics (engine.Physics): DM control physics object
+    def before_step(self, physics, action, random_state):
+        if self.apply_fluid_force:
+            apply_fluid_force(physics, get_guidewire_bodies_ids(physics.model))
+        del random_state
+        physics.set_control(action)
 
-        Returns:
-            list[np.ndarray]: A list of positions of the guidewire geometries
-        """
-
-        model = physics.copy().model
-
-        # Collect IDs of all guidewire geometries
-        guidewire_geom_ids = []
-        for i in range(model.ngeom):
-            geom_name = model.geom(i).name
-            if "guidewire" in geom_name:
-                guidewire_geom_ids.append(model.geom(i).id)
-
-        # Get positions based on IDs
-        guidewire_geom_pos = [physics.data.geom_xpos[i] for i in guidewire_geom_ids]
-
-        return guidewire_geom_pos
+    def get_from_physics(self, physics, fn: callable):
+        return fn(physics)
 
 
 def make_dm_env(
@@ -690,11 +690,8 @@ if __name__ == "__main__":
         visualize_target=True,
         sample_target=True,
         target_from_sites=False,
+        apply_fluid_force=True,
     )
-
-    env._task.get_guidewire_geom_pos(env.physics)
-    physics = env.physics
-    image_size = 480
 
     def random_policy(time_step):
         del time_step
@@ -702,26 +699,14 @@ if __name__ == "__main__":
 
     for episode in range(1):
         time_step = env.reset()
-        # print(env._task.target_pos)
-        # print(env._task.get_head_pos(env._physics))
-        for step in range(1):
+        for step in range(200):
             action = random_policy(time_step)
-            # get_segment_images(env.physics)
-            # top = env.physics.render(height=480, width=480, camera_id=0)
+            if step > 30:
+                action = np.zeros_like(action)
             top = time_step.observation["guidewire"]
-            side = time_step.observation["side"]
-            # side = env.physics.render(height=480, width=480, camera_id=2)
-            geom_pos = env._task.get_guidewire_geom_pos(env.physics)
-            __import__('pprint').pprint(geom_pos)
-            # save_guidewire_reconstruction(step, top, side, geom_pos)
+            # __import__("pprint").pprint(env.task.get_guidewire_bodies_ids(env.physics))
+            # body_positions = env.task.get_geom_pos(env.physics)
+            # exit()
             cv2.imshow("top", top)
-            cv2.imshow("side", side)
             cv2.waitKey(1)
-
-            # contact_forces = env._task.get_contact_forces(env.physics, threshold=0.01)
-            # print(contact_forces)
-            # print(env._task.get_head_pos(env._physics))
-            # print(env._task.target_pos)
-            # print(time_step.reward)
-            # plt.imsave("phantom_480.png", img)
             time_step = env.step(action)

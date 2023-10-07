@@ -135,14 +135,6 @@ class CathSim(gym.Env):
             self.viewer = None
         return self._env.close()
 
-    def print_spaces(self):
-        print("Observation space:")
-        if isinstance(self.observation_space, spaces.Dict):
-            for key, value in self.observation_space.spaces.items():
-                print("\t", key, value.shape)
-        print("Action space:")
-        print("\t", self.action_space.shape)
-
     @property
     def head_pos(self) -> np.ndarray:
         """Get the position of the guidewire tip."""
