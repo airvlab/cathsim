@@ -4,6 +4,7 @@ from pathlib import Path
 
 
 from stable_baselines3 import PPO, SAC
+from stable_baselines3.common.base_class import BaseAlgorithm
 from cathsim.rl.data import RESULTS_PATH
 
 ALGOS = {

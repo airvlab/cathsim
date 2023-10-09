@@ -3,6 +3,7 @@ from typing import Dict
 from gymnasium import spaces
 
 import torch.nn as nn
+import torch
 import torch as th
 
 from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
