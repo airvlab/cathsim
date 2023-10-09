@@ -2,13 +2,14 @@
 logs/
 results/
 ./shape-prediction/models/
-# data/
+data/
 .sync*
 data_2/
 data_3/
 data/
 models/
 lightning_logs/
+data_*/
 
 
 # Byte-compiled / optimized / DLL files
