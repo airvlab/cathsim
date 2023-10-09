@@ -4,3 +4,5 @@ wrapper_kwargs:
     - 'joint_pos'
     - 'joint_vel'
 
+task_kwargs:
+  use_pixels: False
