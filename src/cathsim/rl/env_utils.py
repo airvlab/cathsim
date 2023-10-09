@@ -45,7 +45,7 @@ def make_gym_env(
 
     wrapper_kwargs = config.wrapper_kwargs or {}
     task_kwargs = config.task_kwargs or {}
-    __import__('pprint').pprint(wrapper_kwargs)
+    __import__("pprint").pprint(wrapper_kwargs)
 
     def _create_env() -> gym.Env:
         from cathsim.gym.envs import CathSim

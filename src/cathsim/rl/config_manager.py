@@ -25,11 +25,6 @@ class Config:
         self.config_name = "default"
 
         self.task_kwargs = dict(
-            image_size=80,
-            phantom="phantom3",
-            target="bca",
-        )
-        self.task_kwargs = dict(
             use_pixels=True,
             use_segment=True,
             image_size=80,
