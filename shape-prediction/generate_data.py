@@ -7,7 +7,6 @@ from cathsim.dm.utils import filter_mask
 from cathsim.dm.physics_functions import get_geom_pos as get_pos
 from cathsim.dm.physics_functions import get_guidewire_geom_ids
 
-import time
 
 from stable_baselines3 import SAC
 
@@ -117,17 +116,6 @@ def visualize(top, side, geom_pos):
     cv2.waitKey(1)
 
 
-def save_data(path, step, top_real, side_real, top_mask, side_mask, actual):
-    top_real = cv2.cvtColor(top_real, cv2.COLOR_RGB2GRAY)
-    side_real = cv2.cvtColor(side_real, cv2.COLOR_RGB2GRAY)
-
-    plt.imsave((path / f"{step}_top_real.jpg").as_posix(), top_real, cmap="gray")
-    plt.imsave((path / f"{step}_side_real.jpg").as_posix(), side_real, cmap="gray")
-    plt.imsave((path / f"{step}_top.jpg").as_posix(), top_mask, cmap="gray")
-    plt.imsave((path / f"{step}_side.jpg").as_posix(), side_mask, cmap="gray")
-    np.save((path / f"{step}_actual.npy").as_posix(), actual)
-
-
 def save_data_simple(path, step, top_mask, side_mask, actual):
     plt.imsave((path / f"{step}_top.jpg").as_posix(), top_mask, cmap="gray")
     plt.imsave((path / f"{step}_side.jpg").as_posix(), side_mask, cmap="gray")
@@ -135,7 +123,7 @@ def save_data_simple(path, step, top_mask, side_mask, actual):
 
 
 def generate_data(n_samples: int = 500, resume: bool = False):
-    path = Path.cwd() / "data_3"
+    path = Path.cwd() / "data_2"
     if not path.exists():
         path.mkdir(parents=True, exist_ok=True)
 

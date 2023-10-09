@@ -16,6 +16,14 @@ from shape_reconstruction import (
 
 from cathsim.dm.visualization import point2pixel
 
+transform = transforms.Compose(
+    [
+        transforms.Resize((84, 84)),
+        transforms.Grayscale(num_output_channels=1),
+        transforms.ToTensor(),
+    ]
+)
+
 
 def pad_tensor(tensor, max_length, padding_value=-999):
     if tensor.size(0) < max_length:
@@ -66,10 +74,10 @@ def clean_dataset(path: Path):
                 top_path.unlink()
                 side_path.unlink()
                 actual_path.unlink()
-            else:
-                pred_points_path = path / f"{index}_pred_points.npy"
-                if not pred_points_path.exists():
-                    np.save(pred_points_path.as_posix(), points)
+                continue
+            pred_points_path = path / f"{index}_pred_points.npy"
+            if not pred_points_path.exists():
+                np.save(pred_points_path.as_posix(), points)
 
         except IndexError:
             print("Removing", index)
@@ -107,21 +115,12 @@ def get_points(top_image, side_image):
 
 
 class TransitionsDataset(data.Dataset):
-    def __init__(self, path: Path, transform: callable = None):
+    def __init__(self, path: Path, transform: callable = transform):
         self.path = path
         self.indices = list(path.glob("*_actual.npy"))
         self.indices = [int(index.name.split("_")[0]) for index in self.indices]
 
-        if transform is None:
-            self.transform = transforms.Compose(
-                [
-                    # transforms.Resize((84, 84)),
-                    transforms.Grayscale(num_output_channels=1),
-                    transforms.ToTensor(),
-                ]
-            )
-        else:
-            self.transform = transform
+        self.transform = transform
 
         self.images = []
         self.points = []
@@ -173,18 +172,74 @@ class TransitionsDataset(data.Dataset):
         return top_image, points
 
 
+class TransitionDatasetWLengths(TransitionsDataset):
+    def __init__(self, path: Path, transform: callable = None):
+        super().__init__(path, transform)
+        self.lengths = []
+        for points in self.points:
+            self.lengths.append(points.size(0))
+
+    def __getitem__(self, index):
+        return self.images[index], self.points[index], self.lengths[index]
+
+
 def get_dataloader(path: Path, **kwargs) -> data.DataLoader:
     dataset = TransitionsDataset(path)
     print("Loaded dataset with {} transitions".format(len(dataset)))
-    return data.DataLoader(dataset, shuffle=True, **kwargs, collate_fn=collate_fn, num_workers=8)
+    return data.DataLoader(
+        dataset, shuffle=True, **kwargs, collate_fn=collate_fn, num_workers=8
+    )
+
+
+def get_dataloader_w_lengths(path: Path, **kwargs) -> data.DataLoader:
+    def collate_fn(batch):
+        # Separate the images and the points
+        images, points_list, length = zip(*batch)
+
+        # Determine max length among all batches
+        max_length = max([p.size(0) for p in points_list])
+
+        # Pad each tensor in points to this max length
+        padded_points = [pad_tensor(p, max_length) for p in points_list]
+
+        # Stack everything up
+        images = torch.stack(images)
+        padded_points = torch.stack(padded_points)
+
+        return images, padded_points, length
+
+    dataset = TransitionDatasetWLengths(path)
+    print("Loaded dataset with {} transitions".format(len(dataset)))
+    return data.DataLoader(
+        dataset, shuffle=True, **kwargs, num_workers=8, collate_fn=collate_fn
+    )
+
+
+def sample_from_dl(dataloader, n=1):
+    for batch in dataloader:
+        tops, points_sets, lengths = batch
+        for indice in range(n):
+            top = tops[indice]
+            points = points_sets[indice]
+            length = lengths[indice]
+            print(length)
+            print(points)
+            print(points.size())
+            print(top.size())
+            print(top.squeeze().size())
+            exit()
 
 
 if __name__ == "__main__":
     from visualization import P_TOP
     import matplotlib.pyplot as plt
 
-    # clean_dataset(Path.cwd() / "data_3")
-    dataloader = get_dataloader(Path.cwd() / "data_3")
+    # clean_dataset(Path.cwd() / "data_2")
+    dataloader = get_dataloader_w_lengths(Path.cwd() / "data_2")
+    sample_from_dl(dataloader, n=10)
+    exit()
+
+    dataloader = get_dataloader(Path.cwd() / "data_2")
     for batch in dataloader:
         for image, points in zip(*batch):
             reprojection = point2pixel(points, P_TOP)
