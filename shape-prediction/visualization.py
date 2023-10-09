@@ -1,7 +1,6 @@
 import numpy as np
 from pathlib import Path
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 import matplotlib.gridspec as gridspec
 from matplotlib.colors import Normalize
 import cv2
@@ -123,14 +122,14 @@ def visualize_2d(
 def visualize_3d(point_sets: list, labels: list, colors: list = ["r", "g"]):
     fig = plt.figure(figsize=(4, 3.0))
     ax = fig.add_subplot(111, projection="3d")
-    for points, label in zip(point_sets, labels):
+    for i, (points, label) in enumerate(zip(point_sets, labels)):
         ax.plot(
             points[:, 0],
             points[:, 1],
             points[:, 2],
             ".",
             label=label,
-            color=colors.pop(0),
+            color=colors[i % len(colors)]
         )
 
     set_limits(ax, plot_mesh=False)
@@ -140,17 +139,13 @@ def visualize_3d(point_sets: list, labels: list, colors: list = ["r", "g"]):
     ax.xaxis.set_ticklabels([])
     ax.yaxis.set_ticklabels([])
     ax.zaxis.set_ticklabels([])
-    # fig.legend(
-    #     ncol=1,
-    #     loc="outside left center",
-    #     markerscale=5,
-    #     # text size
-    #     prop={"size": 8},
-    #     # bbox_to_anchor=(
-    #     #     -0.0,
-    #     #     0.5,
-    #     # ),
-    # )
+    fig.legend(
+        ncol=len(labels),
+        loc="outside upper center",
+        markerscale=5,
+        # text size
+        prop={"size": 8},
+    )
     # fig.savefig(
     #     "./data/figures/3d.jpg",
     #     dpi=300 * 4,
@@ -530,5 +525,45 @@ def make_error_figure(pred_list, actual_list):
     ax.yaxis.grid(True)
 
     plt.tight_layout()
+    save_fig(fig)
+    plt.show()
+
+
+def make_simple_3d_figure(points):
+    def save_fig(fig):
+        fig.savefig(
+            "./assets/figures/simple_3d.png",
+            dpi=300 * 2,
+            bbox_inches="tight",
+            pad_inches=0,
+        )
+
+    fig = plt.figure(figsize=(4, 3.0))
+    ax = fig.add_subplot(1, 1, 1, projection="3d")
+    ax.plot(
+        points[:, 0],
+        points[:, 1],
+        points[:, 2],
+        # ".",
+        color="r",
+        linewidth=2,
+    )
+    ax.scatter(
+        points[:, 0],
+        points[:, 1],
+        points[:, 2],
+        ".",
+        color="r",
+        s=20,
+    )
+
+    set_limits(ax, plot_mesh=True)
+    # set the view
+    # ax.view_init(elev=45, azim=45)
+
+    ax.xaxis.set_ticklabels([])
+    ax.yaxis.set_ticklabels([])
+    ax.zaxis.set_ticklabels([])
+
     save_fig(fig)
     plt.show()

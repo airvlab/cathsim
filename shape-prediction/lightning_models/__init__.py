@@ -1,0 +1,1 @@
+from .transformer_based import ShapePredictionLightningTransformer

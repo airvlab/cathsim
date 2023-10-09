@@ -14,6 +14,8 @@ from shape_reconstruction import (
     read_segmented_image,
 )
 
+from cathsim.dm.visualization import point2pixel
+
 
 def pad_tensor(tensor, max_length, padding_value=-999):
     if tensor.size(0) < max_length:
@@ -48,7 +50,13 @@ def clean_dataset(path: Path):
         top_path = path / f"{index}_top.jpg"
         side_path = path / f"{index}_side.jpg"
         actual_path = path / f"{index}_actual.npy"
-
+        pred_points_path = path / f"{index}_pred_points.npy"
+        if not top_path.exists() or not side_path.exists() or not actual_path.exists():
+            print("Removing", index)
+            top_path.unlink()
+            side_path.unlink()
+            actual_path.unlink()
+            continue
         try:
             top_image = read_segmented_image(top_path)
             side_image = read_segmented_image(side_path)
@@ -58,6 +66,11 @@ def clean_dataset(path: Path):
                 top_path.unlink()
                 side_path.unlink()
                 actual_path.unlink()
+            else:
+                pred_points_path = path / f"{index}_pred_points.npy"
+                if not pred_points_path.exists():
+                    np.save(pred_points_path.as_posix(), points)
+
         except IndexError:
             print("Removing", index)
             top_path.unlink()
@@ -89,8 +102,6 @@ def pad_points(points: np.ndarray, max_length=84, padding_value=-999):
 
 def get_points(top_image, side_image):
     points = get_equidistant_3d_points_from_images(top_image, side_image)
-    # points = pad_points(points)
-    # points = torch.from_numpy(points)
 
     return points
 
@@ -98,13 +109,13 @@ def get_points(top_image, side_image):
 class TransitionsDataset(data.Dataset):
     def __init__(self, path: Path, transform: callable = None):
         self.path = path
-        self.indices = list(path.glob("*_top.jpg"))
+        self.indices = list(path.glob("*_actual.npy"))
         self.indices = [int(index.name.split("_")[0]) for index in self.indices]
 
         if transform is None:
             self.transform = transforms.Compose(
                 [
-                    transforms.Resize((84, 84)),
+                    # transforms.Resize((84, 84)),
                     transforms.Grayscale(num_output_channels=1),
                     transforms.ToTensor(),
                 ]
@@ -112,19 +123,30 @@ class TransitionsDataset(data.Dataset):
         else:
             self.transform = transform
 
-        self.tops = []
+        self.images = []
         self.points = []
-        for idx in range(len(self.indices)):
-            top, point = self._get_item(idx)
-            self.tops.append(top)
-            self.points.append(point)
+        for idx in self.indices:
+            points_path = self.path / f"{idx}_pred_points.npy"
+            image_path = self.path / f"{idx}_top.jpg"
+            if points_path.exists():
+                points = np.load(points_path.as_posix())
+                points = torch.from_numpy(points)
+                with Image.open(image_path) as top:
+                    if self.transform:
+                        top_image = self.transform(top)
+                self.images.append(top_image)
+                self.points.append(points)
+                continue
+            top, points = self._get_item(idx)
+            np.save(points_path.as_posix(), points.numpy())
+            self.points.append(points)
+            self.images.append(top)
 
     def __len__(self):
         return len(self.indices)
 
     def __getitem__(self, index):
-        # Fetch from pre-loaded data
-        return self.tops[index], self.points[index]
+        return self.images[index], self.points[index]
 
     def get_paths(self, index):
         index = self.indices[index]
@@ -144,7 +166,7 @@ class TransitionsDataset(data.Dataset):
         points = get_points(top_image, side_image)
         points = torch.from_numpy(points)
 
-        with Image.open(top_path) as top, Image.open(side_path) as side:
+        with Image.open(top_path) as top:
             if self.transform:
                 top_image = self.transform(top)
 
@@ -152,16 +174,21 @@ class TransitionsDataset(data.Dataset):
 
 
 def get_dataloader(path: Path, **kwargs) -> data.DataLoader:
-    dataset = TransitionsDataset(Path.cwd() / "data")
+    dataset = TransitionsDataset(path)
     print("Loaded dataset with {} transitions".format(len(dataset)))
-    return data.DataLoader(dataset, shuffle=True, **kwargs, collate_fn=collate_fn)
+    return data.DataLoader(dataset, shuffle=True, **kwargs, collate_fn=collate_fn, num_workers=8)
 
 
 if __name__ == "__main__":
-    clean_dataset(Path.cwd() / "data_3")
-    exit()
-    dataloader = get_dataloader(Path.cwd() / "data")
+    from visualization import P_TOP
+    import matplotlib.pyplot as plt
+
+    # clean_dataset(Path.cwd() / "data_3")
+    dataloader = get_dataloader(Path.cwd() / "data_3")
     for batch in dataloader:
-        top, points = batch
-        print(top.shape, points.shape)
-        break
+        for image, points in zip(*batch):
+            reprojection = point2pixel(points, P_TOP)
+            plt.imshow(image.squeeze(), cmap="gray")
+            plt.axis("off")
+            plt.scatter(reprojection[:, 0], reprojection[:, 1], s=1)
+            plt.show()

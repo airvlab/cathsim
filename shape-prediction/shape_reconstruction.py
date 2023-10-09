@@ -1,3 +1,5 @@
+from skimage.measure import ransac
+from skimage.transform import FundamentalMatrixTransform
 from pathlib import Path
 
 import cv2
@@ -8,7 +10,9 @@ from cathsim.dm.visualization import point2pixel
 from scipy import interpolate, optimize
 from skimage.morphology import thin
 
-from visualization import set_limits
+from visualization import set_limits, make_simple_3d_figure
+
+from scipy.interpolate import UnivariateSpline
 
 # set scatter marker size
 mpl.rcParams["lines.markersize"] = 1
@@ -48,7 +52,7 @@ def find_endpoints(skeleton):
     for i in range(1, skeleton.shape[0] - 1):
         for j in range(1, skeleton.shape[1] - 1):
             if skeleton[i, j]:
-                sum_neighbors = np.sum(skeleton[i - 1 : i + 2, j - 1 : j + 2])
+                sum_neighbors = np.sum(skeleton[i - 1: i + 2, j - 1: j + 2])
                 if sum_neighbors == 2:  # The pixel itself + one neighbor = 2
                     # print(f"Found endpoint at ({j}, {i})")
                     endpoints.append((j, i))
@@ -153,14 +157,29 @@ def valid_points(points: np.ndarray):
         return mask
 
 
-def triangulate_points(P1, P2, x1s, x2s):
-    """
-    P1, P2: Projection matrices for camera 1 and 2, shape 3x4
-    x1s, x2s: Homogeneous coordinates of the points in image 1 and image 2, shape Nx3
+def refine_matches_with_epipolar(x1s, x2s):
+    # Compute the fundamental matrix using RANSAC
+    model, inliers = ransac((x1s[:, :2], x2s[:, :2]),
+                            FundamentalMatrixTransform, min_samples=8,
+                            residual_threshold=1, max_trials=1000)
 
-    Returns:
-    Xs: Homogeneous coordinates of the 3D points, shape Nx4
-    """
+    # Return the inlier matches
+    return x1s[inliers], x2s[inliers]
+
+
+def triangulate_with_epipolar_constraints(P1, P2, x1s, x2s):
+    # Refine the matches using epipolar constraints
+    x1s_refined, x2s_refined = refine_matches_with_epipolar(x1s, x2s)
+
+    # Triangulate the refined matches
+    Xs = triangulate_points(P1, P2, x1s_refined, x2s_refined)
+
+    return Xs
+
+# Your original triangulate_points function remains unchanged
+
+
+def triangulate_points(P1, P2, x1s, x2s):
     N = x1s.shape[0]
     Xs = np.zeros((N, 4))
 
@@ -176,15 +195,47 @@ def triangulate_points(P1, P2, x1s, x2s):
         B[0:2, :] = x2[0] * P2[2, :] - P2[0, :]
         B[2:4, :] = x2[1] * P2[2, :] - P2[1, :]
 
-        # Stacking A and B to form a 4x4 matrix
         A = np.vstack((A, B))
 
-        # Solve for X by minimizing ||AX|| subject to ||X|| = 1
         U, S, Vt = np.linalg.svd(A)
         X = Vt[-1]
-        Xs[i, :] = X / X[-1]  # Dehomogenize (make last element 1)
+        Xs[i, :] = X / X[-1]
 
     return Xs
+
+
+# def triangulate_points(P1, P2, x1s, x2s):
+#     """
+#     P1, P2: Projection matrices for camera 1 and 2, shape 3x4
+#     x1s, x2s: Homogeneous coordinates of the points in image 1 and image 2, shape Nx3
+#
+#     Returns:
+#     Xs: Homogeneous coordinates of the 3D points, shape Nx4
+#     """
+#     N = x1s.shape[0]
+#     Xs = np.zeros((N, 4))
+#
+#     for i in range(N):
+#         x1 = x1s[i]
+#         x2 = x2s[i]
+#
+#         A = np.zeros((4, 4))
+#         A[0:2, :] = x1[0] * P1[2, :] - P1[0, :]
+#         A[2:4, :] = x1[1] * P1[2, :] - P1[1, :]
+#
+#         B = np.zeros((4, 4))
+#         B[0:2, :] = x2[0] * P2[2, :] - P2[0, :]
+#         B[2:4, :] = x2[1] * P2[2, :] - P2[1, :]
+#
+#         # Stacking A and B to form a 4x4 matrix
+#         A = np.vstack((A, B))
+#
+#         # Solve for X by minimizing ||AX|| subject to ||X|| = 1
+#         U, S, Vt = np.linalg.svd(A)
+#         X = Vt[-1]
+#         Xs[i, :] = X / X[-1]  # Dehomogenize (make last element 1)
+#
+#     return Xs
 
 
 def reprojection_error(
@@ -284,7 +335,7 @@ def get_equidistant_3d_points_from_images(
 
 
 def get_points(
-    image_num: int = 23, spacing: int = 30, size: int = 10, debug: bool = False
+    image_num: int = 23, spacing: int = 14, size: int = 10, debug: bool = False
 ):
     img1 = read_segmented_image(DATA_DIR / f"{image_num}_top.jpg")
     img2 = read_segmented_image(DATA_DIR / f"{image_num}_side.jpg")
@@ -476,31 +527,42 @@ def make_3d_curve(points_3d):
         c="r",
         label="Fitted curve",
     )
-    set_limits(ax)
+    set_limits(ax, plot_mesh=False)
 
     return fig, ax
 
 
-def interpolate_even_spacing(chain, spacing=0.002):
-    new_chain = [chain[0]]
-    leftover_distance = 0
+def interpolate_even_spacing(points_3d, spacing=0.002):
+    cs_x, cs_y, cs_z, t = get_curve_3D(points_3d)
 
-    for i in range(len(chain) - 1):
-        start = chain[i]
-        end = chain[i + 1]
+    # Calculate the total arc length
+    total_length = t[-1]
 
-        segment = end - start
-        segment_length = np.linalg.norm(segment)
+    # Generate equidistant sample points along the curve
+    num_samples = int(total_length / spacing)
+    t_new = np.linspace(0, total_length, num_samples)
 
-        num_points = int((segment_length + leftover_distance) // spacing)
-        leftover_distance += segment_length - num_points * spacing
+    # Evaluate the splines at the sample points
+    x_new = cs_x(t_new)
+    y_new = cs_y(t_new)
+    z_new = cs_z(t_new)
 
-        for j in range(1, num_points + 1):
-            fraction = (j * spacing - leftover_distance) / segment_length
-            new_point = start + fraction * segment
-            new_chain.append(new_point)
+    return np.column_stack((x_new, y_new, z_new))
 
-    return np.array(new_chain)
+
+def get_curve_3D(points, s=1.0):
+    """Get smooth spline interpolation of 3D points."""
+    # Compute the cumulative arc length as the parameter
+    t = np.zeros(len(points))
+    for i in range(1, len(points)):
+        t[i] = t[i - 1] + np.linalg.norm(points[i] - points[i - 1])
+
+    # Create smoothing splines for x, y, z
+    cs_x = UnivariateSpline(t, points[:, 0], s=s)
+    cs_y = UnivariateSpline(t, points[:, 1], s=s)
+    cs_z = UnivariateSpline(t, points[:, 2], s=s)
+
+    return cs_x, cs_y, cs_z, t
 
 
 def make_data():
@@ -552,21 +614,31 @@ def make_data():
             time_step = env.step(action)
 
 
-if __name__ == "__main__":
-    points1, points2, points_3d, geom_pos = get_points(40)
+def main():
+    points1, points2, points_3d, geom_pos = get_points(46)
     reconstructed_top = point2pixel(geom_pos, P_TOP)
-    image = read_segmented_image(DATA_DIR / "40_top.jpg")
+    print(f"Reconstructed top: {reconstructed_top.shape}")
+    image = read_segmented_image(DATA_DIR / "46_top.jpg")
     plt.imshow(image, cmap="gray")
-    plt.scatter(reconstructed_top[0, 0], reconstructed_top[0, 1], c="r", s=1)
+    plt.scatter(reconstructed_top[-1, 0], reconstructed_top[-1, 1], c="r", s=10)
     plt.axis("off")
     plt.show()
+    # exit()
 
-    exit()
-    image = read_segmented_image(DATA_DIR / "23_side.png")
+    # image = read_segmented_image(DATA_DIR / "46.png")
     fig, ax = make_3d_curve(points_3d)
-    set_limits(ax)
     ax.scatter(
         geom_pos[:, 0], geom_pos[:, 1], geom_pos[:, 2], c="g", label="Geom points", s=1
     )
     ax.legend(ncol=3)
     plt.show()
+
+
+if __name__ == "__main__":
+    points1, points2, points_3d, geom_pos = get_points(46)
+    top_image = read_segmented_image(DATA_DIR / "10_top.jpg")
+    side_image = read_segmented_image(DATA_DIR / "10_side.jpg")
+    predicted_points_3d = get_equidistant_3d_points_from_images(top_image, side_image, pixel_spacing=6, spacing=0.01)
+    print(f"Predicted points: {predicted_points_3d.shape}")
+
+    make_simple_3d_figure(predicted_points_3d)
