@@ -45,7 +45,7 @@ conda activate cathsim
 2. Install the environment:
 
 ```bash
-git clone git@github.com:airv/cathsim
+git clone git@github.com:airvlab/cathsim
 cd cathsim
 pip install -e .
 ```
