@@ -45,7 +45,7 @@ conda activate cathsim
 2. Install the environment:
 
 ```bash
-git clone git@github.com:robotvision-ai/cathsim
+git clone git@github.com:airv/cathsim
 cd cathsim
 pip install -e .
 ```
@@ -159,7 +159,7 @@ Note: You will probably have to change the parameters of V-HACD for the best res
 - [ ] Add guidewire representation
 - [ ] Create tests for the environment 
 
-## Contributors (full list of [contributors](contributors.md))
+## Maintainers (full list of [contributors](contributors.md))
 
 - [Tudor Jianu](https://tudorjnu.github.io/)
 - [Baoru Huang](https://baoru.netlify.app)
