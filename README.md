@@ -6,7 +6,6 @@
     <a href="https://"><img height="auto" src="/misc/cathsim_dn.gif"></a>
 </div>
 
-![CathSim](./cathsim.png)
 
 ## Contents
 1. [Requirements](#requirements)
@@ -19,7 +18,7 @@
 
 ## Requirements
 1. Ubuntu (tested with Ubuntu 22.04 LTS)
-2. Miniconda (tested with 23.5 but all versions should work)
+2. Miniconda (tested with Miniconda 23.5)
 3. Python 3.9
 
 If `miniconda` is not installed run the following for a quick Installation. Note: the script assumes you use `bash`.
@@ -160,19 +159,11 @@ Note: You will probably have to change the parameters of V-HACD for the best res
 - [ ] Add guidewire representation
 - [ ] Create tests for the environment 
 
-## Contributors
+## Contributors (full list of [contributors](contributors.md))
 
 - [Tudor Jianu](https://tudorjnu.github.io/)
 - [Baoru Huang](https://baoru.netlify.app)
-- Jingxuan Kang
-- Tuan Van Vo
-- [Mohamed E. M. K. Abdelaziz](https://memkabdelaziz.com/)
-- [Minh Nhat Vu](https://www.acin.tuwien.ac.at/staff/mnv/)
-- [Sebastiano Fichera](https://www.liverpool.ac.uk/engineering/staff/sebastiano-fichera/)
-- [Chun-Yi Lee](https://elsalab.ai/about)
-- [Olatunji Mumini Omisore](https://sites.google.com/view/moom1)
-- [Pierre Berthet-Rayne](https://caranx-medical.com/pierre-berthet-rayne-phd-ing/)
-- [Ferdinando Rodriguez y Baena](https://www.imperial.ac.uk/people/f.rodriguez)
+- [Tung Ta](https://tungtd.com/)
 - [Anh Nguyen](https://cgi.csc.liv.ac.uk/~anguyen/)
 
 ## Terms of Use
