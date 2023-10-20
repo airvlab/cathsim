@@ -96,7 +96,7 @@ For a list of the environment libraries at the current time, see the accompanyin
 
 In order to train the models available run:
 ```bash
-bash ./scripts/train.sh
+bash ./scripts/train.bash
 ```
 
 The script will create a `results` directory on the `cwd`. The script saves the data in `<trial-name>/<phantom>/<target>/<model>` format. Each model has three subfolders `eval`, `models` and `logs`, where the evaluation data contains the `Trajectory` data resulting from the evaluation of the policy, the `models` contains the `pytorch` models and the `logs` contains the `tensorboard` logs.
