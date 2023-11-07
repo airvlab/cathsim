@@ -86,6 +86,14 @@ for _ in range(1):
         print(info_key, info[info_key])
 ```
 
+Being a `gyn` interface, it is compatible with RL libraries such as `stable_baselines3`:
+```python
+import cathsim.gym.envs
+from stable_baselines3 import SAC
+
+model = SAC("MultiInputPolicy", "cathsim/CathSim-v0").learn(10000)
+```
+
 For a list of the environment libraries at the current time, see the accompanying `environment.yml`
 
 ## Training 
