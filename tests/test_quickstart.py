@@ -1,5 +1,3 @@
-# from cathsim.utils import make_dm_env
-# from cathsim.gym.wrappers import DMEnvToGymWrapper
 import cathsim.gym.envs
 import gymnasium as gym
 
