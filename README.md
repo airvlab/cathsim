@@ -52,7 +52,7 @@ pip install -e .
 
 ## Quickstart
 
-A quick way to have the enviromnent run with gym is to make use of the `make_dm_env` function and then wrap the resulting environment into a `DMEnvToGymWrapper` resulting in a `gym.Env`.
+A quick way to have the environment run with gym is to make use of the `make_dm_env` function and then wrap the resulting environment into a `DMEnvToGymWrapper` resulting in a `gym.Env`.
 
 ```python
 import cathsim.gym.envs
@@ -151,7 +151,9 @@ After the installation, you can use `stl2mjcf --help` to see the available comma
 
 Note: You will probably have to change the parameters of V-HACD for the best results.
 
-## Adding a phantom
+## Adding Elements
+
+### Adding a Phantom
 
 Following the steps from [mesh processing](#mesh-processing), the easiest way is to add the files to the correct directory, namely `src/cathsim/dm/components/phantom_assets/`. From here, you can simply select the phantom based on its name. For example, assuming your phantom is named `my_phantom.xml`, you would simply call:
 
