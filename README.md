@@ -86,7 +86,7 @@ for _ in range(1):
         print(info_key, info[info_key])
 ```
 
-Being a `gyn` interface, it is compatible with RL libraries such as `stable_baselines3`:
+Being a `gym` interface, it is compatible with RL libraries such as `stable_baselines3`:
 ```python
 import cathsim.gym.envs
 from stable_baselines3 import SAC
