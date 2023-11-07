@@ -14,6 +14,7 @@
 4. [Training](#training)
 5. [Manual Control](#manual-control)
 6. [Mesh Processing](#mesh-processing)
+7. [Adding Elements](#adding-elements)
 
 
 ## Requirements
