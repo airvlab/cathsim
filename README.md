@@ -55,10 +55,10 @@ pip install -e .
 A quick way to have the enviromnent run with gym is to make use of the `make_dm_env` function and then wrap the resulting environment into a `DMEnvToGymWrapper` resulting in a `gym.Env`.
 
 ```python
-from cathsim.utils import make_dm_env
-from cathsim.wrappers import DMEnvToGymWrapper
+import cathsim.gym.envs
+import gymnasium as gym
 
-env = make_dm_env(
+task_kwargs = dict(
     dense_reward=True,
     success_reward=10.0,
     delta=0.004,
@@ -69,16 +69,18 @@ env = make_dm_env(
     target="bca",
 )
 
-env = DMEnvToGymWrapper(env)
+env = gym.make("cathsim/CathSim-v0", **task_kwargs)
+
 
 obs = env.reset()
 for _ in range(1):
     action = env.action_space.sample()
-    obs, reward, done, info = env.step(action)
+    obs, reward, terminated, truncated, info = env.step(action)
     for obs_key in obs:
         print(obs_key, obs[obs_key].shape)
     print(reward)
-    print(done)
+    print(terminated)
+    print(truncated)
     for info_key in info:
         print(info_key, info[info_key])
 ```
