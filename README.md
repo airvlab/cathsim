@@ -151,6 +151,53 @@ After the installation, you can use `stl2mjcf --help` to see the available comma
 
 Note: You will probably have to change the parameters of V-HACD for the best results.
 
+## Adding a phantom
+
+Following the steps from [mesh processing](#mesh-processing), the easiest way is to add the files to the correct directory, namely `src/cathsim/dm/components/phantom_assets/`. From here, you can simply select the phantom based on its name. For example, assuming your phantom is named `my_phantom.xml`, you would simply call:
+
+```python
+import cathsim.gym.envs
+import gymnasium as gym
+
+task_kwargs = dict(
+    phantom="my_phantom",
+    target=[0.1, 0.1, 0.1],  # select a target based on the mesh or embed it into the xml
+)
+
+env = gym.make("cathsim/CathSim-v0", **task_kwargs)
+```
+
+For more control, you could set the aorta using `mjcf`. See `src/cathsim/dm/components/phantom.py` and `src/cathsim/dm/components/base_models.py` for an example on how to do this. You can then just add the phantom to the task as such:
+
+```python
+from cathsim.gym.envs import CathSim
+
+phantom = MyPhantom()
+tip = Tip(n_bodies=4)
+guidewire = Guidewire(n_bodies=80)
+task = Navigate(
+    phantom=phantom,
+    guidewire=guidewire,
+    tip=tip,
+    target=target,
+    **kwargs,
+)
+env = composer.Environment(
+    task=task,
+    random_state=random_state,
+    strip_singleton_obs_buffer_dim=True,
+)
+
+env = CathSim(dm_env=env)
+```
+
+## Adding a guidewire
+
+A guidewire can be created similarly to the phantom and then embedded into the task like above.
+
+*Please see more information on `mjcf` [here](https://github.com/google-deepmind/dm_control/tree/main/dm_control/mjcf).*
+
+
 ## TODO's
 
 - [x] Code refactoring

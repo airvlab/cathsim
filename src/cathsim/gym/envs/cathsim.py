@@ -54,9 +54,12 @@ class CathSim(gym.Env):
         use_contact_forces: bool = False,
         use_force: bool = False,
         use_geom_pos: bool = False,
-        **kwargs,
+        dm_env=None,
+        ** kwargs,
     ):
-        self._env = make_dm_env(phantom=phantom, **kwargs)
+        self.dm_env = dm_env
+        if self.dm_env is None:
+            self._env = make_dm_env(phantom=phantom, **kwargs)
 
         self.metadata = {
             "render_modes": ["rgb_array"],
