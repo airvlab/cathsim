@@ -18,7 +18,7 @@ class Config:
 
     def set_defaults(self):
         """Set default values for the config."""
-        from cathsim.rl.feature_extractors import CustomExtractor
+        from cathsim.rl.feature_extractors import CustomExtractor, ViTExtractor
 
         self.base_path = RESULTS_PATH
         self.trial_name = "test"
@@ -51,7 +51,7 @@ class Config:
             buffer_size=int(5e5),
             policy="MultiInputPolicy",
             policy_kwargs=dict(
-                features_extractor_class=CustomExtractor,
+                features_extractor_class=ViTExtractor,
             ),
             device="cuda" if th.cuda.is_available() else "cpu",
         )
