@@ -24,7 +24,7 @@ dependencies = [
     "stable_baselines3@git+https://github.com/DLR-RM/stable-baselines3",
     "tensorboard",
     "pyaml",
-    "dm-control",
+    "dm-control@git+https://github.com/google-deepmind/dm_control",
     # "mujoco",
     "trimesh",
     "opencv-python",

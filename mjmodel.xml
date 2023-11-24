@@ -1,0 +1,442 @@
+<mujoco model="composite">
+  <compiler angle="radian"/>
+  <size memory="1G"/>
+  <statistic meansize="0.00803478" extent="0.4016" center="0.2 0 0"/>
+  <extension>
+    <plugin plugin="mujoco.elasticity.cable">
+      <instance name="compositeA">
+        <config key="bend" value="1e9"/>
+        <config key="flat" value="true"/>
+        <config key="vmax" value="0.005"/>
+      </instance>
+      <instance name="compositeB">
+        <config key="bend" value="1e6"/>
+        <config key="flat" value="true"/>
+        <config key="vmax" value="0.005"/>
+      </instance>
+    </plugin>
+  </extension>
+  <custom>
+    <text name="composite_A" data="rope_A"/>
+    <text name="composite_B" data="rope_B"/>
+  </custom>
+  <worldbody>
+    <body name="my_composite">
+      <body name="AB_first">
+        <geom name="AG0" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+        <site name="AS_first" pos="0 0 0" group="3"/>
+        <plugin instance="compositeA"/>
+        <body name="AB_1" pos="0.00612245 0 0">
+          <joint name="AJ_1" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+          <geom name="AG1" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+          <plugin instance="compositeA"/>
+          <body name="AB_2" pos="0.00612245 0 0">
+            <joint name="AJ_2" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+            <geom name="AG2" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+            <plugin instance="compositeA"/>
+            <body name="AB_3" pos="0.00612245 0 0">
+              <joint name="AJ_3" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+              <geom name="AG3" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+              <plugin instance="compositeA"/>
+              <body name="AB_4" pos="0.00612245 0 0">
+                <joint name="AJ_4" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                <geom name="AG4" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                <plugin instance="compositeA"/>
+                <body name="AB_5" pos="0.00612245 0 0">
+                  <joint name="AJ_5" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                  <geom name="AG5" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                  <plugin instance="compositeA"/>
+                  <body name="AB_6" pos="0.00612245 0 0">
+                    <joint name="AJ_6" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                    <geom name="AG6" size="0.0008 0.00306123" pos="0.00306123 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                    <plugin instance="compositeA"/>
+                    <body name="AB_7" pos="0.00612245 0 0">
+                      <joint name="AJ_7" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                      <geom name="AG7" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                      <plugin instance="compositeA"/>
+                      <body name="AB_8" pos="0.00612245 0 0">
+                        <joint name="AJ_8" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                        <geom name="AG8" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                        <plugin instance="compositeA"/>
+                        <body name="AB_9" pos="0.00612245 0 0">
+                          <joint name="AJ_9" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                          <geom name="AG9" size="0.0008 0.00306123" pos="0.00306123 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                          <plugin instance="compositeA"/>
+                          <body name="AB_10" pos="0.00612245 0 0">
+                            <joint name="AJ_10" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                            <geom name="AG10" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                            <plugin instance="compositeA"/>
+                            <body name="AB_11" pos="0.00612245 0 0">
+                              <joint name="AJ_11" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                              <geom name="AG11" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                              <plugin instance="compositeA"/>
+                              <body name="AB_12" pos="0.00612245 0 0">
+                                <joint name="AJ_12" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                <geom name="AG12" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                <plugin instance="compositeA"/>
+                                <body name="AB_13" pos="0.00612246 0 0">
+                                  <joint name="AJ_13" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                  <geom name="AG13" size="0.0008 0.00306123" pos="0.00306123 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                  <plugin instance="compositeA"/>
+                                  <body name="AB_14" pos="0.00612245 0 0">
+                                    <joint name="AJ_14" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                    <geom name="AG14" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                    <plugin instance="compositeA"/>
+                                    <body name="AB_15" pos="0.00612245 0 0">
+                                      <joint name="AJ_15" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                      <geom name="AG15" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                      <plugin instance="compositeA"/>
+                                      <body name="AB_16" pos="0.00612245 0 0">
+                                        <joint name="AJ_16" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                        <geom name="AG16" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                        <plugin instance="compositeA"/>
+                                        <body name="AB_17" pos="0.00612245 0 0">
+                                          <joint name="AJ_17" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                          <geom name="AG17" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                          <plugin instance="compositeA"/>
+                                          <body name="AB_18" pos="0.00612246 0 0">
+                                            <joint name="AJ_18" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                            <geom name="AG18" size="0.0008 0.00306123" pos="0.00306123 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                            <plugin instance="compositeA"/>
+                                            <body name="AB_19" pos="0.00612245 0 0">
+                                              <joint name="AJ_19" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                              <geom name="AG19" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                              <plugin instance="compositeA"/>
+                                              <body name="AB_20" pos="0.00612246 0 0">
+                                                <joint name="AJ_20" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                <geom name="AG20" size="0.0008 0.00306123" pos="0.00306123 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                <plugin instance="compositeA"/>
+                                                <body name="AB_21" pos="0.00612244 0 0">
+                                                  <joint name="AJ_21" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                  <geom name="AG21" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                  <plugin instance="compositeA"/>
+                                                  <body name="AB_22" pos="0.00612246 0 0">
+                                                    <joint name="AJ_22" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                    <geom name="AG22" size="0.0008 0.00306123" pos="0.00306123 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                    <plugin instance="compositeA"/>
+                                                    <body name="AB_23" pos="0.00612244 0 0">
+                                                      <joint name="AJ_23" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                      <geom name="AG23" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                      <plugin instance="compositeA"/>
+                                                      <body name="AB_24" pos="0.00612246 0 0">
+                                                        <joint name="AJ_24" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                        <geom name="AG24" size="0.0008 0.00306123" pos="0.00306123 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                        <plugin instance="compositeA"/>
+                                                        <body name="AB_25" pos="0.00612244 0 0">
+                                                          <joint name="AJ_25" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                          <geom name="AG25" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                          <plugin instance="compositeA"/>
+                                                          <body name="AB_26" pos="0.00612246 0 0">
+                                                            <joint name="AJ_26" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                            <geom name="AG26" size="0.0008 0.00306123" pos="0.00306123 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                            <plugin instance="compositeA"/>
+                                                            <body name="AB_27" pos="0.00612246 0 0">
+                                                              <joint name="AJ_27" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                              <geom name="AG27" size="0.0008 0.00306123" pos="0.00306123 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                              <plugin instance="compositeA"/>
+                                                              <body name="AB_28" pos="0.00612244 0 0">
+                                                                <joint name="AJ_28" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                                <geom name="AG28" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                                <plugin instance="compositeA"/>
+                                                                <body name="AB_29" pos="0.00612246 0 0">
+                                                                  <joint name="AJ_29" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                                  <geom name="AG29" size="0.0008 0.00306123" pos="0.00306123 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                                  <plugin instance="compositeA"/>
+                                                                  <body name="AB_30" pos="0.00612244 0 0">
+                                                                    <joint name="AJ_30" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                                    <geom name="AG30" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                                    <plugin instance="compositeA"/>
+                                                                    <body name="AB_31" pos="0.00612246 0 0">
+                                                                      <joint name="AJ_31" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                                      <geom name="AG31" size="0.0008 0.00306123" pos="0.00306123 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                                      <plugin instance="compositeA"/>
+                                                                      <body name="AB_32" pos="0.00612246 0 0">
+                                                                        <joint name="AJ_32" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                                        <geom name="AG32" size="0.0008 0.00306123" pos="0.00306123 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                                        <plugin instance="compositeA"/>
+                                                                        <body name="AB_33" pos="0.00612244 0 0">
+                                                                          <joint name="AJ_33" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                                          <geom name="AG33" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                                          <plugin instance="compositeA"/>
+                                                                          <body name="AB_34" pos="0.00612246 0 0">
+                                                                            <joint name="AJ_34" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                                            <geom name="AG34" size="0.0008 0.00306123" pos="0.00306123 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                                            <plugin instance="compositeA"/>
+                                                                            <body name="AB_35" pos="0.00612244 0 0">
+                                                                              <joint name="AJ_35" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                                              <geom name="AG35" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                                              <plugin instance="compositeA"/>
+                                                                              <body name="AB_36" pos="0.00612246 0 0">
+                                                                                <joint name="AJ_36" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                                                <geom name="AG36" size="0.0008 0.00306123" pos="0.00306123 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                                                <plugin instance="compositeA"/>
+                                                                                <body name="AB_37" pos="0.00612246 0 0">
+                                                                                  <joint name="AJ_37" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                                                  <geom name="AG37" size="0.0008 0.00306123" pos="0.00306123 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                                                  <plugin instance="compositeA"/>
+                                                                                  <body name="AB_38" pos="0.00612244 0 0">
+                                                                                    <joint name="AJ_38" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                                                    <geom name="AG38" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                                                    <plugin instance="compositeA"/>
+                                                                                    <body name="AB_39" pos="0.00612246 0 0">
+                                                                                      <joint name="AJ_39" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                                                      <geom name="AG39" size="0.0008 0.00306123" pos="0.00306123 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                                                      <plugin instance="compositeA"/>
+                                                                                      <body name="AB_40" pos="0.00612244 0 0">
+                                                                                        <joint name="AJ_40" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                                                        <geom name="AG40" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                                                        <plugin instance="compositeA"/>
+                                                                                        <body name="AB_41" pos="0.00612247 0 0">
+                                                                                          <joint name="AJ_41" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                                                          <geom name="AG41" size="0.0008 0.00306123" pos="0.00306123 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                                                          <plugin instance="compositeA"/>
+                                                                                          <body name="AB_42" pos="0.00612244 0 0">
+                                                                                            <joint name="AJ_42" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                                                            <geom name="AG42" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                                                            <plugin instance="compositeA"/>
+                                                                                            <body name="AB_43" pos="0.00612244 0 0">
+                                                                                              <joint name="AJ_43" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                                                              <geom name="AG43" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                                                              <plugin instance="compositeA"/>
+                                                                                              <body name="AB_44" pos="0.00612244 0 0">
+                                                                                                <joint name="AJ_44" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                                                                <geom name="AG44" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                                                                <plugin instance="compositeA"/>
+                                                                                                <body name="AB_45" pos="0.00612247 0 0">
+                                                                                                  <joint name="AJ_45" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                                                                  <geom name="AG45" size="0.0008 0.00306123" pos="0.00306123 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                                                                  <plugin instance="compositeA"/>
+                                                                                                  <body name="AB_46" pos="0.00612244 0 0">
+                                                                                                    <joint name="AJ_46" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                                                                    <geom name="AG46" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                                                                    <plugin instance="compositeA"/>
+                                                                                                    <body name="AB_47" pos="0.00612244 0 0">
+                                                                                                      <joint name="AJ_47" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                                                                      <geom name="AG47" size="0.0008 0.00306122" pos="0.00306122 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                                                                      <plugin instance="compositeA"/>
+                                                                                                      <body name="AB_last" pos="0.00612247 0 0">
+                                                                                                        <joint name="AJ_last" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                                                                                        <geom name="AG48" size="0.0008 0.00306123" pos="0.00306123 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                                                                                        <site name="AS_last" pos="0.00612247 0 0" group="3"/>
+                                                                                                        <plugin instance="compositeA"/>
+                                                                                                      </body>
+                                                                                                    </body>
+                                                                                                  </body>
+                                                                                                </body>
+                                                                                              </body>
+                                                                                            </body>
+                                                                                          </body>
+                                                                                        </body>
+                                                                                      </body>
+                                                                                    </body>
+                                                                                  </body>
+                                                                                </body>
+                                                                              </body>
+                                                                            </body>
+                                                                          </body>
+                                                                        </body>
+                                                                      </body>
+                                                                    </body>
+                                                                  </body>
+                                                                </body>
+                                                              </body>
+                                                            </body>
+                                                          </body>
+                                                        </body>
+                                                      </body>
+                                                    </body>
+                                                  </body>
+                                                </body>
+                                              </body>
+                                            </body>
+                                          </body>
+                                        </body>
+                                      </body>
+                                    </body>
+                                  </body>
+                                </body>
+                              </body>
+                            </body>
+                          </body>
+                        </body>
+                      </body>
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="BB_first" pos="0.3 0 0">
+        <joint name="BJ_first" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+        <geom name="BG0" size="0.0008 0.00263158" pos="0.00263158 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+        <site name="BS_first" pos="0 0 0" group="3"/>
+        <plugin instance="compositeB"/>
+        <body name="BB_1" pos="0.00526316 0 0">
+          <joint name="BJ_1" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+          <geom name="BG1" size="0.0008 0.00263158" pos="0.00263158 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+          <plugin instance="compositeB"/>
+          <body name="BB_2" pos="0.00526316 0 0">
+            <joint name="BJ_2" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+            <geom name="BG2" size="0.0008 0.00263158" pos="0.00263158 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+            <plugin instance="compositeB"/>
+            <body name="BB_3" pos="0.00526316 0 0">
+              <joint name="BJ_3" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+              <geom name="BG3" size="0.0008 0.00263158" pos="0.00263158 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+              <plugin instance="compositeB"/>
+              <body name="BB_4" pos="0.00526316 0 0">
+                <joint name="BJ_4" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                <geom name="BG4" size="0.0008 0.00263158" pos="0.00263158 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                <plugin instance="compositeB"/>
+                <body name="BB_5" pos="0.00526316 0 0">
+                  <joint name="BJ_5" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                  <geom name="BG5" size="0.0008 0.00263158" pos="0.00263158 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                  <plugin instance="compositeB"/>
+                  <body name="BB_6" pos="0.00526316 0 0">
+                    <joint name="BJ_6" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                    <geom name="BG6" size="0.0008 0.00263158" pos="0.00263158 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                    <plugin instance="compositeB"/>
+                    <body name="BB_7" pos="0.00526316 0 0">
+                      <joint name="BJ_7" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                      <geom name="BG7" size="0.0008 0.00263158" pos="0.00263158 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                      <plugin instance="compositeB"/>
+                      <body name="BB_8" pos="0.00526316 0 0">
+                        <joint name="BJ_8" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                        <geom name="BG8" size="0.0008 0.00263158" pos="0.00263158 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                        <plugin instance="compositeB"/>
+                        <body name="BB_9" pos="0.00526316 0 0">
+                          <joint name="BJ_9" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                          <geom name="BG9" size="0.0008 0.00263158" pos="0.00263158 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                          <plugin instance="compositeB"/>
+                          <body name="BB_10" pos="0.00526316 0 0">
+                            <joint name="BJ_10" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                            <geom name="BG10" size="0.0008 0.00263158" pos="0.00263158 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                            <plugin instance="compositeB"/>
+                            <body name="BB_11" pos="0.00526316 0 0">
+                              <joint name="BJ_11" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                              <geom name="BG11" size="0.0008 0.00263158" pos="0.00263158 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                              <plugin instance="compositeB"/>
+                              <body name="BB_12" pos="0.00526316 0 0">
+                                <joint name="BJ_12" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                <geom name="BG12" size="0.0008 0.00263158" pos="0.00263158 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                <plugin instance="compositeB"/>
+                                <body name="BB_13" pos="0.00526316 0 0">
+                                  <joint name="BJ_13" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                  <geom name="BG13" size="0.0008 0.00263158" pos="0.00263158 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                  <plugin instance="compositeB"/>
+                                  <body name="BB_14" pos="0.00526316 0 0">
+                                    <joint name="BJ_14" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                    <geom name="BG14" size="0.0008 0.00263158" pos="0.00263158 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                    <plugin instance="compositeB"/>
+                                    <body name="BB_15" pos="0.00526316 0 0">
+                                      <joint name="BJ_15" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                      <geom name="BG15" size="0.0008 0.00263158" pos="0.00263158 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                      <plugin instance="compositeB"/>
+                                      <body name="BB_16" pos="0.00526316 0 0">
+                                        <joint name="BJ_16" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                        <geom name="BG16" size="0.0008 0.00263158" pos="0.00263158 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                        <plugin instance="compositeB"/>
+                                        <body name="BB_17" pos="0.00526316 0 0">
+                                          <joint name="BJ_17" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                          <geom name="BG17" size="0.0008 0.00263158" pos="0.00263158 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                          <plugin instance="compositeB"/>
+                                          <body name="BB_last" pos="0.00526316 0 0">
+                                            <joint name="BJ_last" pos="0 0 0" type="ball" group="3" stiffness="0.001" margin="0.02" damping="0.001"/>
+                                            <geom name="BG18" size="0.0008 0.00263158" pos="0.00263158 0 0" quat="0.707107 0 -0.707107 0" type="capsule" condim="1" rgba="0 0 1 1"/>
+                                            <site name="BS_last" pos="0.00526316 0 0" group="3"/>
+                                            <plugin instance="compositeB"/>
+                                          </body>
+                                        </body>
+                                      </body>
+                                    </body>
+                                  </body>
+                                </body>
+                              </body>
+                            </body>
+                          </body>
+                        </body>
+                      </body>
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <contact>
+    <exclude body1="AB_first" body2="AB_1"/>
+    <exclude body1="AB_1" body2="AB_2"/>
+    <exclude body1="AB_2" body2="AB_3"/>
+    <exclude body1="AB_3" body2="AB_4"/>
+    <exclude body1="AB_4" body2="AB_5"/>
+    <exclude body1="AB_5" body2="AB_6"/>
+    <exclude body1="AB_6" body2="AB_7"/>
+    <exclude body1="AB_7" body2="AB_8"/>
+    <exclude body1="AB_8" body2="AB_9"/>
+    <exclude body1="AB_9" body2="AB_10"/>
+    <exclude body1="AB_10" body2="AB_11"/>
+    <exclude body1="AB_11" body2="AB_12"/>
+    <exclude body1="AB_12" body2="AB_13"/>
+    <exclude body1="AB_13" body2="AB_14"/>
+    <exclude body1="AB_14" body2="AB_15"/>
+    <exclude body1="AB_15" body2="AB_16"/>
+    <exclude body1="AB_16" body2="AB_17"/>
+    <exclude body1="AB_17" body2="AB_18"/>
+    <exclude body1="AB_18" body2="AB_19"/>
+    <exclude body1="AB_19" body2="AB_20"/>
+    <exclude body1="AB_20" body2="AB_21"/>
+    <exclude body1="AB_21" body2="AB_22"/>
+    <exclude body1="AB_22" body2="AB_23"/>
+    <exclude body1="AB_23" body2="AB_24"/>
+    <exclude body1="AB_24" body2="AB_25"/>
+    <exclude body1="AB_25" body2="AB_26"/>
+    <exclude body1="AB_26" body2="AB_27"/>
+    <exclude body1="AB_27" body2="AB_28"/>
+    <exclude body1="AB_28" body2="AB_29"/>
+    <exclude body1="AB_29" body2="AB_30"/>
+    <exclude body1="AB_30" body2="AB_31"/>
+    <exclude body1="AB_31" body2="AB_32"/>
+    <exclude body1="AB_32" body2="AB_33"/>
+    <exclude body1="AB_33" body2="AB_34"/>
+    <exclude body1="AB_34" body2="AB_35"/>
+    <exclude body1="AB_35" body2="AB_36"/>
+    <exclude body1="AB_36" body2="AB_37"/>
+    <exclude body1="AB_37" body2="AB_38"/>
+    <exclude body1="AB_38" body2="AB_39"/>
+    <exclude body1="AB_39" body2="AB_40"/>
+    <exclude body1="AB_40" body2="AB_41"/>
+    <exclude body1="AB_41" body2="AB_42"/>
+    <exclude body1="AB_42" body2="AB_43"/>
+    <exclude body1="AB_43" body2="AB_44"/>
+    <exclude body1="AB_44" body2="AB_45"/>
+    <exclude body1="AB_45" body2="AB_46"/>
+    <exclude body1="AB_46" body2="AB_47"/>
+    <exclude body1="AB_47" body2="AB_last"/>
+    <exclude body1="AB_last" body2="BB_first"/>
+    <exclude body1="BB_first" body2="BB_1"/>
+    <exclude body1="BB_1" body2="BB_2"/>
+    <exclude body1="BB_2" body2="BB_3"/>
+    <exclude body1="BB_3" body2="BB_4"/>
+    <exclude body1="BB_4" body2="BB_5"/>
+    <exclude body1="BB_5" body2="BB_6"/>
+    <exclude body1="BB_6" body2="BB_7"/>
+    <exclude body1="BB_7" body2="BB_8"/>
+    <exclude body1="BB_8" body2="BB_9"/>
+    <exclude body1="BB_9" body2="BB_10"/>
+    <exclude body1="BB_10" body2="BB_11"/>
+    <exclude body1="BB_11" body2="BB_12"/>
+    <exclude body1="BB_12" body2="BB_13"/>
+    <exclude body1="BB_13" body2="BB_14"/>
+    <exclude body1="BB_14" body2="BB_15"/>
+    <exclude body1="BB_15" body2="BB_16"/>
+    <exclude body1="BB_16" body2="BB_17"/>
+    <exclude body1="BB_17" body2="BB_last"/>
+  </contact>
+  <equality>
+    <connect name="right_boundary" body1="AB_last" body2="BB_first" anchor="0 0 0" solref="-10000 -10000"/>
+  </equality>
+</mujoco>

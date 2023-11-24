@@ -1,0 +1,36 @@
+<mujoco model="composite">
+<extension>
+    <plugin plugin="mujoco.elasticity.cable"/>
+</extension>
+<size memory="1G"/>
+<worldbody>
+    <body name="my_composite">
+        <composite prefix="A" type="cable" curve="s" count="50" size="0.3" initial="none">
+            <geom type="capsule" size="0.0008" rgba="1 1 1 1" condim="1"/>
+            <joint kind="main" damping="0.001" stiffness="0.001" margin="0.02"/>
+            <plugin plugin="mujoco.elasticity.cable">
+                <config key="bend" value="1e9"/>
+                <config key="flat" value="true"/>
+                <config key="vmax" value="0.005"/>
+            </plugin>
+        </composite>
+        <composite prefix="B" type="cable" curve="s" count="20" size="0.1" offset="0.3 0 0" initial="ball">
+            <geom type="capsule" size="0.0008" rgba="0 1 0 1" condim="1"/>
+            <joint kind="main" damping="0.001" stiffness="0.001" margin="0.02"/>
+            <plugin plugin="mujoco.elasticity.cable">
+                <config key="bend" value="1e6"/>
+                <config key="flat" value="true"/>
+                <config key="vmax" value="0.005"/>
+            </plugin>
+        </composite>
+    </body>
+</worldbody>
+<equality>
+    <!-- <weld name="right_boundary" body1="AB_last" body2="BB_first" solref="-1e4 -1e3"/> -->
+    <connect name="right_boundary" body1="AB_last" body2="BB_first" anchor="0.00612247 0 0" solref="-1e4 -1e4"/>
+    <!-- <connect body1="weight" body2="CB49" anchor="-.05 0 0" solref="-10000 -1000"/> -->
+</equality>
+<contact>
+    <exclude body1="AB_last" body2="BB_first"/>
+</contact>
+</mujoco>

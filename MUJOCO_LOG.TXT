@@ -1,0 +1,30 @@
+Mon Nov  6 13:53:24 2023
+WARNING: mju_openResource: unknown file './assets/phantom2.xml'
+
+Tue Nov 14 11:02:56 2023
+WARNING: mju_openResource: unknown file 'assets/phantom2.xml'
+
+Tue Nov 14 12:41:31 2023
+WARNING: Nan, Inf or huge value in QACC at DOF 3. The simulation is unstable. Time = 0.0460.
+
+Tue Nov 14 12:42:03 2023
+WARNING: Nan, Inf or huge value in QACC at DOF 3. The simulation is unstable. Time = 0.0460.
+
+Fri Nov 24 11:45:28 2023
+WARNING: Nan, Inf or huge value in QACC at DOF 3. The simulation is unstable. Time = 20.2480.
+
+Fri Nov 24 13:25:47 2023
+WARNING: Nan, Inf or huge value in QACC at DOF 3. The simulation is unstable. Time = 0.0120.
+
+Fri Nov 24 13:25:59 2023
+WARNING: Nan, Inf or huge value in QACC at DOF 0. The simulation is unstable. Time = 0.0440.
+
+Fri Nov 24 13:26:34 2023
+WARNING: Nan, Inf or huge value in QACC at DOF 0. The simulation is unstable. Time = 0.0440.
+
+Fri Nov 24 13:27:12 2023
+WARNING: Nan, Inf or huge value in QACC at DOF 0. The simulation is unstable. Time = 0.0440.
+
+Fri Nov 24 13:34:45 2023
+WARNING: Nan, Inf or huge value in QACC at DOF 0. The simulation is unstable. Time = 0.0340.
+

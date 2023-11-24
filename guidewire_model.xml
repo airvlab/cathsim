@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<mujoco model="Guidewire">
+	<extension>
+		<plugin plugin="mujoco.elasticity.cable"/>
+	</extension>
+	<!-- <include file="./src/cathsim/dm/components/phantom_assets/phantom3.xml"/> -->
+	<compiler autolimits="false" meshdir="assets/meshes"/>
+	<size memory="1G"/>
+	<option density="1055" viscosity="0.0035" o_margin="0.02" integrator="implicitfast" cone="pyramidal" jacobian="sparse" solver="Newton"/>
+	<worldbody>
+		<light diffuse=".4 .4 .4" specular="0.1 0.1 0.1" pos="0 0 2" dir="0 0 -1" castshadow="false"/>
+		<light directional="true" diffuse=".8 .8 .8" specular="0.2 0.2 0.2" pos="0 0 4" dir="0 0 -1"/>
+		<body name="core" pos="0 -0.49 0.0032500000000000003" euler="0 0 90">
+			<joint name="slider" type="slide" axis="1 0 0" stiffness="0" damping="0"/>
+			<joint name="rotator" type="hinge" axis="1 0 0" stiffness="0" damping="5" armature="0.1"/>
+			<composite type="cable" curve="s" count="31 1 1" size="0.5" offset="0.00025 0 0" initial="none">
+				<geom type="capsule" size="0.00025" rgba="1 1 1 1" condim="1" density="6450" margin="0.02"/>
+				<joint kind="main" damping="0.1" stiffness="0.01" margin="0.02"/>
+				<plugin plugin="mujoco.elasticity.cable">
+					<config key="twist" value="1e6"/>
+					<config key="bend" value="1e9"/>
+					<config key="vmax" value="0.0005"/>
+				</plugin>
+			</composite>
+		</body>
+	</worldbody>
+	<actuator>
+		<velocity name="slider_actuator" joint="slider"/>
+		<general name="rotator_actuator" joint="rotator" biastype="none" dynprm="1 0 0" gainprm="40 0 0" biasprm="0 40 0"/>
+	</actuator>
+</mujoco>
