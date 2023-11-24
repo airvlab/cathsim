@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from gym import spaces
+from gymnasium import spaces
 from cathsim.rl.data import Trajectory
 from toolz.dicttoolz import get_in
 

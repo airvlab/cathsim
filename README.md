@@ -1,12 +1,11 @@
 # CathSim: An Open-source Simulator for Endovascular Intervention
-### [[Project Page](https://robotvisionlabs.github.io/cathsim/)] [[Paper](https://arxiv.org/abs/2208.01455)]
+### [[Project Page](https://airvlab.github.io/cathsim/)] [[Paper](https://arxiv.org/abs/2208.01455)]
 
 
 <div align="center">
     <a href="https://"><img height="auto" src="/misc/cathsim_dn.gif"></a>
 </div>
 
-![CathSim](./cathsim.png)
 
 ## Contents
 1. [Requirements](#requirements)
@@ -15,11 +14,12 @@
 4. [Training](#training)
 5. [Manual Control](#manual-control)
 6. [Mesh Processing](#mesh-processing)
+7. [Adding Elements](#adding-elements)
 
 
 ## Requirements
 1. Ubuntu (tested with Ubuntu 22.04 LTS)
-2. Miniconda (tested with 23.5 but all versions should work)
+2. Miniconda (tested with Miniconda 23.5)
 3. Python 3.9
 
 If `miniconda` is not installed run the following for a quick Installation. Note: the script assumes you use `bash`.
@@ -46,20 +46,20 @@ conda activate cathsim
 2. Install the environment:
 
 ```bash
-git clone git@github.com:robotvision-ai/cathsim
+git clone git@github.com:airvlab/cathsim
 cd cathsim
 pip install -e .
 ```
 
 ## Quickstart
 
-A quick way to have the enviromnent run with gym is to make use of the `make_dm_env` function and then wrap the resulting environment into a `DMEnvToGymWrapper` resulting in a `gym.Env`.
+A quick way to have the environment run with gym is to make use of the `make_dm_env` function and then wrap the resulting environment into a `DMEnvToGymWrapper` resulting in a `gym.Env`.
 
 ```python
-from cathsim.utils import make_dm_env
-from cathsim.wrappers import DMEnvToGymWrapper
+import cathsim.gym.envs
+import gymnasium as gym
 
-env = make_dm_env(
+task_kwargs = dict(
     dense_reward=True,
     success_reward=10.0,
     delta=0.004,
@@ -70,30 +70,74 @@ env = make_dm_env(
     target="bca",
 )
 
-env = DMEnvToGymWrapper(env)
+env = gym.make("cathsim/CathSim-v0", **task_kwargs)
+
 
 obs = env.reset()
 for _ in range(1):
     action = env.action_space.sample()
-    obs, reward, done, info = env.step(action)
+    obs, reward, terminated, truncated, info = env.step(action)
     for obs_key in obs:
         print(obs_key, obs[obs_key].shape)
     print(reward)
-    print(done)
+    print(terminated)
+    print(truncated)
     for info_key in info:
         print(info_key, info[info_key])
+```
+
+Being a `gym` interface, it is compatible with RL libraries such as `stable_baselines3`:
+```python
+import cathsim.gym.envs
+from stable_baselines3 import SAC
+
+model = SAC("MultiInputPolicy", "cathsim/CathSim-v0").learn(10000)
 ```
 
 For a list of the environment libraries at the current time, see the accompanying `environment.yml`
 
 ## Training 
 
+#### Network Models
+
+| ENN Model | BC Model |
+|:--------:|:--------:|
+| <img height="293" width="auto" alt="expert network architecture" src="./misc/expert_model.png"> | <img height="293" width="auto" alt="bc network architecture" src="./misc/bc_model.png"> |
+
+
 In order to train the models available run:
 ```bash
-bash ./scripts/train.sh
+bash ./scripts/train.bash
 ```
 
-The script will create a results directory on the `cwd`. The script saves the data in `<trial-name>/<phantom>/<target>/<model>` format. Each model has three subfolders `eval`, `models` and `logs`, where the evaluation data contains the `Trajectory` data resulting from the evaluation of the policy, the `models` contains the `pytorch` models and the `logs` contains the `tensorboard` logs.
+The script will create a `results` directory on the `cwd`. The script saves the data in `<trial-name>/<phantom>/<target>/<model>` format. Each model has three subfolders `eval`, `models` and `logs`, where the evaluation data contains the `Trajectory` data resulting from the evaluation of the policy, the `models` contains the `pytorch` models and the `logs` contains the `tensorboard` logs.
+
+### Results
+
+#### Expert Navigation Results
+
+| Input         | Force&#160;(N)&#160;↓             | Path&#160;Length&#160;(cm)&#160;↓      | Episode&#160;Length&#160;(s)&#160;↓    | Safety&#160;%&#160;↑              | Success&#160;%&#160;↑             | SPL&#160;%&#160;↑                 |
+|:---------------|--------------------------:|-------------------------:|-------------------------:|-------------------------:|-------------------------:|-------------------------:|
+| Human         | **1.02±0.22**         | 28.82±11.80           | 146.30±62.83          | **83±04**             | 100±00                | 62                      |
+| Image         | 3.61±0.61             | 25.28±15.21           | 162.55±106.85         | 16±10                 | 65±48                 | 74                      |
+| Image+Mask    | 3.36±0.41             | 18.55±2.91            | 77.67±21.83           | 25±07                 | 100±00                | 86                      |
+| Internal      | 3.33±0.46             | 20.53±4.96            | 87.25±50.56           | 26±09                 | 97±18                 | 80                      |
+| Internal+Image| 2.53±0.57             | 21.65±4.35            | 221.03±113.30         | 39±15                 | 33±47                 | 76                      |
+| **ENN**       | 2.33±0.18             | **15.78±0.17**        | **36.88±2.40**        | 45±04                 | 100±00                | **99**                  |
+> ENN outperforms human surgeon, however it uses extra data such as the joint positions and joint velocities, compared to human which is relies only on the 2D image.
+
+#### Imitation Learning Results
+
+| Input         | Force&#160;(N)&#160;↓  | Path&#160;Length&#160;(cm)&#160;↓  | Episode&#160;Length&#160;(s)&#160;↓    | Safety&#160;%&#160;↑              | Success&#160;%&#160;↑             | SPL&#160;%&#160;↑                 |
+|:--------------|-----------------------:|-------------------------:|-------------------------:|-------------------------:|-------------------------:|-------------------------:|
+| ENN           | 2.33±0.18              | **15.78±0.17**        | **36.88±2.40**        | 45±04                 | 100±00                | **99**                  |
+| Image&#160;w/o.&#160;ENN| 3.61±0.61              | 25.28±15.21           | 162.55±106.85         | 16±10                 | 65±48                 | 74                      |
+| Image&#160;w.&#160;ENN  | **2.23±0.10**          | 16.06±0.33            | 43.40±1.50            | **49±03**             | 100±00                | 98                      |
+
+##### Path Comparison
+
+<img width="1604" alt="path comparison between human and ENN" src="./misc/path.png"> 
+
 
 ## Manual Control
 
@@ -102,6 +146,7 @@ For a quick visualisation of the environment run:
 run_env
 ```
 You will now see the guidewire and the aorta along with the two sites that represent the targets. You can interact with the environment using the keyboard arrows.
+
 
 ## Mesh Processing
 
@@ -115,27 +160,70 @@ After the installation, you can use `stl2mjcf --help` to see the available comma
 
 Note: You will probably have to change the parameters of V-HACD for the best results.
 
+## Adding Elements
+
+### Adding a Phantom
+
+Following the steps from [mesh processing](#mesh-processing), the easiest way is to add the files to the correct directory, namely `src/cathsim/dm/components/phantom_assets/`. From here, you can simply select the phantom based on its name. For example, assuming your phantom is named `my_phantom.xml`, you would simply call:
+
+```python
+import cathsim.gym.envs
+import gymnasium as gym
+
+task_kwargs = dict(
+    phantom="my_phantom",
+    target=[0.1, 0.1, 0.1],  # select a target based on the mesh or embed it into the xml
+)
+
+env = gym.make("cathsim/CathSim-v0", **task_kwargs)
+```
+
+For more control, you could set the aorta using `mjcf`. See `src/cathsim/dm/components/phantom.py` and `src/cathsim/dm/components/base_models.py` for an example on how to do this. You can then just add the phantom to the task as such:
+
+```python
+from cathsim.gym.envs import CathSim
+
+phantom = MyPhantom()
+tip = Tip(n_bodies=4)
+guidewire = Guidewire(n_bodies=80)
+task = Navigate(
+    phantom=phantom,
+    guidewire=guidewire,
+    tip=tip,
+    target=target,
+    **kwargs,
+)
+env = composer.Environment(
+    task=task,
+    random_state=random_state,
+    strip_singleton_obs_buffer_dim=True,
+)
+
+env = CathSim(dm_env=env)
+```
+
+## Adding a guidewire
+
+A guidewire can be created similarly to the phantom and then embedded into the task like above.
+
+*Please see more information on `mjcf` [here](https://github.com/google-deepmind/dm_control/tree/main/dm_control/mjcf).*
+
+
 ## TODO's
 
 - [x] Code refactoring
 - [x] Add fluid simulation
 - [x] Add VR/AR interface through Unity
 - [x] Implement multiple aortic models
+- [x] Update to `gymnasium`
 - [ ] Add guidewire representation
+- [ ] Create tests for the environment 
 
-## Contributors
+## Maintainers (full list of [contributors](contributors.md))
 
 - [Tudor Jianu](https://tudorjnu.github.io/)
 - [Baoru Huang](https://baoru.netlify.app)
-- Jingxuan Kang
-- Tuan Van Vo
-- [Mohamed E. M. K. Abdelaziz](https://memkabdelaziz.com/)
-- [Minh Nhat Vu](https://www.acin.tuwien.ac.at/staff/mnv/)
-- [Sebastiano Fichera](https://www.liverpool.ac.uk/engineering/staff/sebastiano-fichera/)
-- [Chun-Yi Lee](https://elsalab.ai/about)
-- [Olatunji Mumini Omisore](https://sites.google.com/view/moom1)
-- [Pierre Berthet-Rayne](https://caranx-medical.com/pierre-berthet-rayne-phd-ing/)
-- [Ferdinando Rodriguez y Baena](https://www.imperial.ac.uk/people/f.rodriguez)
+- [Tung Ta](https://tungtd.com/)
 - [Anh Nguyen](https://cgi.csc.liv.ac.uk/~anguyen/)
 
 ## Terms of Use

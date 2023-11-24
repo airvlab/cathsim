@@ -1,0 +1,2 @@
+from cathsim.rl.feature_extractors.cnn_extractor import CustomExtractor
+from cathsim.rl.feature_extractors.vit_extractor import ViTExtractor

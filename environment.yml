@@ -1,99 +1,86 @@
-name: cathsim
+name: cathsim-dev
 channels:
-  - conda-forge
   - defaults
 dependencies:
-  - _libgcc_mutex=0.1=conda_forge
-  - _openmp_mutex=4.5=2_gnu
-  - bzip2=1.0.8=h7f98852_4
-  - ca-certificates=2023.5.7=hbcca054_0
-  - ld_impl_linux-64=2.40=h41732ed_0
-  - libffi=3.4.2=h7f98852_5
-  - libgcc-ng=12.2.0=h65d4601_19
-  - libgomp=12.2.0=h65d4601_19
-  - libnsl=2.0.0=h7f98852_0
-  - libsqlite=3.42.0=h2797004_0
-  - libuuid=2.38.1=h0b41bf4_0
-  - libzlib=1.2.13=h166bdaf_4
-  - ncurses=6.3=h27087fc_1
-  - openssl=3.1.0=hd590300_3
-  - pip=23.1.2=pyhd8ed1ab_0
-  - python=3.9.16=h2782a2a_0_cpython
-  - readline=8.2=h8228510_1
-  - tk=8.6.12=h27826a3_0
-  - wheel=0.40.0=pyhd8ed1ab_0
-  - xz=5.2.6=h166bdaf_0
+  - _libgcc_mutex=0.1=main
+  - _openmp_mutex=5.1=1_gnu
+  - ca-certificates=2023.05.30=h06a4308_0
+  - ld_impl_linux-64=2.38=h1181459_1
+  - libffi=3.4.4=h6a678d5_0
+  - libgcc-ng=11.2.0=h1234567_1
+  - libgomp=11.2.0=h1234567_1
+  - libstdcxx-ng=11.2.0=h1234567_1
+  - ncurses=6.4=h6a678d5_0
+  - openssl=3.0.10=h7f8727e_0
+  - pip=23.2.1=py39h06a4308_0
+  - python=3.9.17=h955ad1f_0
+  - readline=8.2=h5eee18b_0
+  - setuptools=68.0.0=py39h06a4308_0
+  - sqlite=3.41.2=h5eee18b_0
+  - tk=8.6.12=h1ccaba5_0
+  - wheel=0.38.4=py39h06a4308_0
+  - xz=5.4.2=h5eee18b_0
+  - zlib=1.2.13=h5eee18b_0
   - pip:
       - absl-py==1.4.0
-      - aiohttp==3.8.4
+      - aiohttp==3.8.5
       - aiosignal==1.3.1
-      - asttokens==2.2.1
-      - async-timeout==4.0.2
+      - async-timeout==4.0.3
       - attrs==23.1.0
-      - backcall==0.2.0
-      - cachetools==5.3.0
-      - certifi==2023.5.7
-      - chai-sacred==0.8.3
-      - charset-normalizer==3.1.0
+      - cachetools==5.3.1
+      - cathsim==0.1.dev1
+      - certifi==2023.7.22
+      - charset-normalizer==3.2.0
       - cloudpickle==2.2.1
-      - cmake==3.26.3
+      - cmake==3.27.2
       - colorama==0.4.6
-      - comm==0.1.3
-      - contourpy==1.0.7
+      - contourpy==1.1.0
       - cycler==0.11.0
-      - debugpy==1.6.7
-      - decorator==5.1.1
-      - dm-control==1.0.12
+      - datasets==2.14.4
+      - dill==0.3.7
+      - dm-control==1.0.14
       - dm-env==1.6
       - dm-tree==0.1.8
       - docopt==0.6.2
-      - exceptiongroup==1.1.1
-      - executing==1.2.0
-      - filelock==3.12.0
-      - fonttools==4.39.4
-      - frozenlist==1.3.3
-      - fsspec==2023.5.0
+      - farama-notifications==0.0.4
+      - filelock==3.12.2
+      - fonttools==4.42.1
+      - frozenlist==1.4.0
+      - fsspec==2023.6.0
       - gitdb==4.0.10
-      - gitpython==3.1.31
-      - glfw==2.5.9
-      - google-auth==2.18.1
+      - gitpython==3.1.32
+      - glfw==2.6.2
+      - google-auth==2.22.0
       - google-auth-oauthlib==1.0.0
-      - grpcio==1.54.2
+      - grpcio==1.57.0
       - gym==0.21.0
-      - huggingface-hub==0.14.1
-      - huggingface-sb3==2.2.4
+      - gymnasium==0.29.1
+      - huggingface-hub==0.16.4
+      - huggingface-sb3==2.3
       - idna==3.4
-      - imitation==0.3.2
+      - imitation==0.4.0
       - importlib-metadata==4.13.0
-      - importlib-resources==5.12.0
-      - iniconfig==2.0.0
-      - ipykernel==6.23.1
-      - ipython==8.13.2
-      - jedi==0.18.2
+      - importlib-resources==6.0.1
       - jinja2==3.1.2
-      - joblib==1.2.0
-      - jsonpickle==3.0.1
-      - jupyter-client==8.2.0
-      - jupyter-core==5.3.0
+      - joblib==1.3.2
+      - jsonpickle==3.0.2
       - kiwisolver==1.4.4
       - labmaze==1.0.6
-      - lightning-utilities==0.8.0
-      - lit==16.0.5
-      - lxml==4.9.2
-      - markdown==3.4.3
-      - markdown-it-py==2.2.0
-      - markupsafe==2.1.2
-      - matplotlib==3.7.1
-      - matplotlib-inline==0.1.6
+      - lit==16.0.6
+      - lxml==4.9.3
+      - markdown==3.4.4
+      - markdown-it-py==3.0.0
+      - markupsafe==2.1.3
+      - matplotlib==3.7.2
       - mdurl==0.1.2
       - mergedeep==1.3.4
       - mpmath==1.3.0
-      - mujoco==2.3.5
+      - mujoco==2.3.7
       - multidict==6.0.4
+      - multiprocess==0.70.15
       - munch==2.5.0
-      - nest-asyncio==1.5.6
       - networkx==3.1
-      - numpy==1.24.3
+      - numpy==1.25.2
       - nvidia-cublas-cu11==11.10.3.66
       - nvidia-cuda-cupti-cu11==11.7.101
       - nvidia-cuda-nvrtc-cu11==11.7.99
@@ -106,72 +93,54 @@ dependencies:
       - nvidia-nccl-cu11==2.14.3
       - nvidia-nvtx-cu11==11.7.91
       - oauthlib==3.2.2
-      - opencv-python==4.7.0.72
+      - opencv-python==4.8.0.76
       - packaging==23.1
-      - pandas==2.0.1
-      - parso==0.8.3
-      - pexpect==4.8.0
-      - pickleshare==0.7.5
-      - pillow==9.5.0
-      - platformdirs==3.5.1
-      - pluggy==1.0.0
+      - pandas==2.0.3
+      - pillow==10.0.0
       - progress==1.6
       - progressbar2==4.2.0
-      - prompt-toolkit==3.0.38
-      - protobuf==4.23.1
-      - psutil==5.9.5
-      - ptyprocess==0.7.0
-      - pure-eval==0.2.2
+      - protobuf==4.24.1
       - py-cpuinfo==9.0.0
+      - pyaml==23.9.7
+      - pyarrow==12.0.1
       - pyasn1==0.5.0
       - pyasn1-modules==0.3.0
       - pyglet==1.5.27
-      - pygments==2.15.1
+      - pygments==2.16.1
       - pyopengl==3.1.7
       - pyparsing==3.0.9
-      - pytest==7.3.1
       - python-dateutil==2.8.2
-      - python-utils==3.5.2
-      - pytorch-lightning==2.0.2
+      - python-utils==3.7.0
       - pytz==2023.3
-      - pyyaml==6.0
-      - pyzmq==25.1.0
+      - pyyaml==6.0.1
       - requests==2.31.0
       - requests-oauthlib==1.3.1
-      - rich==13.3.5
+      - rich==13.5.2
       - rsa==4.9
-      - sb3-contrib==1.8.0
-      - scikit-learn==1.2.2
-      - scipy==1.10.1
-      - seaborn==0.12.2
+      - rtree==1.0.1
+      - sacred==0.8.4
+      - scikit-learn==1.3.0
+      - scipy==1.11.2
       - seals==0.1.5
-      - setuptools==58.2.0
       - six==1.16.0
       - smmap==5.0.0
-      - stable-baselines3==1.8.0
-      - stack-data==0.6.2
+      - stable-baselines3==2.2.0a7
       - sympy==1.12
-      - tensorboard==2.13.0
-      - tensorboard-data-server==0.7.0
-      - threadpoolctl==3.1.0
-      - tomli==2.0.1
+      - tensorboard==2.14.0
+      - tensorboard-data-server==0.7.1
+      - threadpoolctl==3.2.0
+      - toolz==0.12.0
       - torch==2.0.1
-      - torch-summary==1.4.5
-      - torch-vision==0.1.6.dev0
-      - torchaudio==2.0.2
-      - torchmetrics==0.11.4
-      - torchvision==0.15.2
-      - tornado==6.3.2
-      - tqdm==4.65.0
-      - traitlets==5.9.0
+      - tqdm==4.66.1
+      - trimesh==3.23.3
       - triton==2.0.0
-      - typing-extensions==4.6.1
+      - typing-extensions==4.7.1
       - tzdata==2023.3
       - urllib3==1.26.16
-      - wasabi==1.1.1
-      - wcwidth==0.2.6
-      - werkzeug==2.3.4
+      - wasabi==1.1.2
+      - werkzeug==2.3.7
       - wrapt==1.15.0
+      - xxhash==3.3.0
       - yarl==1.9.2
-      - zipp==3.15.0
+      - zipp==3.16.2
 prefix: /home/tudorjnu/.miniconda3/envs/cathsim-dev

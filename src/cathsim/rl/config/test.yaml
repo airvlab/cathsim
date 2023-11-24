@@ -1,18 +1,13 @@
 ---
-experiment:
-  name: test
-
 task_kwargs:
-  # use_pixels: True
-  # use_segment: True
-  phantom: "low_tort"
-  target: "bca"
-
+  use_pixels: True
+  use_segment: True
+  random_init_distance: 0
 
 wrapper_kwargs:
   use_obs:
-    # - 'pixels'
-    # - 'guidewire'
+    - 'pixels'
+    - 'guidewire'
     - 'joint_pos'
     - 'joint_vel'
 

@@ -1,0 +1,89 @@
+<mujoco model="guidewire">
+  <compiler autolimits="true" angle="radian"/>
+  <default>
+    <default class="/">
+      <joint type="hinge" pos="0 0 -0.001" axis="0 0 1" stiffness="20" ref="0" springref="0" armature="0.050000000000000003"/>
+      <geom type="capsule" condim="1" group="1" size="0.00050000000000000001 0.00075000000000000002" rgba="0.20000000000000001 0.20000000000000001 0.20000000000000001 1" friction="0.10000000000000001" density="672" fluidshape="ellipsoid"/>
+      <site type="sphere" rgba="0.29999999999999999 0 0 0" size="0.00050000000000000001"/>
+      <velocity ctrlrange="-1 1" forcerange="-1 1" kv="5"/>
+    </default>
+    <default class="tip/">
+      <joint type="hinge" pos="0 0 -0.001" stiffness="1" springref="0.3490658503988659" armature="0.050000000000000003" damping="0.5"/>
+      <geom type="capsule" condim="1" group="2" size="0.00050000000000000001 0.00075000000000000002" rgba="0.20000000000000001 0.20000000000000001 0.20000000000000001 1" friction="0.10000000000000001" density="672" fluidshape="ellipsoid"/>
+    </default>
+  </default>
+  <worldbody>
+    <body name="guidewire_body_0" pos="0 -0.0074999999999999997 0" euler="-1.5707963267948966 0 3.1415926535897931">
+      <geom name="guidewire_geom_0" class="/"/>
+      <joint name="slider" class="/" type="slide" stiffness="0" range="0 0.20000000000000001" damping="20"/>
+      <joint name="rotator" class="/" type="hinge" stiffness="0" damping="20"/>
+      <body name="guidewire_body_1" pos="0 0 0.002">
+        <geom name="geom_1" class="/"/>
+        <joint name="guidewire_J0_1" class="/" axis="1 0 0" stiffness="20"/>
+        <joint name="guidewire_J1_1" class="/" axis="0 1 0" stiffness="20"/>
+        <body name="guidewire_body_2" pos="0 0 0.002">
+          <geom name="geom_2" class="/"/>
+          <joint name="guidewire_J0_2" class="/" axis="1 0 0" stiffness="19.899999999999999"/>
+          <joint name="guidewire_J1_2" class="/" axis="0 1 0" stiffness="19.899999999999999"/>
+          <body name="guidewire_body_3" pos="0 0 0.002">
+            <geom name="geom_3" class="/"/>
+            <joint name="guidewire_J0_3" class="/" axis="1 0 0" stiffness="19.8005"/>
+            <joint name="guidewire_J1_3" class="/" axis="0 1 0" stiffness="19.8005"/>
+            <body name="guidewire_body_4" pos="0 0 0.002">
+              <geom name="geom_4" class="/"/>
+              <joint name="guidewire_J0_4" class="/" axis="1 0 0" stiffness="19.701497499999999"/>
+              <joint name="guidewire_J1_4" class="/" axis="0 1 0" stiffness="19.701497499999999"/>
+              <body name="guidewire_body_5" pos="0 0 0.002">
+                <geom name="geom_5" class="/"/>
+                <joint name="guidewire_J0_5" class="/" axis="1 0 0" stiffness="19.602990012499998"/>
+                <joint name="guidewire_J1_5" class="/" axis="0 1 0" stiffness="19.602990012499998"/>
+                <body name="guidewire_body_6" pos="0 0 0.002">
+                  <geom name="geom_6" class="/"/>
+                  <joint name="guidewire_J0_6" class="/" axis="1 0 0" stiffness="19.504975062437499"/>
+                  <joint name="guidewire_J1_6" class="/" axis="0 1 0" stiffness="19.504975062437499"/>
+                  <body name="guidewire_body_7" pos="0 0 0.002">
+                    <geom name="geom_7" class="/"/>
+                    <joint name="guidewire_J0_7" class="/" axis="1 0 0" stiffness="19.40745018712531"/>
+                    <joint name="guidewire_J1_7" class="/" axis="0 1 0" stiffness="19.40745018712531"/>
+                    <body name="guidewire_body_8" pos="0 0 0.002">
+                      <geom name="geom_8" class="/"/>
+                      <joint name="guidewire_J0_8" class="/" axis="1 0 0" stiffness="19.310412936189682"/>
+                      <joint name="guidewire_J1_8" class="/" axis="0 1 0" stiffness="19.310412936189682"/>
+                      <body name="guidewire_body_9" pos="0 0 0.002">
+                        <geom name="geom_9" class="/"/>
+                        <joint name="guidewire_J0_9" class="/" axis="1 0 0" stiffness="19.213860871508732"/>
+                        <joint name="guidewire_J1_9" class="/" axis="0 1 0" stiffness="19.213860871508732"/>
+                        <site name="tip_site" class="/" pos="0 0 0.002"/>
+                        <body pos="0 0 0.002" name="tip/">
+                          <body name="tip/tip_body_0" pos="0 0 0" euler="0 0 0">
+                            <geom name="tip/tip_geom_0" class="tip/"/>
+                            <joint name="tip/tip_J0_0" class="tip/" axis="0 0 1"/>
+                            <joint name="tip/tip_J1_0" class="tip/" axis="0 1 0"/>
+                            <body name="tip/tip_body_1" pos="0 0 0.002">
+                              <geom name="tip/geom_1" class="tip/"/>
+                              <joint name="tip/tip_J0_1" class="tip/" axis="1 0 0"/>
+                              <joint name="tip/tip_J1_1" class="tip/" axis="0 1 0"/>
+                              <body name="tip/tip_body_2" pos="0 0 0.002">
+                                <geom name="tip/head" class="tip/"/>
+                                <joint name="tip/tip_J0_2" class="tip/" axis="1 0 0"/>
+                                <joint name="tip/tip_J1_2" class="tip/" axis="0 1 0"/>
+                              </body>
+                            </body>
+                          </body>
+                        </body>
+                      </body>
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <actuator>
+    <velocity name="slider_actuator" class="/" joint="slider"/>
+    <general name="rotator_actuator" class="/" joint="rotator" gaintype="fixed" biastype="none" dynprm="1 0 0" gainprm="20 0 0" biasprm="0 20 0"/>
+  </actuator>
+</mujoco>
