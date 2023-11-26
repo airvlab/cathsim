@@ -150,7 +150,7 @@ You will now see the guidewire and the aorta along with the two sites that repre
 
 ## Mesh Processing
 
-You can use a custom aorta by making use of V-HACD convex decomposition. To do so, you can use stl2mjcf, available [here](https://github.com/tudorjnu/stl2mjcf). You can quickly install the tool with:
+In order to use a custom aorta, it has to be processed using convex decomposition. This can be done using V-HACD or a preferred method. To do so, you can use stl2mjcf, available [here](https://github.com/tudorjnu/stl2mjcf). You can quickly install the tool with:
 
 ```bash
 pip install git+git@github.com:tudorjnu/stl2mjcf.git
