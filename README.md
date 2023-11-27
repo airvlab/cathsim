@@ -175,9 +175,36 @@ env = CathSim(dm_env=env)
 
 ## Adding a guidewire
 
-A guidewire can be created similarly to the phantom and then embedded into the task like above.
+A guidewire can be created similarly to the phantom and then embedded into the task like above, using the MJCF model as follows:
 
-*Please see more information on `mjcf` [here](https://github.com/google-deepmind/dm_control/tree/main/dm_control/mjcf).*
+#### Creating an MJCF model
+
+In PyMJCF, the basic building block of a model is an `mjcf.Element`. This
+corresponds to an element in the generated XML. However, user code _cannot_
+instantiate a generic `mjcf.Element` object directly.
+
+A valid model always consists of a single root `<mujoco>` element. This is
+represented as the special `mjcf.RootElement` type in PyMJCF, which _can_ be
+instantiated in user code to create an empty model.
+
+```python
+from dm_control import mjcf
+
+mjcf_model = mjcf.RootElement()
+print(mjcf_model)  # MJCF Element: <mujoco/>
+```
+
+#### Adding new elements
+
+Attributes of the new element can be passed as kwargs:
+
+```python
+my_box = mjcf_model.worldbody.add('geom', name='my_box',
+                                  type='box', pos=[0, .1, 0])
+print(my_box)  # MJCF Element: <geom name="my_box" type="box" pos="0. 0.1 0."/>
+```
+
+Please see more information on `mjcf` [here](https://github.com/google-deepmind/dm_control/tree/main/dm_control/mjcf).*
 
 
 ## TODO's
