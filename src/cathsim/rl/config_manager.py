@@ -51,7 +51,7 @@ class Config:
             buffer_size=int(5e5),
             policy="MultiInputPolicy",
             policy_kwargs=dict(
-                features_extractor_class=ViTExtractor,
+                features_extractor_class=CustomExtractor,
             ),
             device="cuda" if th.cuda.is_available() else "cpu",
         )

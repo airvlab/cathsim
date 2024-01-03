@@ -61,10 +61,12 @@ def train(
 
     config = Config(
         config_name=config_name,
-        target=target,
-        phantom=phantom,
         trial_name=trial_name,
         base_path=base_path,
+        task_kwargs=dict(
+            phantom=phantom,
+            target=target,
+        ),
     )
 
     experiment_path = config.get_env_path()
