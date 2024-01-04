@@ -1486,6 +1486,8 @@
     <mesh name="hull_1478" file="phantom2/hull_1478.stl"/>
   </asset>
   <worldbody>
+    <site name="bca" pos="-0.035644 0.14879 0.034597" />
+    <site name="lcca" pos="-0.020723 0.14949 0.036324" />
     <body name="phantom">
       <geom name="visual" mesh="visual" contype="0" conaffinity="0"/>
       <geom mesh="hull_0"/>
