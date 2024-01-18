@@ -230,7 +230,7 @@ Please review our [Terms of Use](TERMS.md) before using this project.
 
 ## License
 
-Please feel free to copy, distribute, display, perform or remix our work but for non-commercial porposes only.
+Please feel free to copy, distribute, display, perform or remix our work but for non-commercial purposes only.
 
 ## Citation
 
