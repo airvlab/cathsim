@@ -21,8 +21,8 @@ export default function MyNavBar() {
           </Link>
         </NavbarItem>
         <NavbarItem isActive>
-          <Link href="#" aria-current="page">
-            Customers
+          <Link href="/about" aria-current="page">
+            About
           </Link>
         </NavbarItem>
         <NavbarItem>
