@@ -42,16 +42,14 @@ def send(enable, motor1, motor2, motor3, motor4):
 
 
 def move(enable, motor3B, motor4B):
-    motor3 = 1000  # 10 mm; 800 step one rotation -8mm
-    motor4 = 22  # 9.9 degree; 800 step 360 degree
-    if motor3B == 0:
-        motor3 = -motor3
-    if motor4B == 0:
-        motor4 = -motor4
+    motor3_step = 1000  # 10 mm; 800 step one rotation -8mm
+    motor4_step = 22  # 9.9 degree; 800 step 360 degree
+    motor3 = int(motor3B*float(motor3_step))
+    motor4 = int(motor4B*float(motor4_step))
     send(enable, 0, 0, motor3, motor4)
 
 
-ser = serial.Serial("/dev/ttyUSB0", 115200)  # 打开COM17，将波特率配置为115200，其余参数使用默认值
+ser = serial.Serial("/dev/ttyUSB0", 115200)  # 打开COM17，将波特率配置为115200
 if ser.isOpen():  # 判断串口是否成功打开
     print("open")
     # send(1, 1, 2, 4000, 400)
