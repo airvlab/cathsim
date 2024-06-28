@@ -33,7 +33,8 @@ dependencies = [
     "rich",
     "mergedeep",
     "rtree",
-    "toolz"
+    "toolz",
+    "pyrealsense2"
 ]
 
 [tool.setuptools.packages.find]
