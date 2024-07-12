@@ -51,6 +51,7 @@ class CathSim(gym.Env):
         use_contact_forces: bool = False,
         use_force: bool = False,
         use_geom_pos: bool = False,
+        return_info: bool = False,
         dm_env=None,
         **kwargs,
     ):
@@ -80,6 +81,7 @@ class CathSim(gym.Env):
         self.use_contact_forces = use_contact_forces
         self.use_force = use_force
         self.use_geom_pos = use_geom_pos
+        self.return_info = return_info
 
     def _get_obs(self, timestep):
         obs = timestep.observation
@@ -117,8 +119,8 @@ class CathSim(gym.Env):
         reward = timestep.reward
         terminated = timestep.last()
         truncated = False
-        # info = self._get_info()
-        return observation, reward, terminated, truncated, {}
+        info = self._get_info() if self.return_info else {}
+        return observation, reward, terminated, truncated, info
 
     def render_frame(self, image_size=None, camera_id: int = 0):
         image_size = image_size or self.image_size
