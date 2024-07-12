@@ -1,12 +1,11 @@
 """Wrappers for dm_control environments to be used with OpenAI gym."""
-import numpy as np
 
 import gymnasium as gym
 import gymnasium.spaces as spaces
-from gymnasium.envs.registration import EnvSpec
-
-from dm_env import specs
+import numpy as np
 from cathsim.dm import make_dm_env
+from dm_env import specs
+from gymnasium.envs.registration import EnvSpec
 
 
 def convert_spec_to_gym_space(dm_control_space: specs) -> gym.spaces:
@@ -46,8 +45,6 @@ def convert_spec_to_gym_space(dm_control_space: specs) -> gym.spaces:
 
 
 class CathSim(gym.Env):
-    spec = EnvSpec("cathsim/CathSim-v0", max_episode_steps=300)
-
     def __init__(
         self,
         phantom: str = "phantom3",
@@ -55,11 +52,15 @@ class CathSim(gym.Env):
         use_force: bool = False,
         use_geom_pos: bool = False,
         dm_env=None,
-        ** kwargs,
+        **kwargs,
     ):
+        self.spec = EnvSpec("cathsim/CathSim-v0", max_episode_steps=300)
+
         self.dm_env = dm_env
         if self.dm_env is None:
             self._env = make_dm_env(phantom=phantom, **kwargs)
+        else:
+            self._env = self.dm_env
 
         self.metadata = {
             "render_modes": ["rgb_array"],
@@ -116,8 +117,8 @@ class CathSim(gym.Env):
         reward = timestep.reward
         terminated = timestep.last()
         truncated = False
-        info = self._get_info()
-        return observation, reward, terminated, truncated, info
+        # info = self._get_info()
+        return observation, reward, terminated, truncated, {}
 
     def render_frame(self, image_size=None, camera_id: int = 0):
         image_size = image_size or self.image_size
