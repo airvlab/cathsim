@@ -1,0 +1,3 @@
+[submodule "src/cathsim/components/phantoms"]
+	path = src/cathsim/components/phantoms
+	url = git@github.com:airvlab/cathsim-phantoms.git

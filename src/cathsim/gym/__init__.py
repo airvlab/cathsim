@@ -1,1 +1,0 @@
-"""Gym based CathSim environment."""
