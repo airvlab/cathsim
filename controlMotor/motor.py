@@ -51,13 +51,11 @@ class motor():
         motor3 = int(motor3B*float(motor3_step))
         motor4 = int(motor4B*float(motor4_step))
         self.__send(enable, 0, 0, motor3, motor4, False)
-        self.__send(enable, 0, 0, motor3, motor4, False)
 
     def moveTo(self, enable, motor3B, motor4B):
         # motor3B, motor4B should be in range(0,1)
-        motor3_step = 60000  # 5 mm; 800 step one rotation -8mm
+        motor3_step = -60000  # 5 mm; 800 step one rotation -8mm
         motor4_step = 800  # 90 degree; 800 step 360 degree
         motor3 = int(motor3B*float(motor3_step))
         motor4 = int(motor4B*float(motor4_step))
-        self.__send(enable, 0, 0, motor3, motor4, True)
         self.__send(enable, 0, 0, motor3, motor4, True)
