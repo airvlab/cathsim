@@ -1,19 +1,28 @@
 from time import sleep
 import serial
 import serial.tools.list_ports
+
+
 class motor():
-    __ser=None
-    def __init__(self,port):
+    __ser = None
+
+    def __init__(self, port):
         # open usb0 and set brut 115200
         self.__ser = serial.Serial(port, 115200)
+
     def __del__(self):
         self.__ser.close()
-    def __send(self, enable, motor1, motor2, motor3, motor4):
-        data = bytearray(18)
+
+    def __send(self, enable, motor1, motor2, motor3, motor4, shouldMoveTo):
+        data = bytearray(19)
         if enable:
             data[0] = 0x81
         else:
             data[0] = 0x80
+        if shouldMoveTo:
+            data[18] = 0x81
+        else:
+            data[18] = 0x80
         data[2] = (motor1 & 0xFF000000) >> 24
         data[3] = (motor1 & 0x00FF0000) >> 16
         data[4] = (motor1 & 0x0000FF00) >> 8
@@ -34,15 +43,21 @@ class motor():
         self.__ser.write(data)
         self.__ser.flush()
         sleep(5)
+
     def move(self, enable, motor3B, motor4B):
-        motor3_step = 1000  # 10 mm; 800 step one rotation -8mm
+        # motor3B, motor4B should be in range(-1,1)
+        motor3_step = 500  # 5 mm; 800 step one rotation -8mm
         motor4_step = 200  # 90 degree; 800 step 360 degree
         motor3 = int(motor3B*float(motor3_step))
         motor4 = int(motor4B*float(motor4_step))
-        self.__send(enable, 0, 0, motor3, motor4)
-# # use example 
-#motor1=motor("/dev/ttyUSB0")
-#motor1.move(1, 1, 0)
-# # port name--need to change 
-# # "/dev/ttyUSB0"
+        self.__send(enable, 0, 0, motor3, motor4, False)
+        self.__send(enable, 0, 0, motor3, motor4, False)
 
+    def moveTo(self, enable, motor3B, motor4B):
+        # motor3B, motor4B should be in range(0,1)
+        motor3_step = 60000  # 5 mm; 800 step one rotation -8mm
+        motor4_step = 800  # 90 degree; 800 step 360 degree
+        motor3 = int(motor3B*float(motor3_step))
+        motor4 = int(motor4B*float(motor4_step))
+        self.__send(enable, 0, 0, motor3, motor4, True)
+        self.__send(enable, 0, 0, motor3, motor4, True)
