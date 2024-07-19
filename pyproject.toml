@@ -1,0 +1,60 @@
+[build-system]
+requires = ["setuptools", "wheel==0.38.4"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cathsim"
+version = "0.1.dev1"
+description = "Endovascular simulator for autonomy development"
+readme = "README.md"  # Point this to your README file if you have one.
+# Homepage = "https://robotvisionlabs.github.io/cathsim/"
+# Documentation = "https://readthedocs.org"
+# Repository = "https://github.com/robotvisionlabs/cathsim"
+license = { file = "LICENSE" }
+authors = [
+    {name = "Tudor Jianu", email = "tudorjnu@gmail.com"}
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: Free for non-commercial use",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "gymnasium",
+    "stable_baselines3@git+https://github.com/DLR-RM/stable-baselines3",
+    "tensorboard",
+    "pyaml",
+    "dm-control",
+    # "mujoco",
+    "trimesh",
+    "opencv-python",
+    "matplotlib",
+    "tqdm",
+    "rich",
+    "mergedeep",
+    "rtree",
+    "toolz"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+
+[project.optional-dependencies]
+docs = [
+    "sphinx",
+    "sphinx-autobuild",
+    "sphinx-rtd-theme",
+    "sphinxcontrib.spelling",
+    "sphinx-autodoc-typehints",
+    "sphinx_copybutton"
+]
+dev = [
+    "pytest",
+    "gymnasium[box2d]",
+]
+
+[project.scripts]
+run_env = "cathsim.console:cmd_run_env"
+visualize_agent = "cathsim.console:cmd_visualize_agent"
+train = "cathsim.console:cmd_train"

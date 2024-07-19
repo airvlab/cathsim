@@ -1,0 +1,6 @@
+---
+wrapper_kwargs:
+  use_obs:
+    - 'joint_pos'
+    - 'joint_vel'
+

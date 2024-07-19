@@ -1,0 +1,718 @@
+Metadata-Version: 2.1
+Name: cathsim
+Version: 0.1.dev1
+Summary: Endovascular simulator for autonomy development
+Author-email: Tudor Jianu <tudorjnu@gmail.com>
+License: Attribution-NonCommercial-ShareAlike 4.0 International
+        
+        =======================================================================
+        
+        Creative Commons Corporation ("Creative Commons") is not a law firm and
+        does not provide legal services or legal advice. Distribution of
+        Creative Commons public licenses does not create a lawyer-client or
+        other relationship. Creative Commons makes its licenses and related
+        information available on an "as-is" basis. Creative Commons gives no
+        warranties regarding its licenses, any material licensed under their
+        terms and conditions, or any related information. Creative Commons
+        disclaims all liability for damages resulting from their use to the
+        fullest extent possible.
+        
+        Using Creative Commons Public Licenses
+        
+        Creative Commons public licenses provide a standard set of terms and
+        conditions that creators and other rights holders may use to share
+        original works of authorship and other material subject to copyright
+        and certain other rights specified in the public license below. The
+        following considerations are for informational purposes only, are not
+        exhaustive, and do not form part of our licenses.
+        
+             Considerations for licensors: Our public licenses are
+             intended for use by those authorized to give the public
+             permission to use material in ways otherwise restricted by
+             copyright and certain other rights. Our licenses are
+             irrevocable. Licensors should read and understand the terms
+             and conditions of the license they choose before applying it.
+             Licensors should also secure all rights necessary before
+             applying our licenses so that the public can reuse the
+             material as expected. Licensors should clearly mark any
+             material not subject to the license. This includes other CC-
+             licensed material, or material used under an exception or
+             limitation to copyright. More considerations for licensors:
+            wiki.creativecommons.org/Considerations_for_licensors
+        
+             Considerations for the public: By using one of our public
+             licenses, a licensor grants the public permission to use the
+             licensed material under specified terms and conditions. If
+             the licensor's permission is not necessary for any reason--for
+             example, because of any applicable exception or limitation to
+             copyright--then that use is not regulated by the license. Our
+             licenses grant only permissions under copyright and certain
+             other rights that a licensor has authority to grant. Use of
+             the licensed material may still be restricted for other
+             reasons, including because others have copyright or other
+             rights in the material. A licensor may make special requests,
+             such as asking that all changes be marked or described.
+             Although not required by our licenses, you are encouraged to
+             respect those requests where reasonable. More considerations
+             for the public:
+            wiki.creativecommons.org/Considerations_for_licensees
+        
+        =======================================================================
+        
+        Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+        Public License
+        
+        By exercising the Licensed Rights (defined below), You accept and agree
+        to be bound by the terms and conditions of this Creative Commons
+        Attribution-NonCommercial-ShareAlike 4.0 International Public License
+        ("Public License"). To the extent this Public License may be
+        interpreted as a contract, You are granted the Licensed Rights in
+        consideration of Your acceptance of these terms and conditions, and the
+        Licensor grants You such rights in consideration of benefits the
+        Licensor receives from making the Licensed Material available under
+        these terms and conditions.
+        
+        
+        Section 1 -- Definitions.
+        
+          a. Adapted Material means material subject to Copyright and Similar
+             Rights that is derived from or based upon the Licensed Material
+             and in which the Licensed Material is translated, altered,
+             arranged, transformed, or otherwise modified in a manner requiring
+             permission under the Copyright and Similar Rights held by the
+             Licensor. For purposes of this Public License, where the Licensed
+             Material is a musical work, performance, or sound recording,
+             Adapted Material is always produced where the Licensed Material is
+             synched in timed relation with a moving image.
+        
+          b. Adapter's License means the license You apply to Your Copyright
+             and Similar Rights in Your contributions to Adapted Material in
+             accordance with the terms and conditions of this Public License.
+        
+          c. BY-NC-SA Compatible License means a license listed at
+             creativecommons.org/compatiblelicenses, approved by Creative
+             Commons as essentially the equivalent of this Public License.
+        
+          d. Copyright and Similar Rights means copyright and/or similar rights
+             closely related to copyright including, without limitation,
+             performance, broadcast, sound recording, and Sui Generis Database
+             Rights, without regard to how the rights are labeled or
+             categorized. For purposes of this Public License, the rights
+             specified in Section 2(b)(1)-(2) are not Copyright and Similar
+             Rights.
+        
+          e. Effective Technological Measures means those measures that, in the
+             absence of proper authority, may not be circumvented under laws
+             fulfilling obligations under Article 11 of the WIPO Copyright
+             Treaty adopted on December 20, 1996, and/or similar international
+             agreements.
+        
+          f. Exceptions and Limitations means fair use, fair dealing, and/or
+             any other exception or limitation to Copyright and Similar Rights
+             that applies to Your use of the Licensed Material.
+        
+          g. License Elements means the license attributes listed in the name
+             of a Creative Commons Public License. The License Elements of this
+             Public License are Attribution, NonCommercial, and ShareAlike.
+        
+          h. Licensed Material means the artistic or literary work, database,
+             or other material to which the Licensor applied this Public
+             License.
+        
+          i. Licensed Rights means the rights granted to You subject to the
+             terms and conditions of this Public License, which are limited to
+             all Copyright and Similar Rights that apply to Your use of the
+             Licensed Material and that the Licensor has authority to license.
+        
+          j. Licensor means the individual(s) or entity(ies) granting rights
+             under this Public License.
+        
+          k. NonCommercial means not primarily intended for or directed towards
+             commercial advantage or monetary compensation. For purposes of
+             this Public License, the exchange of the Licensed Material for
+             other material subject to Copyright and Similar Rights by digital
+             file-sharing or similar means is NonCommercial provided there is
+             no payment of monetary compensation in connection with the
+             exchange.
+        
+          l. Share means to provide material to the public by any means or
+             process that requires permission under the Licensed Rights, such
+             as reproduction, public display, public performance, distribution,
+             dissemination, communication, or importation, and to make material
+             available to the public including in ways that members of the
+             public may access the material from a place and at a time
+             individually chosen by them.
+        
+          m. Sui Generis Database Rights means rights other than copyright
+             resulting from Directive 96/9/EC of the European Parliament and of
+             the Council of 11 March 1996 on the legal protection of databases,
+             as amended and/or succeeded, as well as other essentially
+             equivalent rights anywhere in the world.
+        
+          n. You means the individual or entity exercising the Licensed Rights
+             under this Public License. Your has a corresponding meaning.
+        
+        
+        Section 2 -- Scope.
+        
+          a. License grant.
+        
+               1. Subject to the terms and conditions of this Public License,
+                  the Licensor hereby grants You a worldwide, royalty-free,
+                  non-sublicensable, non-exclusive, irrevocable license to
+                  exercise the Licensed Rights in the Licensed Material to:
+        
+                    a. reproduce and Share the Licensed Material, in whole or
+                       in part, for NonCommercial purposes only; and
+        
+                    b. produce, reproduce, and Share Adapted Material for
+                       NonCommercial purposes only.
+        
+               2. Exceptions and Limitations. For the avoidance of doubt, where
+                  Exceptions and Limitations apply to Your use, this Public
+                  License does not apply, and You do not need to comply with
+                  its terms and conditions.
+        
+               3. Term. The term of this Public License is specified in Section
+                  6(a).
+        
+               4. Media and formats; technical modifications allowed. The
+                  Licensor authorizes You to exercise the Licensed Rights in
+                  all media and formats whether now known or hereafter created,
+                  and to make technical modifications necessary to do so. The
+                  Licensor waives and/or agrees not to assert any right or
+                  authority to forbid You from making technical modifications
+                  necessary to exercise the Licensed Rights, including
+                  technical modifications necessary to circumvent Effective
+                  Technological Measures. For purposes of this Public License,
+                  simply making modifications authorized by this Section 2(a)
+                  (4) never produces Adapted Material.
+        
+               5. Downstream recipients.
+        
+                    a. Offer from the Licensor -- Licensed Material. Every
+                       recipient of the Licensed Material automatically
+                       receives an offer from the Licensor to exercise the
+                       Licensed Rights under the terms and conditions of this
+                       Public License.
+        
+                    b. Additional offer from the Licensor -- Adapted Material.
+                       Every recipient of Adapted Material from You
+                       automatically receives an offer from the Licensor to
+                       exercise the Licensed Rights in the Adapted Material
+                       under the conditions of the Adapter's License You apply.
+        
+                    c. No downstream restrictions. You may not offer or impose
+                       any additional or different terms or conditions on, or
+                       apply any Effective Technological Measures to, the
+                       Licensed Material if doing so restricts exercise of the
+                       Licensed Rights by any recipient of the Licensed
+                       Material.
+        
+               6. No endorsement. Nothing in this Public License constitutes or
+                  may be construed as permission to assert or imply that You
+                  are, or that Your use of the Licensed Material is, connected
+                  with, or sponsored, endorsed, or granted official status by,
+                  the Licensor or others designated to receive attribution as
+                  provided in Section 3(a)(1)(A)(i).
+        
+          b. Other rights.
+        
+               1. Moral rights, such as the right of integrity, are not
+                  licensed under this Public License, nor are publicity,
+                  privacy, and/or other similar personality rights; however, to
+                  the extent possible, the Licensor waives and/or agrees not to
+                  assert any such rights held by the Licensor to the limited
+                  extent necessary to allow You to exercise the Licensed
+                  Rights, but not otherwise.
+        
+               2. Patent and trademark rights are not licensed under this
+                  Public License.
+        
+               3. To the extent possible, the Licensor waives any right to
+                  collect royalties from You for the exercise of the Licensed
+                  Rights, whether directly or through a collecting society
+                  under any voluntary or waivable statutory or compulsory
+                  licensing scheme. In all other cases the Licensor expressly
+                  reserves any right to collect such royalties, including when
+                  the Licensed Material is used other than for NonCommercial
+                  purposes.
+        
+        
+        Section 3 -- License Conditions.
+        
+        Your exercise of the Licensed Rights is expressly made subject to the
+        following conditions.
+        
+          a. Attribution.
+        
+               1. If You Share the Licensed Material (including in modified
+                  form), You must:
+        
+                    a. retain the following if it is supplied by the Licensor
+                       with the Licensed Material:
+        
+                         i. identification of the creator(s) of the Licensed
+                            Material and any others designated to receive
+                            attribution, in any reasonable manner requested by
+                            the Licensor (including by pseudonym if
+                            designated);
+        
+                        ii. a copyright notice;
+        
+                       iii. a notice that refers to this Public License;
+        
+                        iv. a notice that refers to the disclaimer of
+                            warranties;
+        
+                         v. a URI or hyperlink to the Licensed Material to the
+                            extent reasonably practicable;
+        
+                    b. indicate if You modified the Licensed Material and
+                       retain an indication of any previous modifications; and
+        
+                    c. indicate the Licensed Material is licensed under this
+                       Public License, and include the text of, or the URI or
+                       hyperlink to, this Public License.
+        
+               2. You may satisfy the conditions in Section 3(a)(1) in any
+                  reasonable manner based on the medium, means, and context in
+                  which You Share the Licensed Material. For example, it may be
+                  reasonable to satisfy the conditions by providing a URI or
+                  hyperlink to a resource that includes the required
+                  information.
+               3. If requested by the Licensor, You must remove any of the
+                  information required by Section 3(a)(1)(A) to the extent
+                  reasonably practicable.
+        
+          b. ShareAlike.
+        
+             In addition to the conditions in Section 3(a), if You Share
+             Adapted Material You produce, the following conditions also apply.
+        
+               1. The Adapter's License You apply must be a Creative Commons
+                  license with the same License Elements, this version or
+                  later, or a BY-NC-SA Compatible License.
+        
+               2. You must include the text of, or the URI or hyperlink to, the
+                  Adapter's License You apply. You may satisfy this condition
+                  in any reasonable manner based on the medium, means, and
+                  context in which You Share Adapted Material.
+        
+               3. You may not offer or impose any additional or different terms
+                  or conditions on, or apply any Effective Technological
+                  Measures to, Adapted Material that restrict exercise of the
+                  rights granted under the Adapter's License You apply.
+        
+        
+        Section 4 -- Sui Generis Database Rights.
+        
+        Where the Licensed Rights include Sui Generis Database Rights that
+        apply to Your use of the Licensed Material:
+        
+          a. for the avoidance of doubt, Section 2(a)(1) grants You the right
+             to extract, reuse, reproduce, and Share all or a substantial
+             portion of the contents of the database for NonCommercial purposes
+             only;
+        
+          b. if You include all or a substantial portion of the database
+             contents in a database in which You have Sui Generis Database
+             Rights, then the database in which You have Sui Generis Database
+             Rights (but not its individual contents) is Adapted Material,
+             including for purposes of Section 3(b); and
+        
+          c. You must comply with the conditions in Section 3(a) if You Share
+             all or a substantial portion of the contents of the database.
+        
+        For the avoidance of doubt, this Section 4 supplements and does not
+        replace Your obligations under this Public License where the Licensed
+        Rights include other Copyright and Similar Rights.
+        
+        
+        Section 5 -- Disclaimer of Warranties and Limitation of Liability.
+        
+          a. UNLESS OTHERWISE SEPARATELY UNDERTAKEN BY THE LICENSOR, TO THE
+             EXTENT POSSIBLE, THE LICENSOR OFFERS THE LICENSED MATERIAL AS-IS
+             AND AS-AVAILABLE, AND MAKES NO REPRESENTATIONS OR WARRANTIES OF
+             ANY KIND CONCERNING THE LICENSED MATERIAL, WHETHER EXPRESS,
+             IMPLIED, STATUTORY, OR OTHER. THIS INCLUDES, WITHOUT LIMITATION,
+             WARRANTIES OF TITLE, MERCHANTABILITY, FITNESS FOR A PARTICULAR
+             PURPOSE, NON-INFRINGEMENT, ABSENCE OF LATENT OR OTHER DEFECTS,
+             ACCURACY, OR THE PRESENCE OR ABSENCE OF ERRORS, WHETHER OR NOT
+             KNOWN OR DISCOVERABLE. WHERE DISCLAIMERS OF WARRANTIES ARE NOT
+             ALLOWED IN FULL OR IN PART, THIS DISCLAIMER MAY NOT APPLY TO YOU.
+        
+          b. TO THE EXTENT POSSIBLE, IN NO EVENT WILL THE LICENSOR BE LIABLE
+             TO YOU ON ANY LEGAL THEORY (INCLUDING, WITHOUT LIMITATION,
+             NEGLIGENCE) OR OTHERWISE FOR ANY DIRECT, SPECIAL, INDIRECT,
+             INCIDENTAL, CONSEQUENTIAL, PUNITIVE, EXEMPLARY, OR OTHER LOSSES,
+             COSTS, EXPENSES, OR DAMAGES ARISING OUT OF THIS PUBLIC LICENSE OR
+             USE OF THE LICENSED MATERIAL, EVEN IF THE LICENSOR HAS BEEN
+             ADVISED OF THE POSSIBILITY OF SUCH LOSSES, COSTS, EXPENSES, OR
+             DAMAGES. WHERE A LIMITATION OF LIABILITY IS NOT ALLOWED IN FULL OR
+             IN PART, THIS LIMITATION MAY NOT APPLY TO YOU.
+        
+          c. The disclaimer of warranties and limitation of liability provided
+             above shall be interpreted in a manner that, to the extent
+             possible, most closely approximates an absolute disclaimer and
+             waiver of all liability.
+        
+        
+        Section 6 -- Term and Termination.
+        
+          a. This Public License applies for the term of the Copyright and
+             Similar Rights licensed here. However, if You fail to comply with
+             this Public License, then Your rights under this Public License
+             terminate automatically.
+        
+          b. Where Your right to use the Licensed Material has terminated under
+             Section 6(a), it reinstates:
+        
+               1. automatically as of the date the violation is cured, provided
+                  it is cured within 30 days of Your discovery of the
+                  violation; or
+        
+               2. upon express reinstatement by the Licensor.
+        
+             For the avoidance of doubt, this Section 6(b) does not affect any
+             right the Licensor may have to seek remedies for Your violations
+             of this Public License.
+        
+          c. For the avoidance of doubt, the Licensor may also offer the
+             Licensed Material under separate terms or conditions or stop
+             distributing the Licensed Material at any time; however, doing so
+             will not terminate this Public License.
+        
+          d. Sections 1, 5, 6, 7, and 8 survive termination of this Public
+             License.
+        
+        
+        Section 7 -- Other Terms and Conditions.
+        
+          a. The Licensor shall not be bound by any additional or different
+             terms or conditions communicated by You unless expressly agreed.
+        
+          b. Any arrangements, understandings, or agreements regarding the
+             Licensed Material not stated herein are separate from and
+             independent of the terms and conditions of this Public License.
+        
+        
+        Section 8 -- Interpretation.
+        
+          a. For the avoidance of doubt, this Public License does not, and
+             shall not be interpreted to, reduce, limit, restrict, or impose
+             conditions on any use of the Licensed Material that could lawfully
+             be made without permission under this Public License.
+        
+          b. To the extent possible, if any provision of this Public License is
+             deemed unenforceable, it shall be automatically reformed to the
+             minimum extent necessary to make it enforceable. If the provision
+             cannot be reformed, it shall be severed from this Public License
+             without affecting the enforceability of the remaining terms and
+             conditions.
+        
+          c. No term or condition of this Public License will be waived and no
+             failure to comply consented to unless expressly agreed to by the
+             Licensor.
+        
+          d. Nothing in this Public License constitutes or may be interpreted
+             as a limitation upon, or waiver of, any privileges and immunities
+             that apply to the Licensor or You, including from the legal
+             processes of any jurisdiction or authority.
+        
+        =======================================================================
+        
+        Creative Commons is not a party to its public
+        licenses. Notwithstanding, Creative Commons may elect to apply one of
+        its public licenses to material it publishes and in those instances
+        will be considered the “Licensor.” The text of the Creative Commons
+        public licenses is dedicated to the public domain under the CC0 Public
+        Domain Dedication. Except for the limited purpose of indicating that
+        material is shared under a Creative Commons public license or as
+        otherwise permitted by the Creative Commons policies published at
+        creativecommons.org/policies, Creative Commons does not authorize the
+        use of the trademark "Creative Commons" or any other trademark or logo
+        of Creative Commons without its prior written consent including,
+        without limitation, in connection with any unauthorized modifications
+        to any of its public licenses or any other arrangements,
+        understandings, or agreements concerning use of licensed material. For
+        the avoidance of doubt, this paragraph does not form part of the
+        public licenses.
+        
+        Creative Commons may be contacted at creativecommons.org.
+        
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: Free for non-commercial use
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: gymnasium
+Requires-Dist: stable_baselines3@ git+https://github.com/DLR-RM/stable-baselines3
+Requires-Dist: tensorboard
+Requires-Dist: pyaml
+Requires-Dist: dm-control
+Requires-Dist: trimesh
+Requires-Dist: opencv-python
+Requires-Dist: matplotlib
+Requires-Dist: tqdm
+Requires-Dist: rich
+Requires-Dist: mergedeep
+Requires-Dist: rtree
+Requires-Dist: toolz
+Provides-Extra: docs
+Requires-Dist: sphinx; extra == "docs"
+Requires-Dist: sphinx-autobuild; extra == "docs"
+Requires-Dist: sphinx-rtd-theme; extra == "docs"
+Requires-Dist: sphinxcontrib.spelling; extra == "docs"
+Requires-Dist: sphinx-autodoc-typehints; extra == "docs"
+Requires-Dist: sphinx_copybutton; extra == "docs"
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: gymnasium[box2d]; extra == "dev"
+
+# CathSim: An Open-source Simulator for Endovascular Intervention
+### [[Project Page](https://airvlab.github.io/cathsim/)] [[Paper](https://arxiv.org/abs/2208.01455)]
+
+
+<div align="center">
+    <a href="https://"><img height="auto" src="/misc/cathsim_dn.gif"></a>
+</div>
+
+
+## Contents
+1. [Requirements](#requirements)
+2. [Installation](#installation)
+3. [Quickstart](#quickstart)
+4. [Training](#training)
+5. [Manual Control](#manual-control)
+6. [Mesh Processing](#mesh-processing)
+7. [Adding Elements](#adding-elements)
+
+
+## Requirements
+1. Ubuntu (tested with Ubuntu 22.04 LTS)
+2. Miniconda (tested with Miniconda 23.5)
+3. Python 3.9
+
+If `miniconda` is not installed run the following for a quick Installation. Note: the script assumes you use `bash`.
+
+```bash
+# installing miniconda
+mkdir -p ~/.miniconda3
+wget https://repo.anaconda.com/miniconda/Miniconda3-py39_23.5.2-0-Linux-x86_64.sh -O ~/.miniconda3/miniconda.sh
+bash ~/.miniconda3/miniconda.sh -b -u -p ~/.miniconda3
+rm -rf ~/.miniconda3/miniconda.sh
+~/.miniconda3/bin/conda init bash
+source .bashrc
+```
+
+## Installation
+
+1. Create a `conda environment`:
+
+```bash
+conda create -n cathsim python=3.9
+conda activate cathsim
+```
+
+2. Install the environment:
+
+```bash
+git clone git@github.com:airvlab/cathsim
+cd cathsim
+pip install -e .
+```
+
+## Quickstart
+
+A quick way to have the environment run with gym is to make use of the `make_dm_env` function and then wrap the resulting environment into a `DMEnvToGymWrapper` resulting in a `gym.Env`.
+
+```python
+import cathsim.gym.envs
+import gymnasium as gym
+
+task_kwargs = dict(
+    dense_reward=True,
+    success_reward=10.0,
+    delta=0.004,
+    use_pixels=False,
+    use_segment=False,
+    image_size=64,
+    phantom="phantom3",
+    target="bca",
+)
+
+env = gym.make("cathsim/CathSim-v0", **task_kwargs)
+
+
+obs = env.reset()
+for _ in range(1):
+    action = env.action_space.sample()
+    obs, reward, terminated, truncated, info = env.step(action)
+    for obs_key in obs:
+        print(obs_key, obs[obs_key].shape)
+    print(reward)
+    print(terminated)
+    print(truncated)
+    for info_key in info:
+        print(info_key, info[info_key])
+```
+
+Being a `gym` interface, it is compatible with RL libraries such as `stable_baselines3`:
+```python
+import cathsim.gym.envs
+from stable_baselines3 import SAC
+
+model = SAC("MultiInputPolicy", "cathsim/CathSim-v0").learn(10000)
+```
+
+For a list of the environment libraries at the current time, see the accompanying `environment.yml`
+
+## Training 
+
+#### Network Models
+
+| ENN Model | BC Model |
+|:--------:|:--------:|
+| <img height="293" width="auto" alt="expert network architecture" src="./misc/expert_model.png"> | <img height="293" width="auto" alt="bc network architecture" src="./misc/bc_model.png"> |
+
+
+In order to train the models available run:
+```bash
+bash ./scripts/train.bash
+```
+
+The script will create a `results` directory on the `cwd`. The script saves the data in `<trial-name>/<phantom>/<target>/<model>` format. Each model has three subfolders `eval`, `models` and `logs`, where the evaluation data contains the `Trajectory` data resulting from the evaluation of the policy, the `models` contains the `pytorch` models and the `logs` contains the `tensorboard` logs.
+
+### Results
+
+#### Expert Navigation Results
+
+| Input         | Force&#160;(N)&#160;↓             | Path&#160;Length&#160;(cm)&#160;↓      | Episode&#160;Length&#160;(s)&#160;↓    | Safety&#160;%&#160;↑              | Success&#160;%&#160;↑             | SPL&#160;%&#160;↑                 |
+|:---------------|--------------------------:|-------------------------:|-------------------------:|-------------------------:|-------------------------:|-------------------------:|
+| Human         | **1.02±0.22**         | 28.82±11.80           | 146.30±62.83          | **83±04**             | 100±00                | 62                      |
+| Image         | 3.61±0.61             | 25.28±15.21           | 162.55±106.85         | 16±10                 | 65±48                 | 74                      |
+| Image+Mask    | 3.36±0.41             | 18.55±2.91            | 77.67±21.83           | 25±07                 | 100±00                | 86                      |
+| Internal      | 3.33±0.46             | 20.53±4.96            | 87.25±50.56           | 26±09                 | 97±18                 | 80                      |
+| Internal+Image| 2.53±0.57             | 21.65±4.35            | 221.03±113.30         | 39±15                 | 33±47                 | 76                      |
+| **ENN**       | 2.33±0.18             | **15.78±0.17**        | **36.88±2.40**        | 45±04                 | 100±00                | **99**                  |
+> ENN outperforms human surgeon, however it uses extra data such as the joint positions and joint velocities, compared to human which is relies only on the 2D image.
+
+#### Imitation Learning Results
+
+| Input         | Force&#160;(N)&#160;↓  | Path&#160;Length&#160;(cm)&#160;↓  | Episode&#160;Length&#160;(s)&#160;↓    | Safety&#160;%&#160;↑              | Success&#160;%&#160;↑             | SPL&#160;%&#160;↑                 |
+|:--------------|-----------------------:|-------------------------:|-------------------------:|-------------------------:|-------------------------:|-------------------------:|
+| ENN           | 2.33±0.18              | **15.78±0.17**        | **36.88±2.40**        | 45±04                 | 100±00                | **99**                  |
+| Image&#160;w/o.&#160;ENN| 3.61±0.61              | 25.28±15.21           | 162.55±106.85         | 16±10                 | 65±48                 | 74                      |
+| Image&#160;w.&#160;ENN  | **2.23±0.10**          | 16.06±0.33            | 43.40±1.50            | **49±03**             | 100±00                | 98                      |
+
+##### Path Comparison
+
+<img width="1604" alt="path comparison between human and ENN" src="./misc/path.png"> 
+
+
+## Manual Control
+
+For a quick visualisation of the environment run:
+```bash
+run_env
+```
+You will now see the guidewire and the aorta along with the two sites that represent the targets. You can interact with the environment using the keyboard arrows.
+
+
+## Mesh Processing
+
+You can use a custom aorta by making use of V-HACD convex decomposition. To do so, you can use stl2mjcf, available [here](https://github.com/tudorjnu/stl2mjcf). You can quickly install the tool with:
+
+```bash
+pip install git+git@github.com:tudorjnu/stl2mjcf.git
+```
+
+After the installation, you can use `stl2mjcf --help` to see the available commands. The resultant files can be then added to `cathsim/assets`. The `xml` will go in that folder and the resultant meshes folder will go in `cathsim/assets/meshes/`. 
+
+Note: You will probably have to change the parameters of V-HACD for the best results.
+
+## Adding Elements
+
+### Adding a Phantom
+
+Following the steps from [mesh processing](#mesh-processing), the easiest way is to add the files to the correct directory, namely `src/cathsim/dm/components/phantom_assets/`. From here, you can simply select the phantom based on its name. For example, assuming your phantom is named `my_phantom.xml`, you would simply call:
+
+```python
+import cathsim.gym.envs
+import gymnasium as gym
+
+task_kwargs = dict(
+    phantom="my_phantom",
+    target=[0.1, 0.1, 0.1],  # select a target based on the mesh or embed it into the xml
+)
+
+env = gym.make("cathsim/CathSim-v0", **task_kwargs)
+```
+
+For more control, you could set the aorta using `mjcf`. See `src/cathsim/dm/components/phantom.py` and `src/cathsim/dm/components/base_models.py` for an example on how to do this. You can then just add the phantom to the task as such:
+
+```python
+from cathsim.gym.envs import CathSim
+
+phantom = MyPhantom()
+tip = Tip(n_bodies=4)
+guidewire = Guidewire(n_bodies=80)
+task = Navigate(
+    phantom=phantom,
+    guidewire=guidewire,
+    tip=tip,
+    target=target,
+    **kwargs,
+)
+env = composer.Environment(
+    task=task,
+    random_state=random_state,
+    strip_singleton_obs_buffer_dim=True,
+)
+
+env = CathSim(dm_env=env)
+```
+
+## Adding a guidewire
+
+A guidewire can be created similarly to the phantom and then embedded into the task like above.
+
+*Please see more information on `mjcf` [here](https://github.com/google-deepmind/dm_control/tree/main/dm_control/mjcf).*
+
+
+## TODO's
+
+- [x] Code refactoring
+- [x] Add fluid simulation
+- [x] Add VR/AR interface through Unity
+- [x] Implement multiple aortic models
+- [x] Update to `gymnasium`
+- [ ] Add guidewire representation
+- [ ] Create tests for the environment 
+
+## Maintainers (full list of [contributors](contributors.md))
+
+- [Tudor Jianu](https://tudorjnu.github.io/)
+- [Baoru Huang](https://baoru.netlify.app)
+- [Tung Ta](https://tungtd.com/)
+- [Anh Nguyen](https://cgi.csc.liv.ac.uk/~anguyen/)
+
+## Terms of Use
+
+Please review our [Terms of Use](TERMS.md) before using this project.
+
+## License
+
+Please feel free to copy, distribute, display, perform or remix our work but for non-commercial porposes only.
+
+## Citation
+
+If you find our paper useful in your research, please consider citing:
+
+``` bibtex
+@article{jianu2022cathsim,
+  title={CathSim: An Open-source Simulator for Endovascular Intervention},
+  author={Jianu, Tudor and Huang, Baoru and Abdelaziz, Mohamed EMK and Vu, Minh Nhat and Fichera, Sebastiano and Lee, Chun-Yi and Berthet-Rayne, Pierre and Nguyen, Anh and others},
+  journal={arXiv preprint arXiv:2208.01455},
+  year={2022}

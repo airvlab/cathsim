@@ -1,0 +1,1128 @@
+<mujoco model="low_tort">
+  <compiler meshdir="meshes" />
+  <default>
+    <geom type="mesh" />
+  </default>
+  <asset>
+    <mesh name="visual" file="low_tort/visual.stl" />
+    <mesh name="hull_0" file="low_tort/hull_0.stl" />
+    <mesh name="hull_1" file="low_tort/hull_1.stl" />
+    <mesh name="hull_2" file="low_tort/hull_2.stl" />
+    <mesh name="hull_3" file="low_tort/hull_3.stl" />
+    <mesh name="hull_4" file="low_tort/hull_4.stl" />
+    <mesh name="hull_5" file="low_tort/hull_5.stl" />
+    <mesh name="hull_6" file="low_tort/hull_6.stl" />
+    <mesh name="hull_7" file="low_tort/hull_7.stl" />
+    <mesh name="hull_8" file="low_tort/hull_8.stl" />
+    <mesh name="hull_9" file="low_tort/hull_9.stl" />
+    <mesh name="hull_10" file="low_tort/hull_10.stl" />
+    <mesh name="hull_11" file="low_tort/hull_11.stl" />
+    <mesh name="hull_12" file="low_tort/hull_12.stl" />
+    <mesh name="hull_13" file="low_tort/hull_13.stl" />
+    <mesh name="hull_14" file="low_tort/hull_14.stl" />
+    <mesh name="hull_15" file="low_tort/hull_15.stl" />
+    <mesh name="hull_16" file="low_tort/hull_16.stl" />
+    <mesh name="hull_17" file="low_tort/hull_17.stl" />
+    <mesh name="hull_18" file="low_tort/hull_18.stl" />
+    <mesh name="hull_19" file="low_tort/hull_19.stl" />
+    <mesh name="hull_20" file="low_tort/hull_20.stl" />
+    <mesh name="hull_21" file="low_tort/hull_21.stl" />
+    <mesh name="hull_22" file="low_tort/hull_22.stl" />
+    <mesh name="hull_23" file="low_tort/hull_23.stl" />
+    <mesh name="hull_24" file="low_tort/hull_24.stl" />
+    <mesh name="hull_25" file="low_tort/hull_25.stl" />
+    <mesh name="hull_26" file="low_tort/hull_26.stl" />
+    <mesh name="hull_27" file="low_tort/hull_27.stl" />
+    <mesh name="hull_28" file="low_tort/hull_28.stl" />
+    <mesh name="hull_29" file="low_tort/hull_29.stl" />
+    <mesh name="hull_30" file="low_tort/hull_30.stl" />
+    <mesh name="hull_31" file="low_tort/hull_31.stl" />
+    <mesh name="hull_32" file="low_tort/hull_32.stl" />
+    <mesh name="hull_33" file="low_tort/hull_33.stl" />
+    <mesh name="hull_34" file="low_tort/hull_34.stl" />
+    <mesh name="hull_35" file="low_tort/hull_35.stl" />
+    <mesh name="hull_36" file="low_tort/hull_36.stl" />
+    <mesh name="hull_37" file="low_tort/hull_37.stl" />
+    <mesh name="hull_38" file="low_tort/hull_38.stl" />
+    <mesh name="hull_39" file="low_tort/hull_39.stl" />
+    <mesh name="hull_40" file="low_tort/hull_40.stl" />
+    <mesh name="hull_41" file="low_tort/hull_41.stl" />
+    <mesh name="hull_42" file="low_tort/hull_42.stl" />
+    <mesh name="hull_43" file="low_tort/hull_43.stl" />
+    <mesh name="hull_44" file="low_tort/hull_44.stl" />
+    <mesh name="hull_45" file="low_tort/hull_45.stl" />
+    <mesh name="hull_46" file="low_tort/hull_46.stl" />
+    <mesh name="hull_47" file="low_tort/hull_47.stl" />
+    <mesh name="hull_48" file="low_tort/hull_48.stl" />
+    <mesh name="hull_49" file="low_tort/hull_49.stl" />
+    <mesh name="hull_50" file="low_tort/hull_50.stl" />
+    <mesh name="hull_51" file="low_tort/hull_51.stl" />
+    <mesh name="hull_52" file="low_tort/hull_52.stl" />
+    <mesh name="hull_53" file="low_tort/hull_53.stl" />
+    <mesh name="hull_54" file="low_tort/hull_54.stl" />
+    <mesh name="hull_55" file="low_tort/hull_55.stl" />
+    <mesh name="hull_56" file="low_tort/hull_56.stl" />
+    <mesh name="hull_57" file="low_tort/hull_57.stl" />
+    <mesh name="hull_58" file="low_tort/hull_58.stl" />
+    <mesh name="hull_59" file="low_tort/hull_59.stl" />
+    <mesh name="hull_60" file="low_tort/hull_60.stl" />
+    <mesh name="hull_61" file="low_tort/hull_61.stl" />
+    <mesh name="hull_62" file="low_tort/hull_62.stl" />
+    <mesh name="hull_63" file="low_tort/hull_63.stl" />
+    <mesh name="hull_64" file="low_tort/hull_64.stl" />
+    <mesh name="hull_65" file="low_tort/hull_65.stl" />
+    <mesh name="hull_66" file="low_tort/hull_66.stl" />
+    <mesh name="hull_67" file="low_tort/hull_67.stl" />
+    <mesh name="hull_68" file="low_tort/hull_68.stl" />
+    <mesh name="hull_69" file="low_tort/hull_69.stl" />
+    <mesh name="hull_70" file="low_tort/hull_70.stl" />
+    <mesh name="hull_71" file="low_tort/hull_71.stl" />
+    <mesh name="hull_72" file="low_tort/hull_72.stl" />
+    <mesh name="hull_73" file="low_tort/hull_73.stl" />
+    <mesh name="hull_74" file="low_tort/hull_74.stl" />
+    <mesh name="hull_75" file="low_tort/hull_75.stl" />
+    <mesh name="hull_76" file="low_tort/hull_76.stl" />
+    <mesh name="hull_77" file="low_tort/hull_77.stl" />
+    <mesh name="hull_78" file="low_tort/hull_78.stl" />
+    <mesh name="hull_79" file="low_tort/hull_79.stl" />
+    <mesh name="hull_80" file="low_tort/hull_80.stl" />
+    <mesh name="hull_81" file="low_tort/hull_81.stl" />
+    <mesh name="hull_82" file="low_tort/hull_82.stl" />
+    <mesh name="hull_83" file="low_tort/hull_83.stl" />
+    <mesh name="hull_84" file="low_tort/hull_84.stl" />
+    <mesh name="hull_85" file="low_tort/hull_85.stl" />
+    <mesh name="hull_86" file="low_tort/hull_86.stl" />
+    <mesh name="hull_87" file="low_tort/hull_87.stl" />
+    <mesh name="hull_88" file="low_tort/hull_88.stl" />
+    <mesh name="hull_89" file="low_tort/hull_89.stl" />
+    <mesh name="hull_90" file="low_tort/hull_90.stl" />
+    <mesh name="hull_91" file="low_tort/hull_91.stl" />
+    <mesh name="hull_92" file="low_tort/hull_92.stl" />
+    <mesh name="hull_93" file="low_tort/hull_93.stl" />
+    <mesh name="hull_94" file="low_tort/hull_94.stl" />
+    <mesh name="hull_95" file="low_tort/hull_95.stl" />
+    <mesh name="hull_96" file="low_tort/hull_96.stl" />
+    <mesh name="hull_97" file="low_tort/hull_97.stl" />
+    <mesh name="hull_98" file="low_tort/hull_98.stl" />
+    <mesh name="hull_99" file="low_tort/hull_99.stl" />
+    <mesh name="hull_100" file="low_tort/hull_100.stl" />
+    <mesh name="hull_101" file="low_tort/hull_101.stl" />
+    <mesh name="hull_102" file="low_tort/hull_102.stl" />
+    <mesh name="hull_103" file="low_tort/hull_103.stl" />
+    <mesh name="hull_104" file="low_tort/hull_104.stl" />
+    <mesh name="hull_105" file="low_tort/hull_105.stl" />
+    <mesh name="hull_106" file="low_tort/hull_106.stl" />
+    <mesh name="hull_107" file="low_tort/hull_107.stl" />
+    <mesh name="hull_108" file="low_tort/hull_108.stl" />
+    <mesh name="hull_109" file="low_tort/hull_109.stl" />
+    <mesh name="hull_110" file="low_tort/hull_110.stl" />
+    <mesh name="hull_111" file="low_tort/hull_111.stl" />
+    <mesh name="hull_112" file="low_tort/hull_112.stl" />
+    <mesh name="hull_113" file="low_tort/hull_113.stl" />
+    <mesh name="hull_114" file="low_tort/hull_114.stl" />
+    <mesh name="hull_115" file="low_tort/hull_115.stl" />
+    <mesh name="hull_116" file="low_tort/hull_116.stl" />
+    <mesh name="hull_117" file="low_tort/hull_117.stl" />
+    <mesh name="hull_118" file="low_tort/hull_118.stl" />
+    <mesh name="hull_119" file="low_tort/hull_119.stl" />
+    <mesh name="hull_120" file="low_tort/hull_120.stl" />
+    <mesh name="hull_121" file="low_tort/hull_121.stl" />
+    <mesh name="hull_122" file="low_tort/hull_122.stl" />
+    <mesh name="hull_123" file="low_tort/hull_123.stl" />
+    <mesh name="hull_124" file="low_tort/hull_124.stl" />
+    <mesh name="hull_125" file="low_tort/hull_125.stl" />
+    <mesh name="hull_126" file="low_tort/hull_126.stl" />
+    <mesh name="hull_127" file="low_tort/hull_127.stl" />
+    <mesh name="hull_128" file="low_tort/hull_128.stl" />
+    <mesh name="hull_129" file="low_tort/hull_129.stl" />
+    <mesh name="hull_130" file="low_tort/hull_130.stl" />
+    <mesh name="hull_131" file="low_tort/hull_131.stl" />
+    <mesh name="hull_132" file="low_tort/hull_132.stl" />
+    <mesh name="hull_133" file="low_tort/hull_133.stl" />
+    <mesh name="hull_134" file="low_tort/hull_134.stl" />
+    <mesh name="hull_135" file="low_tort/hull_135.stl" />
+    <mesh name="hull_136" file="low_tort/hull_136.stl" />
+    <mesh name="hull_137" file="low_tort/hull_137.stl" />
+    <mesh name="hull_138" file="low_tort/hull_138.stl" />
+    <mesh name="hull_139" file="low_tort/hull_139.stl" />
+    <mesh name="hull_140" file="low_tort/hull_140.stl" />
+    <mesh name="hull_141" file="low_tort/hull_141.stl" />
+    <mesh name="hull_142" file="low_tort/hull_142.stl" />
+    <mesh name="hull_143" file="low_tort/hull_143.stl" />
+    <mesh name="hull_144" file="low_tort/hull_144.stl" />
+    <mesh name="hull_145" file="low_tort/hull_145.stl" />
+    <mesh name="hull_146" file="low_tort/hull_146.stl" />
+    <mesh name="hull_147" file="low_tort/hull_147.stl" />
+    <mesh name="hull_148" file="low_tort/hull_148.stl" />
+    <mesh name="hull_149" file="low_tort/hull_149.stl" />
+    <mesh name="hull_150" file="low_tort/hull_150.stl" />
+    <mesh name="hull_151" file="low_tort/hull_151.stl" />
+    <mesh name="hull_152" file="low_tort/hull_152.stl" />
+    <mesh name="hull_153" file="low_tort/hull_153.stl" />
+    <mesh name="hull_154" file="low_tort/hull_154.stl" />
+    <mesh name="hull_155" file="low_tort/hull_155.stl" />
+    <mesh name="hull_156" file="low_tort/hull_156.stl" />
+    <mesh name="hull_157" file="low_tort/hull_157.stl" />
+    <mesh name="hull_158" file="low_tort/hull_158.stl" />
+    <mesh name="hull_159" file="low_tort/hull_159.stl" />
+    <mesh name="hull_160" file="low_tort/hull_160.stl" />
+    <mesh name="hull_161" file="low_tort/hull_161.stl" />
+    <mesh name="hull_162" file="low_tort/hull_162.stl" />
+    <mesh name="hull_163" file="low_tort/hull_163.stl" />
+    <mesh name="hull_164" file="low_tort/hull_164.stl" />
+    <mesh name="hull_165" file="low_tort/hull_165.stl" />
+    <mesh name="hull_166" file="low_tort/hull_166.stl" />
+    <mesh name="hull_167" file="low_tort/hull_167.stl" />
+    <mesh name="hull_168" file="low_tort/hull_168.stl" />
+    <mesh name="hull_169" file="low_tort/hull_169.stl" />
+    <mesh name="hull_170" file="low_tort/hull_170.stl" />
+    <mesh name="hull_171" file="low_tort/hull_171.stl" />
+    <mesh name="hull_172" file="low_tort/hull_172.stl" />
+    <mesh name="hull_173" file="low_tort/hull_173.stl" />
+    <mesh name="hull_174" file="low_tort/hull_174.stl" />
+    <mesh name="hull_175" file="low_tort/hull_175.stl" />
+    <mesh name="hull_176" file="low_tort/hull_176.stl" />
+    <mesh name="hull_177" file="low_tort/hull_177.stl" />
+    <mesh name="hull_178" file="low_tort/hull_178.stl" />
+    <mesh name="hull_179" file="low_tort/hull_179.stl" />
+    <mesh name="hull_180" file="low_tort/hull_180.stl" />
+    <mesh name="hull_181" file="low_tort/hull_181.stl" />
+    <mesh name="hull_182" file="low_tort/hull_182.stl" />
+    <mesh name="hull_183" file="low_tort/hull_183.stl" />
+    <mesh name="hull_184" file="low_tort/hull_184.stl" />
+    <mesh name="hull_185" file="low_tort/hull_185.stl" />
+    <mesh name="hull_186" file="low_tort/hull_186.stl" />
+    <mesh name="hull_187" file="low_tort/hull_187.stl" />
+    <mesh name="hull_188" file="low_tort/hull_188.stl" />
+    <mesh name="hull_189" file="low_tort/hull_189.stl" />
+    <mesh name="hull_190" file="low_tort/hull_190.stl" />
+    <mesh name="hull_191" file="low_tort/hull_191.stl" />
+    <mesh name="hull_192" file="low_tort/hull_192.stl" />
+    <mesh name="hull_193" file="low_tort/hull_193.stl" />
+    <mesh name="hull_194" file="low_tort/hull_194.stl" />
+    <mesh name="hull_195" file="low_tort/hull_195.stl" />
+    <mesh name="hull_196" file="low_tort/hull_196.stl" />
+    <mesh name="hull_197" file="low_tort/hull_197.stl" />
+    <mesh name="hull_198" file="low_tort/hull_198.stl" />
+    <mesh name="hull_199" file="low_tort/hull_199.stl" />
+    <mesh name="hull_200" file="low_tort/hull_200.stl" />
+    <mesh name="hull_201" file="low_tort/hull_201.stl" />
+    <mesh name="hull_202" file="low_tort/hull_202.stl" />
+    <mesh name="hull_203" file="low_tort/hull_203.stl" />
+    <mesh name="hull_204" file="low_tort/hull_204.stl" />
+    <mesh name="hull_205" file="low_tort/hull_205.stl" />
+    <mesh name="hull_206" file="low_tort/hull_206.stl" />
+    <mesh name="hull_207" file="low_tort/hull_207.stl" />
+    <mesh name="hull_208" file="low_tort/hull_208.stl" />
+    <mesh name="hull_209" file="low_tort/hull_209.stl" />
+    <mesh name="hull_210" file="low_tort/hull_210.stl" />
+    <mesh name="hull_211" file="low_tort/hull_211.stl" />
+    <mesh name="hull_212" file="low_tort/hull_212.stl" />
+    <mesh name="hull_213" file="low_tort/hull_213.stl" />
+    <mesh name="hull_214" file="low_tort/hull_214.stl" />
+    <mesh name="hull_215" file="low_tort/hull_215.stl" />
+    <mesh name="hull_216" file="low_tort/hull_216.stl" />
+    <mesh name="hull_217" file="low_tort/hull_217.stl" />
+    <mesh name="hull_218" file="low_tort/hull_218.stl" />
+    <mesh name="hull_219" file="low_tort/hull_219.stl" />
+    <mesh name="hull_220" file="low_tort/hull_220.stl" />
+    <mesh name="hull_221" file="low_tort/hull_221.stl" />
+    <mesh name="hull_222" file="low_tort/hull_222.stl" />
+    <mesh name="hull_223" file="low_tort/hull_223.stl" />
+    <mesh name="hull_224" file="low_tort/hull_224.stl" />
+    <mesh name="hull_225" file="low_tort/hull_225.stl" />
+    <mesh name="hull_226" file="low_tort/hull_226.stl" />
+    <mesh name="hull_227" file="low_tort/hull_227.stl" />
+    <mesh name="hull_228" file="low_tort/hull_228.stl" />
+    <mesh name="hull_229" file="low_tort/hull_229.stl" />
+    <mesh name="hull_230" file="low_tort/hull_230.stl" />
+    <mesh name="hull_231" file="low_tort/hull_231.stl" />
+    <mesh name="hull_232" file="low_tort/hull_232.stl" />
+    <mesh name="hull_233" file="low_tort/hull_233.stl" />
+    <mesh name="hull_234" file="low_tort/hull_234.stl" />
+    <mesh name="hull_235" file="low_tort/hull_235.stl" />
+    <mesh name="hull_236" file="low_tort/hull_236.stl" />
+    <mesh name="hull_237" file="low_tort/hull_237.stl" />
+    <mesh name="hull_238" file="low_tort/hull_238.stl" />
+    <mesh name="hull_239" file="low_tort/hull_239.stl" />
+    <mesh name="hull_240" file="low_tort/hull_240.stl" />
+    <mesh name="hull_241" file="low_tort/hull_241.stl" />
+    <mesh name="hull_242" file="low_tort/hull_242.stl" />
+    <mesh name="hull_243" file="low_tort/hull_243.stl" />
+    <mesh name="hull_244" file="low_tort/hull_244.stl" />
+    <mesh name="hull_245" file="low_tort/hull_245.stl" />
+    <mesh name="hull_246" file="low_tort/hull_246.stl" />
+    <mesh name="hull_247" file="low_tort/hull_247.stl" />
+    <mesh name="hull_248" file="low_tort/hull_248.stl" />
+    <mesh name="hull_249" file="low_tort/hull_249.stl" />
+    <mesh name="hull_250" file="low_tort/hull_250.stl" />
+    <mesh name="hull_251" file="low_tort/hull_251.stl" />
+    <mesh name="hull_252" file="low_tort/hull_252.stl" />
+    <mesh name="hull_253" file="low_tort/hull_253.stl" />
+    <mesh name="hull_254" file="low_tort/hull_254.stl" />
+    <mesh name="hull_255" file="low_tort/hull_255.stl" />
+    <mesh name="hull_256" file="low_tort/hull_256.stl" />
+    <mesh name="hull_257" file="low_tort/hull_257.stl" />
+    <mesh name="hull_258" file="low_tort/hull_258.stl" />
+    <mesh name="hull_259" file="low_tort/hull_259.stl" />
+    <mesh name="hull_260" file="low_tort/hull_260.stl" />
+    <mesh name="hull_261" file="low_tort/hull_261.stl" />
+    <mesh name="hull_262" file="low_tort/hull_262.stl" />
+    <mesh name="hull_263" file="low_tort/hull_263.stl" />
+    <mesh name="hull_264" file="low_tort/hull_264.stl" />
+    <mesh name="hull_265" file="low_tort/hull_265.stl" />
+    <mesh name="hull_266" file="low_tort/hull_266.stl" />
+    <mesh name="hull_267" file="low_tort/hull_267.stl" />
+    <mesh name="hull_268" file="low_tort/hull_268.stl" />
+    <mesh name="hull_269" file="low_tort/hull_269.stl" />
+    <mesh name="hull_270" file="low_tort/hull_270.stl" />
+    <mesh name="hull_271" file="low_tort/hull_271.stl" />
+    <mesh name="hull_272" file="low_tort/hull_272.stl" />
+    <mesh name="hull_273" file="low_tort/hull_273.stl" />
+    <mesh name="hull_274" file="low_tort/hull_274.stl" />
+    <mesh name="hull_275" file="low_tort/hull_275.stl" />
+    <mesh name="hull_276" file="low_tort/hull_276.stl" />
+    <mesh name="hull_277" file="low_tort/hull_277.stl" />
+    <mesh name="hull_278" file="low_tort/hull_278.stl" />
+    <mesh name="hull_279" file="low_tort/hull_279.stl" />
+    <mesh name="hull_280" file="low_tort/hull_280.stl" />
+    <mesh name="hull_281" file="low_tort/hull_281.stl" />
+    <mesh name="hull_282" file="low_tort/hull_282.stl" />
+    <mesh name="hull_283" file="low_tort/hull_283.stl" />
+    <mesh name="hull_284" file="low_tort/hull_284.stl" />
+    <mesh name="hull_285" file="low_tort/hull_285.stl" />
+    <mesh name="hull_286" file="low_tort/hull_286.stl" />
+    <mesh name="hull_287" file="low_tort/hull_287.stl" />
+    <mesh name="hull_288" file="low_tort/hull_288.stl" />
+    <mesh name="hull_289" file="low_tort/hull_289.stl" />
+    <mesh name="hull_290" file="low_tort/hull_290.stl" />
+    <mesh name="hull_291" file="low_tort/hull_291.stl" />
+    <mesh name="hull_292" file="low_tort/hull_292.stl" />
+    <mesh name="hull_293" file="low_tort/hull_293.stl" />
+    <mesh name="hull_294" file="low_tort/hull_294.stl" />
+    <mesh name="hull_295" file="low_tort/hull_295.stl" />
+    <mesh name="hull_296" file="low_tort/hull_296.stl" />
+    <mesh name="hull_297" file="low_tort/hull_297.stl" />
+    <mesh name="hull_298" file="low_tort/hull_298.stl" />
+    <mesh name="hull_299" file="low_tort/hull_299.stl" />
+    <mesh name="hull_300" file="low_tort/hull_300.stl" />
+    <mesh name="hull_301" file="low_tort/hull_301.stl" />
+    <mesh name="hull_302" file="low_tort/hull_302.stl" />
+    <mesh name="hull_303" file="low_tort/hull_303.stl" />
+    <mesh name="hull_304" file="low_tort/hull_304.stl" />
+    <mesh name="hull_305" file="low_tort/hull_305.stl" />
+    <mesh name="hull_306" file="low_tort/hull_306.stl" />
+    <mesh name="hull_307" file="low_tort/hull_307.stl" />
+    <mesh name="hull_308" file="low_tort/hull_308.stl" />
+    <mesh name="hull_309" file="low_tort/hull_309.stl" />
+    <mesh name="hull_310" file="low_tort/hull_310.stl" />
+    <mesh name="hull_311" file="low_tort/hull_311.stl" />
+    <mesh name="hull_312" file="low_tort/hull_312.stl" />
+    <mesh name="hull_313" file="low_tort/hull_313.stl" />
+    <mesh name="hull_314" file="low_tort/hull_314.stl" />
+    <mesh name="hull_315" file="low_tort/hull_315.stl" />
+    <mesh name="hull_316" file="low_tort/hull_316.stl" />
+    <mesh name="hull_317" file="low_tort/hull_317.stl" />
+    <mesh name="hull_318" file="low_tort/hull_318.stl" />
+    <mesh name="hull_319" file="low_tort/hull_319.stl" />
+    <mesh name="hull_320" file="low_tort/hull_320.stl" />
+    <mesh name="hull_321" file="low_tort/hull_321.stl" />
+    <mesh name="hull_322" file="low_tort/hull_322.stl" />
+    <mesh name="hull_323" file="low_tort/hull_323.stl" />
+    <mesh name="hull_324" file="low_tort/hull_324.stl" />
+    <mesh name="hull_325" file="low_tort/hull_325.stl" />
+    <mesh name="hull_326" file="low_tort/hull_326.stl" />
+    <mesh name="hull_327" file="low_tort/hull_327.stl" />
+    <mesh name="hull_328" file="low_tort/hull_328.stl" />
+    <mesh name="hull_329" file="low_tort/hull_329.stl" />
+    <mesh name="hull_330" file="low_tort/hull_330.stl" />
+    <mesh name="hull_331" file="low_tort/hull_331.stl" />
+    <mesh name="hull_332" file="low_tort/hull_332.stl" />
+    <mesh name="hull_333" file="low_tort/hull_333.stl" />
+    <mesh name="hull_334" file="low_tort/hull_334.stl" />
+    <mesh name="hull_335" file="low_tort/hull_335.stl" />
+    <mesh name="hull_336" file="low_tort/hull_336.stl" />
+    <mesh name="hull_337" file="low_tort/hull_337.stl" />
+    <mesh name="hull_338" file="low_tort/hull_338.stl" />
+    <mesh name="hull_339" file="low_tort/hull_339.stl" />
+    <mesh name="hull_340" file="low_tort/hull_340.stl" />
+    <mesh name="hull_341" file="low_tort/hull_341.stl" />
+    <mesh name="hull_342" file="low_tort/hull_342.stl" />
+    <mesh name="hull_343" file="low_tort/hull_343.stl" />
+    <mesh name="hull_344" file="low_tort/hull_344.stl" />
+    <mesh name="hull_345" file="low_tort/hull_345.stl" />
+    <mesh name="hull_346" file="low_tort/hull_346.stl" />
+    <mesh name="hull_347" file="low_tort/hull_347.stl" />
+    <mesh name="hull_348" file="low_tort/hull_348.stl" />
+    <mesh name="hull_349" file="low_tort/hull_349.stl" />
+    <mesh name="hull_350" file="low_tort/hull_350.stl" />
+    <mesh name="hull_351" file="low_tort/hull_351.stl" />
+    <mesh name="hull_352" file="low_tort/hull_352.stl" />
+    <mesh name="hull_353" file="low_tort/hull_353.stl" />
+    <mesh name="hull_354" file="low_tort/hull_354.stl" />
+    <mesh name="hull_355" file="low_tort/hull_355.stl" />
+    <mesh name="hull_356" file="low_tort/hull_356.stl" />
+    <mesh name="hull_357" file="low_tort/hull_357.stl" />
+    <mesh name="hull_358" file="low_tort/hull_358.stl" />
+    <mesh name="hull_359" file="low_tort/hull_359.stl" />
+    <mesh name="hull_360" file="low_tort/hull_360.stl" />
+    <mesh name="hull_361" file="low_tort/hull_361.stl" />
+    <mesh name="hull_362" file="low_tort/hull_362.stl" />
+    <mesh name="hull_363" file="low_tort/hull_363.stl" />
+    <mesh name="hull_364" file="low_tort/hull_364.stl" />
+    <mesh name="hull_365" file="low_tort/hull_365.stl" />
+    <mesh name="hull_366" file="low_tort/hull_366.stl" />
+    <mesh name="hull_367" file="low_tort/hull_367.stl" />
+    <mesh name="hull_368" file="low_tort/hull_368.stl" />
+    <mesh name="hull_369" file="low_tort/hull_369.stl" />
+    <mesh name="hull_370" file="low_tort/hull_370.stl" />
+    <mesh name="hull_371" file="low_tort/hull_371.stl" />
+    <mesh name="hull_372" file="low_tort/hull_372.stl" />
+    <mesh name="hull_373" file="low_tort/hull_373.stl" />
+    <mesh name="hull_374" file="low_tort/hull_374.stl" />
+    <mesh name="hull_375" file="low_tort/hull_375.stl" />
+    <mesh name="hull_376" file="low_tort/hull_376.stl" />
+    <mesh name="hull_377" file="low_tort/hull_377.stl" />
+    <mesh name="hull_378" file="low_tort/hull_378.stl" />
+    <mesh name="hull_379" file="low_tort/hull_379.stl" />
+    <mesh name="hull_380" file="low_tort/hull_380.stl" />
+    <mesh name="hull_381" file="low_tort/hull_381.stl" />
+    <mesh name="hull_382" file="low_tort/hull_382.stl" />
+    <mesh name="hull_383" file="low_tort/hull_383.stl" />
+    <mesh name="hull_384" file="low_tort/hull_384.stl" />
+    <mesh name="hull_385" file="low_tort/hull_385.stl" />
+    <mesh name="hull_386" file="low_tort/hull_386.stl" />
+    <mesh name="hull_387" file="low_tort/hull_387.stl" />
+    <mesh name="hull_388" file="low_tort/hull_388.stl" />
+    <mesh name="hull_389" file="low_tort/hull_389.stl" />
+    <mesh name="hull_390" file="low_tort/hull_390.stl" />
+    <mesh name="hull_391" file="low_tort/hull_391.stl" />
+    <mesh name="hull_392" file="low_tort/hull_392.stl" />
+    <mesh name="hull_393" file="low_tort/hull_393.stl" />
+    <mesh name="hull_394" file="low_tort/hull_394.stl" />
+    <mesh name="hull_395" file="low_tort/hull_395.stl" />
+    <mesh name="hull_396" file="low_tort/hull_396.stl" />
+    <mesh name="hull_397" file="low_tort/hull_397.stl" />
+    <mesh name="hull_398" file="low_tort/hull_398.stl" />
+    <mesh name="hull_399" file="low_tort/hull_399.stl" />
+    <mesh name="hull_400" file="low_tort/hull_400.stl" />
+    <mesh name="hull_401" file="low_tort/hull_401.stl" />
+    <mesh name="hull_402" file="low_tort/hull_402.stl" />
+    <mesh name="hull_403" file="low_tort/hull_403.stl" />
+    <mesh name="hull_404" file="low_tort/hull_404.stl" />
+    <mesh name="hull_405" file="low_tort/hull_405.stl" />
+    <mesh name="hull_406" file="low_tort/hull_406.stl" />
+    <mesh name="hull_407" file="low_tort/hull_407.stl" />
+    <mesh name="hull_408" file="low_tort/hull_408.stl" />
+    <mesh name="hull_409" file="low_tort/hull_409.stl" />
+    <mesh name="hull_410" file="low_tort/hull_410.stl" />
+    <mesh name="hull_411" file="low_tort/hull_411.stl" />
+    <mesh name="hull_412" file="low_tort/hull_412.stl" />
+    <mesh name="hull_413" file="low_tort/hull_413.stl" />
+    <mesh name="hull_414" file="low_tort/hull_414.stl" />
+    <mesh name="hull_415" file="low_tort/hull_415.stl" />
+    <mesh name="hull_416" file="low_tort/hull_416.stl" />
+    <mesh name="hull_417" file="low_tort/hull_417.stl" />
+    <mesh name="hull_418" file="low_tort/hull_418.stl" />
+    <mesh name="hull_419" file="low_tort/hull_419.stl" />
+    <mesh name="hull_420" file="low_tort/hull_420.stl" />
+    <mesh name="hull_421" file="low_tort/hull_421.stl" />
+    <mesh name="hull_422" file="low_tort/hull_422.stl" />
+    <mesh name="hull_423" file="low_tort/hull_423.stl" />
+    <mesh name="hull_424" file="low_tort/hull_424.stl" />
+    <mesh name="hull_425" file="low_tort/hull_425.stl" />
+    <mesh name="hull_426" file="low_tort/hull_426.stl" />
+    <mesh name="hull_427" file="low_tort/hull_427.stl" />
+    <mesh name="hull_428" file="low_tort/hull_428.stl" />
+    <mesh name="hull_429" file="low_tort/hull_429.stl" />
+    <mesh name="hull_430" file="low_tort/hull_430.stl" />
+    <mesh name="hull_431" file="low_tort/hull_431.stl" />
+    <mesh name="hull_432" file="low_tort/hull_432.stl" />
+    <mesh name="hull_433" file="low_tort/hull_433.stl" />
+    <mesh name="hull_434" file="low_tort/hull_434.stl" />
+    <mesh name="hull_435" file="low_tort/hull_435.stl" />
+    <mesh name="hull_436" file="low_tort/hull_436.stl" />
+    <mesh name="hull_437" file="low_tort/hull_437.stl" />
+    <mesh name="hull_438" file="low_tort/hull_438.stl" />
+    <mesh name="hull_439" file="low_tort/hull_439.stl" />
+    <mesh name="hull_440" file="low_tort/hull_440.stl" />
+    <mesh name="hull_441" file="low_tort/hull_441.stl" />
+    <mesh name="hull_442" file="low_tort/hull_442.stl" />
+    <mesh name="hull_443" file="low_tort/hull_443.stl" />
+    <mesh name="hull_444" file="low_tort/hull_444.stl" />
+    <mesh name="hull_445" file="low_tort/hull_445.stl" />
+    <mesh name="hull_446" file="low_tort/hull_446.stl" />
+    <mesh name="hull_447" file="low_tort/hull_447.stl" />
+    <mesh name="hull_448" file="low_tort/hull_448.stl" />
+    <mesh name="hull_449" file="low_tort/hull_449.stl" />
+    <mesh name="hull_450" file="low_tort/hull_450.stl" />
+    <mesh name="hull_451" file="low_tort/hull_451.stl" />
+    <mesh name="hull_452" file="low_tort/hull_452.stl" />
+    <mesh name="hull_453" file="low_tort/hull_453.stl" />
+    <mesh name="hull_454" file="low_tort/hull_454.stl" />
+    <mesh name="hull_455" file="low_tort/hull_455.stl" />
+    <mesh name="hull_456" file="low_tort/hull_456.stl" />
+    <mesh name="hull_457" file="low_tort/hull_457.stl" />
+    <mesh name="hull_458" file="low_tort/hull_458.stl" />
+    <mesh name="hull_459" file="low_tort/hull_459.stl" />
+    <mesh name="hull_460" file="low_tort/hull_460.stl" />
+    <mesh name="hull_461" file="low_tort/hull_461.stl" />
+    <mesh name="hull_462" file="low_tort/hull_462.stl" />
+    <mesh name="hull_463" file="low_tort/hull_463.stl" />
+    <mesh name="hull_464" file="low_tort/hull_464.stl" />
+    <mesh name="hull_465" file="low_tort/hull_465.stl" />
+    <mesh name="hull_466" file="low_tort/hull_466.stl" />
+    <mesh name="hull_467" file="low_tort/hull_467.stl" />
+    <mesh name="hull_468" file="low_tort/hull_468.stl" />
+    <mesh name="hull_469" file="low_tort/hull_469.stl" />
+    <mesh name="hull_470" file="low_tort/hull_470.stl" />
+    <mesh name="hull_471" file="low_tort/hull_471.stl" />
+    <mesh name="hull_472" file="low_tort/hull_472.stl" />
+    <mesh name="hull_473" file="low_tort/hull_473.stl" />
+    <mesh name="hull_474" file="low_tort/hull_474.stl" />
+    <mesh name="hull_475" file="low_tort/hull_475.stl" />
+    <mesh name="hull_476" file="low_tort/hull_476.stl" />
+    <mesh name="hull_477" file="low_tort/hull_477.stl" />
+    <mesh name="hull_478" file="low_tort/hull_478.stl" />
+    <mesh name="hull_479" file="low_tort/hull_479.stl" />
+    <mesh name="hull_480" file="low_tort/hull_480.stl" />
+    <mesh name="hull_481" file="low_tort/hull_481.stl" />
+    <mesh name="hull_482" file="low_tort/hull_482.stl" />
+    <mesh name="hull_483" file="low_tort/hull_483.stl" />
+    <mesh name="hull_484" file="low_tort/hull_484.stl" />
+    <mesh name="hull_485" file="low_tort/hull_485.stl" />
+    <mesh name="hull_486" file="low_tort/hull_486.stl" />
+    <mesh name="hull_487" file="low_tort/hull_487.stl" />
+    <mesh name="hull_488" file="low_tort/hull_488.stl" />
+    <mesh name="hull_489" file="low_tort/hull_489.stl" />
+    <mesh name="hull_490" file="low_tort/hull_490.stl" />
+    <mesh name="hull_491" file="low_tort/hull_491.stl" />
+    <mesh name="hull_492" file="low_tort/hull_492.stl" />
+    <mesh name="hull_493" file="low_tort/hull_493.stl" />
+    <mesh name="hull_494" file="low_tort/hull_494.stl" />
+    <mesh name="hull_495" file="low_tort/hull_495.stl" />
+    <mesh name="hull_496" file="low_tort/hull_496.stl" />
+    <mesh name="hull_497" file="low_tort/hull_497.stl" />
+    <mesh name="hull_498" file="low_tort/hull_498.stl" />
+    <mesh name="hull_499" file="low_tort/hull_499.stl" />
+    <mesh name="hull_500" file="low_tort/hull_500.stl" />
+    <mesh name="hull_501" file="low_tort/hull_501.stl" />
+    <mesh name="hull_502" file="low_tort/hull_502.stl" />
+    <mesh name="hull_503" file="low_tort/hull_503.stl" />
+    <mesh name="hull_504" file="low_tort/hull_504.stl" />
+    <mesh name="hull_505" file="low_tort/hull_505.stl" />
+    <mesh name="hull_506" file="low_tort/hull_506.stl" />
+    <mesh name="hull_507" file="low_tort/hull_507.stl" />
+    <mesh name="hull_508" file="low_tort/hull_508.stl" />
+    <mesh name="hull_509" file="low_tort/hull_509.stl" />
+    <mesh name="hull_510" file="low_tort/hull_510.stl" />
+    <mesh name="hull_511" file="low_tort/hull_511.stl" />
+    <mesh name="hull_512" file="low_tort/hull_512.stl" />
+    <mesh name="hull_513" file="low_tort/hull_513.stl" />
+    <mesh name="hull_514" file="low_tort/hull_514.stl" />
+    <mesh name="hull_515" file="low_tort/hull_515.stl" />
+    <mesh name="hull_516" file="low_tort/hull_516.stl" />
+    <mesh name="hull_517" file="low_tort/hull_517.stl" />
+    <mesh name="hull_518" file="low_tort/hull_518.stl" />
+    <mesh name="hull_519" file="low_tort/hull_519.stl" />
+    <mesh name="hull_520" file="low_tort/hull_520.stl" />
+    <mesh name="hull_521" file="low_tort/hull_521.stl" />
+    <mesh name="hull_522" file="low_tort/hull_522.stl" />
+    <mesh name="hull_523" file="low_tort/hull_523.stl" />
+    <mesh name="hull_524" file="low_tort/hull_524.stl" />
+    <mesh name="hull_525" file="low_tort/hull_525.stl" />
+    <mesh name="hull_526" file="low_tort/hull_526.stl" />
+    <mesh name="hull_527" file="low_tort/hull_527.stl" />
+    <mesh name="hull_528" file="low_tort/hull_528.stl" />
+    <mesh name="hull_529" file="low_tort/hull_529.stl" />
+    <mesh name="hull_530" file="low_tort/hull_530.stl" />
+    <mesh name="hull_531" file="low_tort/hull_531.stl" />
+    <mesh name="hull_532" file="low_tort/hull_532.stl" />
+    <mesh name="hull_533" file="low_tort/hull_533.stl" />
+    <mesh name="hull_534" file="low_tort/hull_534.stl" />
+    <mesh name="hull_535" file="low_tort/hull_535.stl" />
+    <mesh name="hull_536" file="low_tort/hull_536.stl" />
+    <mesh name="hull_537" file="low_tort/hull_537.stl" />
+    <mesh name="hull_538" file="low_tort/hull_538.stl" />
+    <mesh name="hull_539" file="low_tort/hull_539.stl" />
+    <mesh name="hull_540" file="low_tort/hull_540.stl" />
+    <mesh name="hull_541" file="low_tort/hull_541.stl" />
+    <mesh name="hull_542" file="low_tort/hull_542.stl" />
+    <mesh name="hull_543" file="low_tort/hull_543.stl" />
+    <mesh name="hull_544" file="low_tort/hull_544.stl" />
+    <mesh name="hull_545" file="low_tort/hull_545.stl" />
+    <mesh name="hull_546" file="low_tort/hull_546.stl" />
+    <mesh name="hull_547" file="low_tort/hull_547.stl" />
+    <mesh name="hull_548" file="low_tort/hull_548.stl" />
+    <mesh name="hull_549" file="low_tort/hull_549.stl" />
+    <mesh name="hull_550" file="low_tort/hull_550.stl" />
+    <mesh name="hull_551" file="low_tort/hull_551.stl" />
+    <mesh name="hull_552" file="low_tort/hull_552.stl" />
+    <mesh name="hull_553" file="low_tort/hull_553.stl" />
+    <mesh name="hull_554" file="low_tort/hull_554.stl" />
+    <mesh name="hull_555" file="low_tort/hull_555.stl" />
+  </asset>
+  <worldbody>
+    <site name="bca" pos="-0.03759552910923958 0.1243072971701622 0.040043532848358154" />
+    <site name="lcca" pos="-0.02372954785823822 0.12248539179563522 0.027018999680876732" />
+    <body name="phantom">
+      <geom name="visual" mesh="visual" contype="0" conaffinity="0" />
+      <geom mesh="hull_0" />
+      <geom mesh="hull_1" />
+      <geom mesh="hull_2" />
+      <geom mesh="hull_3" />
+      <geom mesh="hull_4" />
+      <geom mesh="hull_5" />
+      <geom mesh="hull_6" />
+      <geom mesh="hull_7" />
+      <geom mesh="hull_8" />
+      <geom mesh="hull_9" />
+      <geom mesh="hull_10" />
+      <geom mesh="hull_11" />
+      <geom mesh="hull_12" />
+      <geom mesh="hull_13" />
+      <geom mesh="hull_14" />
+      <geom mesh="hull_15" />
+      <geom mesh="hull_16" />
+      <geom mesh="hull_17" />
+      <geom mesh="hull_18" />
+      <geom mesh="hull_19" />
+      <geom mesh="hull_20" />
+      <geom mesh="hull_21" />
+      <geom mesh="hull_22" />
+      <geom mesh="hull_23" />
+      <geom mesh="hull_24" />
+      <geom mesh="hull_25" />
+      <geom mesh="hull_26" />
+      <geom mesh="hull_27" />
+      <geom mesh="hull_28" />
+      <geom mesh="hull_29" />
+      <geom mesh="hull_30" />
+      <geom mesh="hull_31" />
+      <geom mesh="hull_32" />
+      <geom mesh="hull_33" />
+      <geom mesh="hull_34" />
+      <geom mesh="hull_35" />
+      <geom mesh="hull_36" />
+      <geom mesh="hull_37" />
+      <geom mesh="hull_38" />
+      <geom mesh="hull_39" />
+      <geom mesh="hull_40" />
+      <geom mesh="hull_41" />
+      <geom mesh="hull_42" />
+      <geom mesh="hull_43" />
+      <geom mesh="hull_44" />
+      <geom mesh="hull_45" />
+      <geom mesh="hull_46" />
+      <geom mesh="hull_47" />
+      <geom mesh="hull_48" />
+      <geom mesh="hull_49" />
+      <geom mesh="hull_50" />
+      <geom mesh="hull_51" />
+      <geom mesh="hull_52" />
+      <geom mesh="hull_53" />
+      <geom mesh="hull_54" />
+      <geom mesh="hull_55" />
+      <geom mesh="hull_56" />
+      <geom mesh="hull_57" />
+      <geom mesh="hull_58" />
+      <geom mesh="hull_59" />
+      <geom mesh="hull_60" />
+      <geom mesh="hull_61" />
+      <geom mesh="hull_62" />
+      <geom mesh="hull_63" />
+      <geom mesh="hull_64" />
+      <geom mesh="hull_65" />
+      <geom mesh="hull_66" />
+      <geom mesh="hull_67" />
+      <geom mesh="hull_68" />
+      <geom mesh="hull_69" />
+      <geom mesh="hull_70" />
+      <geom mesh="hull_71" />
+      <geom mesh="hull_72" />
+      <geom mesh="hull_73" />
+      <geom mesh="hull_74" />
+      <geom mesh="hull_75" />
+      <geom mesh="hull_76" />
+      <geom mesh="hull_77" />
+      <geom mesh="hull_78" />
+      <geom mesh="hull_79" />
+      <geom mesh="hull_80" />
+      <geom mesh="hull_81" />
+      <geom mesh="hull_82" />
+      <geom mesh="hull_83" />
+      <geom mesh="hull_84" />
+      <geom mesh="hull_85" />
+      <geom mesh="hull_86" />
+      <geom mesh="hull_87" />
+      <geom mesh="hull_88" />
+      <geom mesh="hull_89" />
+      <geom mesh="hull_90" />
+      <geom mesh="hull_91" />
+      <geom mesh="hull_92" />
+      <geom mesh="hull_93" />
+      <geom mesh="hull_94" />
+      <geom mesh="hull_95" />
+      <geom mesh="hull_96" />
+      <geom mesh="hull_97" />
+      <geom mesh="hull_98" />
+      <geom mesh="hull_99" />
+      <geom mesh="hull_100" />
+      <geom mesh="hull_101" />
+      <geom mesh="hull_102" />
+      <geom mesh="hull_103" />
+      <geom mesh="hull_104" />
+      <geom mesh="hull_105" />
+      <geom mesh="hull_106" />
+      <geom mesh="hull_107" />
+      <geom mesh="hull_108" />
+      <geom mesh="hull_109" />
+      <geom mesh="hull_110" />
+      <geom mesh="hull_111" />
+      <geom mesh="hull_112" />
+      <geom mesh="hull_113" />
+      <geom mesh="hull_114" />
+      <geom mesh="hull_115" />
+      <geom mesh="hull_116" />
+      <geom mesh="hull_117" />
+      <geom mesh="hull_118" />
+      <geom mesh="hull_119" />
+      <geom mesh="hull_120" />
+      <geom mesh="hull_121" />
+      <geom mesh="hull_122" />
+      <geom mesh="hull_123" />
+      <geom mesh="hull_124" />
+      <geom mesh="hull_125" />
+      <geom mesh="hull_126" />
+      <geom mesh="hull_127" />
+      <geom mesh="hull_128" />
+      <geom mesh="hull_129" />
+      <geom mesh="hull_130" />
+      <geom mesh="hull_131" />
+      <geom mesh="hull_132" />
+      <geom mesh="hull_133" />
+      <geom mesh="hull_134" />
+      <geom mesh="hull_135" />
+      <geom mesh="hull_136" />
+      <geom mesh="hull_137" />
+      <geom mesh="hull_138" />
+      <geom mesh="hull_139" />
+      <geom mesh="hull_140" />
+      <geom mesh="hull_141" />
+      <geom mesh="hull_142" />
+      <geom mesh="hull_143" />
+      <geom mesh="hull_144" />
+      <geom mesh="hull_145" />
+      <geom mesh="hull_146" />
+      <geom mesh="hull_147" />
+      <geom mesh="hull_148" />
+      <geom mesh="hull_149" />
+      <geom mesh="hull_150" />
+      <geom mesh="hull_151" />
+      <geom mesh="hull_152" />
+      <geom mesh="hull_153" />
+      <geom mesh="hull_154" />
+      <geom mesh="hull_155" />
+      <geom mesh="hull_156" />
+      <geom mesh="hull_157" />
+      <geom mesh="hull_158" />
+      <geom mesh="hull_159" />
+      <geom mesh="hull_160" />
+      <geom mesh="hull_161" />
+      <geom mesh="hull_162" />
+      <geom mesh="hull_163" />
+      <geom mesh="hull_164" />
+      <geom mesh="hull_165" />
+      <geom mesh="hull_166" />
+      <geom mesh="hull_167" />
+      <geom mesh="hull_168" />
+      <geom mesh="hull_169" />
+      <geom mesh="hull_170" />
+      <geom mesh="hull_171" />
+      <geom mesh="hull_172" />
+      <geom mesh="hull_173" />
+      <geom mesh="hull_174" />
+      <geom mesh="hull_175" />
+      <geom mesh="hull_176" />
+      <geom mesh="hull_177" />
+      <geom mesh="hull_178" />
+      <geom mesh="hull_179" />
+      <geom mesh="hull_180" />
+      <geom mesh="hull_181" />
+      <geom mesh="hull_182" />
+      <geom mesh="hull_183" />
+      <geom mesh="hull_184" />
+      <geom mesh="hull_185" />
+      <geom mesh="hull_186" />
+      <geom mesh="hull_187" />
+      <geom mesh="hull_188" />
+      <geom mesh="hull_189" />
+      <geom mesh="hull_190" />
+      <geom mesh="hull_191" />
+      <geom mesh="hull_192" />
+      <geom mesh="hull_193" />
+      <geom mesh="hull_194" />
+      <geom mesh="hull_195" />
+      <geom mesh="hull_196" />
+      <geom mesh="hull_197" />
+      <geom mesh="hull_198" />
+      <geom mesh="hull_199" />
+      <geom mesh="hull_200" />
+      <geom mesh="hull_201" />
+      <geom mesh="hull_202" />
+      <geom mesh="hull_203" />
+      <geom mesh="hull_204" />
+      <geom mesh="hull_205" />
+      <geom mesh="hull_206" />
+      <geom mesh="hull_207" />
+      <geom mesh="hull_208" />
+      <geom mesh="hull_209" />
+      <geom mesh="hull_210" />
+      <geom mesh="hull_211" />
+      <geom mesh="hull_212" />
+      <geom mesh="hull_213" />
+      <geom mesh="hull_214" />
+      <geom mesh="hull_215" />
+      <geom mesh="hull_216" />
+      <geom mesh="hull_217" />
+      <geom mesh="hull_218" />
+      <geom mesh="hull_219" />
+      <geom mesh="hull_220" />
+      <geom mesh="hull_221" />
+      <geom mesh="hull_222" />
+      <geom mesh="hull_223" />
+      <geom mesh="hull_224" />
+      <geom mesh="hull_225" />
+      <geom mesh="hull_226" />
+      <geom mesh="hull_227" />
+      <geom mesh="hull_228" />
+      <geom mesh="hull_229" />
+      <geom mesh="hull_230" />
+      <geom mesh="hull_231" />
+      <geom mesh="hull_232" />
+      <geom mesh="hull_233" />
+      <geom mesh="hull_234" />
+      <geom mesh="hull_235" />
+      <geom mesh="hull_236" />
+      <geom mesh="hull_237" />
+      <geom mesh="hull_238" />
+      <geom mesh="hull_239" />
+      <geom mesh="hull_240" />
+      <geom mesh="hull_241" />
+      <geom mesh="hull_242" />
+      <geom mesh="hull_243" />
+      <geom mesh="hull_244" />
+      <geom mesh="hull_245" />
+      <geom mesh="hull_246" />
+      <geom mesh="hull_247" />
+      <geom mesh="hull_248" />
+      <geom mesh="hull_249" />
+      <geom mesh="hull_250" />
+      <geom mesh="hull_251" />
+      <geom mesh="hull_252" />
+      <geom mesh="hull_253" />
+      <geom mesh="hull_254" />
+      <geom mesh="hull_255" />
+      <geom mesh="hull_256" />
+      <geom mesh="hull_257" />
+      <geom mesh="hull_258" />
+      <geom mesh="hull_259" />
+      <geom mesh="hull_260" />
+      <geom mesh="hull_261" />
+      <geom mesh="hull_262" />
+      <geom mesh="hull_263" />
+      <geom mesh="hull_264" />
+      <geom mesh="hull_265" />
+      <geom mesh="hull_266" />
+      <geom mesh="hull_267" />
+      <geom mesh="hull_268" />
+      <geom mesh="hull_269" />
+      <geom mesh="hull_270" />
+      <geom mesh="hull_271" />
+      <geom mesh="hull_272" />
+      <geom mesh="hull_273" />
+      <geom mesh="hull_274" />
+      <geom mesh="hull_275" />
+      <geom mesh="hull_276" />
+      <geom mesh="hull_277" />
+      <geom mesh="hull_278" />
+      <geom mesh="hull_279" />
+      <geom mesh="hull_280" />
+      <geom mesh="hull_281" />
+      <geom mesh="hull_282" />
+      <geom mesh="hull_283" />
+      <geom mesh="hull_284" />
+      <geom mesh="hull_285" />
+      <geom mesh="hull_286" />
+      <geom mesh="hull_287" />
+      <geom mesh="hull_288" />
+      <geom mesh="hull_289" />
+      <geom mesh="hull_290" />
+      <geom mesh="hull_291" />
+      <geom mesh="hull_292" />
+      <geom mesh="hull_293" />
+      <geom mesh="hull_294" />
+      <geom mesh="hull_295" />
+      <geom mesh="hull_296" />
+      <geom mesh="hull_297" />
+      <geom mesh="hull_298" />
+      <geom mesh="hull_299" />
+      <geom mesh="hull_300" />
+      <geom mesh="hull_301" />
+      <geom mesh="hull_302" />
+      <geom mesh="hull_303" />
+      <geom mesh="hull_304" />
+      <geom mesh="hull_305" />
+      <geom mesh="hull_306" />
+      <geom mesh="hull_307" />
+      <geom mesh="hull_308" />
+      <geom mesh="hull_309" />
+      <geom mesh="hull_310" />
+      <geom mesh="hull_311" />
+      <geom mesh="hull_312" />
+      <geom mesh="hull_313" />
+      <geom mesh="hull_314" />
+      <geom mesh="hull_315" />
+      <geom mesh="hull_316" />
+      <geom mesh="hull_317" />
+      <geom mesh="hull_318" />
+      <geom mesh="hull_319" />
+      <geom mesh="hull_320" />
+      <geom mesh="hull_321" />
+      <geom mesh="hull_322" />
+      <geom mesh="hull_323" />
+      <geom mesh="hull_324" />
+      <geom mesh="hull_325" />
+      <geom mesh="hull_326" />
+      <geom mesh="hull_327" />
+      <geom mesh="hull_328" />
+      <geom mesh="hull_329" />
+      <geom mesh="hull_330" />
+      <geom mesh="hull_331" />
+      <geom mesh="hull_332" />
+      <geom mesh="hull_333" />
+      <geom mesh="hull_334" />
+      <geom mesh="hull_335" />
+      <geom mesh="hull_336" />
+      <geom mesh="hull_337" />
+      <geom mesh="hull_338" />
+      <geom mesh="hull_339" />
+      <geom mesh="hull_340" />
+      <geom mesh="hull_341" />
+      <geom mesh="hull_342" />
+      <geom mesh="hull_343" />
+      <geom mesh="hull_344" />
+      <geom mesh="hull_345" />
+      <geom mesh="hull_346" />
+      <geom mesh="hull_347" />
+      <geom mesh="hull_348" />
+      <geom mesh="hull_349" />
+      <geom mesh="hull_350" />
+      <geom mesh="hull_351" />
+      <geom mesh="hull_352" />
+      <geom mesh="hull_353" />
+      <geom mesh="hull_354" />
+      <geom mesh="hull_355" />
+      <geom mesh="hull_356" />
+      <geom mesh="hull_357" />
+      <geom mesh="hull_358" />
+      <geom mesh="hull_359" />
+      <geom mesh="hull_360" />
+      <geom mesh="hull_361" />
+      <geom mesh="hull_362" />
+      <geom mesh="hull_363" />
+      <geom mesh="hull_364" />
+      <geom mesh="hull_365" />
+      <geom mesh="hull_366" />
+      <geom mesh="hull_367" />
+      <geom mesh="hull_368" />
+      <geom mesh="hull_369" />
+      <geom mesh="hull_370" />
+      <geom mesh="hull_371" />
+      <geom mesh="hull_372" />
+      <geom mesh="hull_373" />
+      <geom mesh="hull_374" />
+      <geom mesh="hull_375" />
+      <geom mesh="hull_376" />
+      <geom mesh="hull_377" />
+      <geom mesh="hull_378" />
+      <geom mesh="hull_379" />
+      <geom mesh="hull_380" />
+      <geom mesh="hull_381" />
+      <geom mesh="hull_382" />
+      <geom mesh="hull_383" />
+      <geom mesh="hull_384" />
+      <geom mesh="hull_385" />
+      <geom mesh="hull_386" />
+      <geom mesh="hull_387" />
+      <geom mesh="hull_388" />
+      <geom mesh="hull_389" />
+      <geom mesh="hull_390" />
+      <geom mesh="hull_391" />
+      <geom mesh="hull_392" />
+      <geom mesh="hull_393" />
+      <geom mesh="hull_394" />
+      <geom mesh="hull_395" />
+      <geom mesh="hull_396" />
+      <geom mesh="hull_397" />
+      <geom mesh="hull_398" />
+      <geom mesh="hull_399" />
+      <geom mesh="hull_400" />
+      <geom mesh="hull_401" />
+      <geom mesh="hull_402" />
+      <geom mesh="hull_403" />
+      <geom mesh="hull_404" />
+      <geom mesh="hull_405" />
+      <geom mesh="hull_406" />
+      <geom mesh="hull_407" />
+      <geom mesh="hull_408" />
+      <geom mesh="hull_409" />
+      <geom mesh="hull_410" />
+      <geom mesh="hull_411" />
+      <geom mesh="hull_412" />
+      <geom mesh="hull_413" />
+      <geom mesh="hull_414" />
+      <geom mesh="hull_415" />
+      <geom mesh="hull_416" />
+      <geom mesh="hull_417" />
+      <geom mesh="hull_418" />
+      <geom mesh="hull_419" />
+      <geom mesh="hull_420" />
+      <geom mesh="hull_421" />
+      <geom mesh="hull_422" />
+      <geom mesh="hull_423" />
+      <geom mesh="hull_424" />
+      <geom mesh="hull_425" />
+      <geom mesh="hull_426" />
+      <geom mesh="hull_427" />
+      <geom mesh="hull_428" />
+      <geom mesh="hull_429" />
+      <geom mesh="hull_430" />
+      <geom mesh="hull_431" />
+      <geom mesh="hull_432" />
+      <geom mesh="hull_433" />
+      <geom mesh="hull_434" />
+      <geom mesh="hull_435" />
+      <geom mesh="hull_436" />
+      <geom mesh="hull_437" />
+      <geom mesh="hull_438" />
+      <geom mesh="hull_439" />
+      <geom mesh="hull_440" />
+      <geom mesh="hull_441" />
+      <geom mesh="hull_442" />
+      <geom mesh="hull_443" />
+      <geom mesh="hull_444" />
+      <geom mesh="hull_445" />
+      <geom mesh="hull_446" />
+      <geom mesh="hull_447" />
+      <geom mesh="hull_448" />
+      <geom mesh="hull_449" />
+      <geom mesh="hull_450" />
+      <geom mesh="hull_451" />
+      <geom mesh="hull_452" />
+      <geom mesh="hull_453" />
+      <geom mesh="hull_454" />
+      <geom mesh="hull_455" />
+      <geom mesh="hull_456" />
+      <geom mesh="hull_457" />
+      <geom mesh="hull_458" />
+      <geom mesh="hull_459" />
+      <geom mesh="hull_460" />
+      <geom mesh="hull_461" />
+      <geom mesh="hull_462" />
+      <geom mesh="hull_463" />
+      <geom mesh="hull_464" />
+      <geom mesh="hull_465" />
+      <geom mesh="hull_466" />
+      <geom mesh="hull_467" />
+      <geom mesh="hull_468" />
+      <geom mesh="hull_469" />
+      <geom mesh="hull_470" />
+      <geom mesh="hull_471" />
+      <geom mesh="hull_472" />
+      <geom mesh="hull_473" />
+      <geom mesh="hull_474" />
+      <geom mesh="hull_475" />
+      <geom mesh="hull_476" />
+      <geom mesh="hull_477" />
+      <geom mesh="hull_478" />
+      <geom mesh="hull_479" />
+      <geom mesh="hull_480" />
+      <geom mesh="hull_481" />
+      <geom mesh="hull_482" />
+      <geom mesh="hull_483" />
+      <geom mesh="hull_484" />
+      <geom mesh="hull_485" />
+      <geom mesh="hull_486" />
+      <geom mesh="hull_487" />
+      <geom mesh="hull_488" />
+      <geom mesh="hull_489" />
+      <geom mesh="hull_490" />
+      <geom mesh="hull_491" />
+      <geom mesh="hull_492" />
+      <geom mesh="hull_493" />
+      <geom mesh="hull_494" />
+      <geom mesh="hull_495" />
+      <geom mesh="hull_496" />
+      <geom mesh="hull_497" />
+      <geom mesh="hull_498" />
+      <geom mesh="hull_499" />
+      <geom mesh="hull_500" />
+      <geom mesh="hull_501" />
+      <geom mesh="hull_502" />
+      <geom mesh="hull_503" />
+      <geom mesh="hull_504" />
+      <geom mesh="hull_505" />
+      <geom mesh="hull_506" />
+      <geom mesh="hull_507" />
+      <geom mesh="hull_508" />
+      <geom mesh="hull_509" />
+      <geom mesh="hull_510" />
+      <geom mesh="hull_511" />
+      <geom mesh="hull_512" />
+      <geom mesh="hull_513" />
+      <geom mesh="hull_514" />
+      <geom mesh="hull_515" />
+      <geom mesh="hull_516" />
+      <geom mesh="hull_517" />
+      <geom mesh="hull_518" />
+      <geom mesh="hull_519" />
+      <geom mesh="hull_520" />
+      <geom mesh="hull_521" />
+      <geom mesh="hull_522" />
+      <geom mesh="hull_523" />
+      <geom mesh="hull_524" />
+      <geom mesh="hull_525" />
+      <geom mesh="hull_526" />
+      <geom mesh="hull_527" />
+      <geom mesh="hull_528" />
+      <geom mesh="hull_529" />
+      <geom mesh="hull_530" />
+      <geom mesh="hull_531" />
+      <geom mesh="hull_532" />
+      <geom mesh="hull_533" />
+      <geom mesh="hull_534" />
+      <geom mesh="hull_535" />
+      <geom mesh="hull_536" />
+      <geom mesh="hull_537" />
+      <geom mesh="hull_538" />
+      <geom mesh="hull_539" />
+      <geom mesh="hull_540" />
+      <geom mesh="hull_541" />
+      <geom mesh="hull_542" />
+      <geom mesh="hull_543" />
+      <geom mesh="hull_544" />
+      <geom mesh="hull_545" />
+      <geom mesh="hull_546" />
+      <geom mesh="hull_547" />
+      <geom mesh="hull_548" />
+      <geom mesh="hull_549" />
+      <geom mesh="hull_550" />
+      <geom mesh="hull_551" />
+      <geom mesh="hull_552" />
+      <geom mesh="hull_553" />
+      <geom mesh="hull_554" />
+      <geom mesh="hull_555" />
+    </body>
+  </worldbody>
+</mujoco>

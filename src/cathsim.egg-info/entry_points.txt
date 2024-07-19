@@ -1,0 +1,4 @@
+[console_scripts]
+run_env = cathsim.console:cmd_run_env
+train = cathsim.console:cmd_train
+visualize_agent = cathsim.console:cmd_visualize_agent
