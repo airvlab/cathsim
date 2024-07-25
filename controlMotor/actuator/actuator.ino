@@ -16,7 +16,7 @@ AccelStepper stepper4(AccelStepper::FULL2WIRE, 12, 13); // A Slow, bottom right
 int incomingByte = 0; // for incoming serial data
 
 volatile bool data_ready = false;
-volatile bool shouldMoveTo = false;
+volatile bool relative = true;
 volatile long steps[4];
 volatile bool set_enable = false;
 
@@ -48,15 +48,15 @@ void loop()
   if (data_ready) // If you use serial communication
   {
     data_ready = false;
-    if (shouldMoveTo)
-    {
-      stepper3.moveTo(steps[2]); // linear
-      stepper4.moveTo(steps[3]); // rotation
-    }
-    else
+    if (relative)
     {
       stepper3.move(steps[2]); // linear
       stepper4.move(steps[3]); // rotation
+    }
+    else
+    {
+      stepper3.moveTo(steps[2]); // linear
+      stepper4.moveTo(steps[3]); // rotation
     }
     // stepper3.moveTo(3000);  // linear // each rotation is 8mm, and one rotation is 800 steps
     // stepper4.moveTo(400);  // rotation, each 360rotation is 800 steps
@@ -93,6 +93,6 @@ void serialEvent()
       if (data[1] == 0x88)
         data_ready = true;
     if (data[18] == 0x81)
-      shouldMoveTo = true;
+      relative = false;
   }
 }
