@@ -33,11 +33,11 @@ void setup()
   stepper2.setMaxSpeed(10000.0);
   stepper2.setAcceleration(5000.0);
 
-  stepper3.setMaxSpeed(10000.0);
-  stepper3.setAcceleration(5000.0);
+  stepper3.setMaxSpeed(1000.0);
+  stepper3.setAcceleration(500.0);
 
-  stepper4.setMaxSpeed(10000.0);
-  stepper4.setAcceleration(5000.0);
+  stepper4.setMaxSpeed(1000.0);
+  stepper4.setAcceleration(500.0);
 
   Serial.begin(115200);          // for serial input
   digitalWrite(enable_pin, LOW); // Low equals motor enabled
