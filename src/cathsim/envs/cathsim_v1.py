@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Dict, Optional, Tuple
 
 import gymnasium as gym
@@ -14,7 +15,7 @@ def transform_inage(image):
     return image
 
 
-class Cathsim(gym.Env):
+class CathSim(gym.Env):
     metadata = {
         "render_modes": [
             "human",
@@ -24,13 +25,13 @@ class Cathsim(gym.Env):
 
     def __init__(
         self,
-        model_path: str,
         frame_skip: int = 5,
         render_mode: Optional[str] = None,
         width: int = DEFAULT_SIZE,
         height: int = DEFAULT_SIZE,
     ):
-        self.xml_path = model_path
+        model_path = Path(__file__).parent.parent / "components/scene.xml"
+        self.xml_path = model_path.resolve().as_posix()
 
         self.width = width
         self.height = height
@@ -274,9 +275,7 @@ if __name__ == "__main__":
 
     import cv2
 
-    xml_path = Path.cwd() / "src/cathsim/components/scene.xml"
-    cathsim = Cathsim(
-        model_path=xml_path.resolve().as_posix(),
+    cathsim = CathSim(
         render_mode="rgb_array",
         width=DEFAULT_SIZE,
         height=DEFAULT_SIZE,
