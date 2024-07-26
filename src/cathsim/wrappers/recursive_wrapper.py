@@ -1,7 +1,8 @@
 from typing import Any, Callable, Dict
+
+import cv2
 import gymnasium as gym
 import numpy as np
-import cv2
 
 
 class TransformObservationForKey(

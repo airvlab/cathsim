@@ -1,4 +1,5 @@
 from typing import Any, Callable, Union
+
 import gymnasium as gym
 
 
@@ -46,6 +47,7 @@ class TransformDictObservation(gym.ObservationWrapper):
 
 if __name__ == "__main__":
     import cv2
+
     from cathsim.gym.envs import CathSim
 
     def transform_image(observation):

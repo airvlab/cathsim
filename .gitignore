@@ -2,6 +2,7 @@
 logs/
 scratch/
 data/
+dm/
 .sync*
 
 

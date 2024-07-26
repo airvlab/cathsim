@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Dict, Optional, Tuple
 
+import cv2
 import gymnasium as gym
 import mujoco
 import numpy as np

@@ -3,9 +3,10 @@
 import gymnasium as gym
 import gymnasium.spaces as spaces
 import numpy as np
-from cathsim.dm import make_dm_env
 from dm_env import specs
 from gymnasium.envs.registration import EnvSpec
+
+from cathsim.dm import make_dm_env
 
 
 def convert_spec_to_gym_space(dm_control_space: specs) -> gym.spaces:
