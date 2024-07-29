@@ -196,7 +196,6 @@ class CathSim(gym.Env):
         if self._use_relative_position:
             action = self._current_control + action
             action = np.clip(action, self.bounds[:, 0], self.bounds[:, 1])
-            print("Internal action: ", action)
         self.do_simulation(action, self.frame_skip)
         obs = self._get_obs()
 
