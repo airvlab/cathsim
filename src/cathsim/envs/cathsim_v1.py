@@ -28,14 +28,14 @@ class CathSim(gym.Env):
         self,
         frame_skip: int = 5,
         render_mode: Optional[str] = None,
-        width: int = DEFAULT_SIZE,
-        height: int = DEFAULT_SIZE,
+        image_size: int = DEFAULT_SIZE,
+        image_fn: callable = transform_inage,
     ):
         model_path = Path(__file__).parent.parent / "components/scene.xml"
         self.xml_path = model_path.resolve().as_posix()
 
-        self.width = width
-        self.height = height
+        self.width, self.height = image_size, image_size
+        self.image_fn = image_fn
 
         self._delta: float = 0.004
         self._success_reward: float = 10.0
@@ -227,7 +227,6 @@ class CathSim(gym.Env):
         return -distance
 
     def compute_terminated(self, achieved_goal, desired_goal, info):
-        # TODO: replace the hardcoded value
         distance = np.linalg.norm(achieved_goal - desired_goal)
         return distance < self._delta
 
@@ -246,7 +245,8 @@ class CathSim(gym.Env):
 
     def _get_obs(self):
         top_img = self.mujoco_renderer.render("rgb_array", camera_name="top")
-        top_img = transform_inage(top_img)
+        if self.image_fn:
+            top_img = self.image_fn(top_img)
         return {"pixels": top_img}
 
     def _get_info(self):
