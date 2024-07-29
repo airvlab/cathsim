@@ -1,0 +1,806 @@
+<mujoco model="guidewire">
+  <compiler angle="radian" />
+
+  <visual>
+    <global elevation="-30" />
+  </visual>
+
+  <default>
+    <default class="guidewire">
+      <geom condim="1" rgba="0.8 0.2 0.1 1" />
+    </default>
+    <default class="tips">
+      <geom condim="1" rgba="0.8 0.2 0.1 1" />
+    </default>
+  </default>
+
+  <extension>
+    <plugin plugin="mujoco.pid">
+      <instance name="slider-pid">
+        <config key="kp" value="0.1"></config>
+        <config key="ki" value="0.1"></config>
+        <config key="kd" value="0.1"></config>
+        <config key="imax" value="0.001"></config>
+        <config key="slewmax" value="0.2"></config>
+      </instance>
+      <instance name="rotator-pid">
+        <config key="kp" value="1"></config>
+        <config key="ki" value="1"></config>
+        <config key="kd" value="0.1"></config>
+        <config key="imax" value="1"></config>
+        <config key="slewmax" value="2"></config>
+      </instance>
+    </plugin>
+    <plugin plugin="mujoco.elasticity.cable">
+      <instance name="compositeguidewire">
+        <config key="bend" value="1e9"></config>
+        <config key="flat" value="true"></config>
+        <config key="vmax" value="0.0004"></config>
+      </instance>
+      <instance name="compositetip">
+        <config key="bend" value="5e7"></config>
+        <config key="vmax" value="0.0004"></config>
+      </instance>
+    </plugin>
+  </extension>
+
+  <custom>
+    <text name="composite_guidewire" data="rope_guidewire" />
+    <text name="composite_tip" data="rope_tip" />
+  </custom>
+
+  <worldbody>
+    <frame>
+      <body name="guidewire" childclass="guidewire" pos="0 -0.25 0.002" quat="0.707107 0 0 0.707107">
+        <joint name="slider" pos="0 0 0" axis="1 0 0" type="slide" limited="true" range="-0.1 0.1"
+          damping="0.2" />
+        <joint name="rotator" pos="0 0 0" axis="1 0 0" limited="false" range="100 100" damping="0.2" />
+        <body name="guidewireB_first">
+          <geom name="guidewireG0" size="0.000445 0.00431034" pos="0.00431034 0 0"
+            quat="0.707107 0 -0.707107 0" type="capsule" condim="3" rgba="0 0 1 1" />
+          <site name="guidewireS_first" pos="0 0 0" group="3" />
+          <plugin instance="compositeguidewire" />
+          <body name="guidewireB_1" pos="0.00862069 0 0">
+            <joint name="guidewireJ_1" pos="0 0 0" type="ball" group="3" actuatorfrclimited="false"
+              damping="0.001" />
+            <geom name="guidewireG1" size="0.000445 0.00431034" pos="0.00431034 0 0"
+              quat="0.707107 0 -0.707107 0" type="capsule" condim="3" rgba="0 0 1 1" />
+            <plugin instance="compositeguidewire" />
+            <body name="guidewireB_2" pos="0.00862069 0 0">
+              <joint name="guidewireJ_2" pos="0 0 0" type="ball" group="3"
+                actuatorfrclimited="false" damping="0.001" />
+              <geom name="guidewireG2" size="0.000445 0.00431035" pos="0.00431035 0 0"
+                quat="0.707107 0 -0.707107 0" type="capsule" condim="3" rgba="0 0 1 1" />
+              <plugin instance="compositeguidewire" />
+              <body name="guidewireB_3" pos="0.00862069 0 0">
+                <joint name="guidewireJ_3" pos="0 0 0" type="ball" group="3"
+                  actuatorfrclimited="false" damping="0.001" />
+                <geom name="guidewireG3" size="0.000445 0.00431034" pos="0.00431034 0 0"
+                  quat="0.707107 0 -0.707107 0" type="capsule" condim="3" rgba="0 0 1 1" />
+                <plugin instance="compositeguidewire" />
+                <body name="guidewireB_4" pos="0.00862069 0 0">
+                  <joint name="guidewireJ_4" pos="0 0 0" type="ball" group="3"
+                    actuatorfrclimited="false" damping="0.001" />
+                  <geom name="guidewireG4" size="0.000445 0.00431035" pos="0.00431035 0 0"
+                    quat="0.707107 0 -0.707107 0" type="capsule" condim="3" rgba="0 0 1 1" />
+                  <plugin instance="compositeguidewire" />
+                  <body name="guidewireB_5" pos="0.00862069 0 0">
+                    <joint name="guidewireJ_5" pos="0 0 0" type="ball" group="3"
+                      actuatorfrclimited="false" damping="0.001" />
+                    <geom name="guidewireG5" size="0.000445 0.00431035" pos="0.00431035 0 0"
+                      quat="0.707107 0 -0.707107 0" type="capsule" condim="3" rgba="0 0 1 1" />
+                    <plugin instance="compositeguidewire" />
+                    <body name="guidewireB_6" pos="0.00862069 0 0">
+                      <joint name="guidewireJ_6" pos="0 0 0" type="ball" group="3"
+                        actuatorfrclimited="false" damping="0.001" />
+                      <geom name="guidewireG6" size="0.000445 0.00431034" pos="0.00431034 0 0"
+                        quat="0.707107 0 -0.707107 0" type="capsule" condim="3" rgba="0 0 1 1" />
+                      <plugin instance="compositeguidewire" />
+                      <body name="guidewireB_7" pos="0.00862069 0 0">
+                        <joint name="guidewireJ_7" pos="0 0 0" type="ball" group="3"
+                          actuatorfrclimited="false" damping="0.001" />
+                        <geom name="guidewireG7" size="0.000445 0.00431035" pos="0.00431035 0 0"
+                          quat="0.707107 0 -0.707107 0" type="capsule" condim="3" rgba="0 0 1 1" />
+                        <plugin instance="compositeguidewire" />
+                        <body name="guidewireB_8" pos="0.00862069 0 0">
+                          <joint name="guidewireJ_8" pos="0 0 0" type="ball" group="3"
+                            actuatorfrclimited="false" damping="0.001" />
+                          <geom name="guidewireG8" size="0.000445 0.00431034" pos="0.00431034 0 0"
+                            quat="0.707107 0 -0.707107 0" type="capsule" condim="3" rgba="0 0 1 1" />
+                          <plugin instance="compositeguidewire" />
+                          <body name="guidewireB_9" pos="0.00862069 0 0">
+                            <joint name="guidewireJ_9" pos="0 0 0" type="ball" group="3"
+                              actuatorfrclimited="false" damping="0.001" />
+                            <geom name="guidewireG9" size="0.000445 0.00431035" pos="0.00431035 0 0"
+                              quat="0.707107 0 -0.707107 0" type="capsule" condim="3" rgba="0 0 1 1" />
+                            <plugin instance="compositeguidewire" />
+                            <body name="guidewireB_10" pos="0.00862069 0 0">
+                              <joint name="guidewireJ_10" pos="0 0 0" type="ball" group="3"
+                                actuatorfrclimited="false" damping="0.001" />
+                              <geom name="guidewireG10" size="0.000445 0.00431034"
+                                pos="0.00431034 0 0" quat="0.707107 0 -0.707107 0" type="capsule"
+                                condim="3" rgba="0 0 1 1" />
+                              <plugin instance="compositeguidewire" />
+                              <body name="guidewireB_11" pos="0.00862069 0 0">
+                                <joint name="guidewireJ_11" pos="0 0 0" type="ball" group="3"
+                                  actuatorfrclimited="false" damping="0.001" />
+                                <geom name="guidewireG11" size="0.000445 0.00431035"
+                                  pos="0.00431035 0 0" quat="0.707107 0 -0.707107 0" type="capsule"
+                                  condim="3" rgba="0 0 1 1" />
+                                <plugin instance="compositeguidewire" />
+                                <body name="guidewireB_12" pos="0.00862069 0 0">
+                                  <joint name="guidewireJ_12" pos="0 0 0" type="ball" group="3"
+                                    actuatorfrclimited="false" damping="0.001" />
+                                  <geom name="guidewireG12" size="0.000445 0.00431034"
+                                    pos="0.00431034 0 0" quat="0.707107 0 -0.707107 0"
+                                    type="capsule" condim="3" rgba="0 0 1 1" />
+                                  <plugin instance="compositeguidewire" />
+                                  <body name="guidewireB_13" pos="0.00862069 0 0">
+                                    <joint name="guidewireJ_13" pos="0 0 0" type="ball" group="3"
+                                      actuatorfrclimited="false" damping="0.001" />
+                                    <geom name="guidewireG13" size="0.000445 0.00431034"
+                                      pos="0.00431034 0 0" quat="0.707107 0 -0.707107 0"
+                                      type="capsule" condim="3" rgba="0 0 1 1" />
+                                    <plugin instance="compositeguidewire" />
+                                    <body name="guidewireB_14" pos="0.00862069 0 0">
+                                      <joint name="guidewireJ_14" pos="0 0 0" type="ball" group="3"
+                                        actuatorfrclimited="false" damping="0.001" />
+                                      <geom name="guidewireG14" size="0.000445 0.00431034"
+                                        pos="0.00431034 0 0" quat="0.707107 0 -0.707107 0"
+                                        type="capsule" condim="3" rgba="0 0 1 1" />
+                                      <plugin instance="compositeguidewire" />
+                                      <body name="guidewireB_15" pos="0.00862069 0 0">
+                                        <joint name="guidewireJ_15" pos="0 0 0" type="ball"
+                                          group="3" actuatorfrclimited="false" damping="0.001" />
+                                        <geom name="guidewireG15" size="0.000445 0.00431035"
+                                          pos="0.00431035 0 0" quat="0.707107 0 -0.707107 0"
+                                          type="capsule" condim="3" rgba="0 0 1 1" />
+                                        <plugin instance="compositeguidewire" />
+                                        <body name="guidewireB_16" pos="0.00862069 0 0">
+                                          <joint name="guidewireJ_16" pos="0 0 0" type="ball"
+                                            group="3" actuatorfrclimited="false" damping="0.001" />
+                                          <geom name="guidewireG16" size="0.000445 0.00431035"
+                                            pos="0.00431035 0 0" quat="0.707107 0 -0.707107 0"
+                                            type="capsule" condim="3" rgba="0 0 1 1" />
+                                          <plugin instance="compositeguidewire" />
+                                          <body name="guidewireB_17" pos="0.00862069 0 0">
+                                            <joint name="guidewireJ_17" pos="0 0 0" type="ball"
+                                              group="3" actuatorfrclimited="false" damping="0.001" />
+                                            <geom name="guidewireG17" size="0.000445 0.00431034"
+                                              pos="0.00431034 0 0" quat="0.707107 0 -0.707107 0"
+                                              type="capsule" condim="3" rgba="0 0 1 1" />
+                                            <plugin instance="compositeguidewire" />
+                                            <body name="guidewireB_18" pos="0.00862068 0 0">
+                                              <joint name="guidewireJ_18" pos="0 0 0" type="ball"
+                                                group="3" actuatorfrclimited="false" damping="0.001" />
+                                              <geom name="guidewireG18" size="0.000445 0.00431035"
+                                                pos="0.00431035 0 0" quat="0.707107 0 -0.707107 0"
+                                                type="capsule" condim="3" rgba="0 0 1 1" />
+                                              <plugin instance="compositeguidewire" />
+                                              <body name="guidewireB_19" pos="0.00862069 0 0">
+                                                <joint name="guidewireJ_19" pos="0 0 0" type="ball"
+                                                  group="3" actuatorfrclimited="false"
+                                                  damping="0.001" />
+                                                <geom name="guidewireG19" size="0.000445 0.00431035"
+                                                  pos="0.00431035 0 0" quat="0.707107 0 -0.707107 0"
+                                                  type="capsule" condim="3" rgba="0 0 1 1" />
+                                                <plugin instance="compositeguidewire" />
+                                                <body name="guidewireB_20" pos="0.00862069 0 0">
+                                                  <joint name="guidewireJ_20" pos="0 0 0"
+                                                    type="ball" group="3" actuatorfrclimited="false"
+                                                    damping="0.001" />
+                                                  <geom name="guidewireG20"
+                                                    size="0.000445 0.00431034" pos="0.00431034 0 0"
+                                                    quat="0.707107 0 -0.707107 0" type="capsule"
+                                                    condim="3" rgba="0 0 1 1" />
+                                                  <plugin instance="compositeguidewire" />
+                                                  <body name="guidewireB_21" pos="0.00862068 0 0">
+                                                    <joint name="guidewireJ_21" pos="0 0 0"
+                                                      type="ball" group="3"
+                                                      actuatorfrclimited="false" damping="0.001" />
+                                                    <geom name="guidewireG21"
+                                                      size="0.000445 0.00431035"
+                                                      pos="0.00431035 0 0"
+                                                      quat="0.707107 0 -0.707107 0" type="capsule"
+                                                      condim="3" rgba="0 0 1 1" />
+                                                    <plugin instance="compositeguidewire" />
+                                                    <body name="guidewireB_22" pos="0.00862069 0 0">
+                                                      <joint name="guidewireJ_22" pos="0 0 0"
+                                                        type="ball" group="3"
+                                                        actuatorfrclimited="false" damping="0.001" />
+                                                      <geom name="guidewireG22"
+                                                        size="0.000445 0.00431035"
+                                                        pos="0.00431035 0 0"
+                                                        quat="0.707107 0 -0.707107 0" type="capsule"
+                                                        condim="3" rgba="0 0 1 1" />
+                                                      <plugin instance="compositeguidewire" />
+                                                      <body name="guidewireB_23"
+                                                        pos="0.00862069 0 0">
+                                                        <joint name="guidewireJ_23" pos="0 0 0"
+                                                          type="ball" group="3"
+                                                          actuatorfrclimited="false" damping="0.001" />
+                                                        <geom name="guidewireG23"
+                                                          size="0.000445 0.00431035"
+                                                          pos="0.00431035 0 0"
+                                                          quat="0.707107 0 -0.707107 0"
+                                                          type="capsule" condim="3" rgba="0 0 1 1" />
+                                                        <plugin instance="compositeguidewire" />
+                                                        <body name="guidewireB_24"
+                                                          pos="0.00862069 0 0">
+                                                          <joint name="guidewireJ_24" pos="0 0 0"
+                                                            type="ball" group="3"
+                                                            actuatorfrclimited="false"
+                                                            damping="0.001" />
+                                                          <geom name="guidewireG24"
+                                                            size="0.000445 0.00431034"
+                                                            pos="0.00431034 0 0"
+                                                            quat="0.707107 0 -0.707107 0"
+                                                            type="capsule" condim="3" rgba="0 0 1 1" />
+                                                          <plugin instance="compositeguidewire" />
+                                                          <body name="guidewireB_25"
+                                                            pos="0.00862068 0 0">
+                                                            <joint name="guidewireJ_25" pos="0 0 0"
+                                                              type="ball" group="3"
+                                                              actuatorfrclimited="false"
+                                                              damping="0.001" />
+                                                            <geom name="guidewireG25"
+                                                              size="0.000445 0.00431035"
+                                                              pos="0.00431035 0 0"
+                                                              quat="0.707107 0 -0.707107 0"
+                                                              type="capsule" condim="3"
+                                                              rgba="0 0 1 1" />
+                                                            <plugin instance="compositeguidewire" />
+                                                            <body name="guidewireB_26"
+                                                              pos="0.00862069 0 0">
+                                                              <joint name="guidewireJ_26"
+                                                                pos="0 0 0" type="ball" group="3"
+                                                                actuatorfrclimited="false"
+                                                                damping="0.001" />
+                                                              <geom name="guidewireG26"
+                                                                size="0.000445 0.00431035"
+                                                                pos="0.00431035 0 0"
+                                                                quat="0.707107 0 -0.707107 0"
+                                                                type="capsule" condim="3"
+                                                                rgba="0 0 1 1" />
+                                                              <plugin instance="compositeguidewire" />
+                                                              <body name="guidewireB_27"
+                                                                pos="0.00862069 0 0">
+                                                                <joint name="guidewireJ_27"
+                                                                  pos="0 0 0" type="ball" group="3"
+                                                                  actuatorfrclimited="false"
+                                                                  damping="0.001" />
+                                                                <geom name="guidewireG27"
+                                                                  size="0.000445 0.00431034"
+                                                                  pos="0.00431034 0 0"
+                                                                  quat="0.707107 0 -0.707107 0"
+                                                                  type="capsule" condim="3"
+                                                                  rgba="0 0 1 1" />
+                                                                <plugin
+                                                                  instance="compositeguidewire" />
+                                                                <body name="guidewireB_last"
+                                                                  pos="0.00862068 0 0">
+                                                                  <joint name="guidewireJ_last"
+                                                                    pos="0 0 0" type="ball"
+                                                                    group="3"
+                                                                    actuatorfrclimited="false"
+                                                                    damping="0.001" />
+                                                                  <geom name="guidewireG28"
+                                                                    size="0.000445 0.00431035"
+                                                                    pos="0.00431035 0 0"
+                                                                    quat="0.707107 0 -0.707107 0"
+                                                                    type="capsule" condim="3"
+                                                                    rgba="0 0 1 1" />
+                                                                  <site name="guidewireS_last"
+                                                                    pos="0.00862069 0 0" group="3" />
+                                                                  <plugin
+                                                                    instance="compositeguidewire" />
+                                                                  <body name="tip" childclass="tips"
+                                                                    pos="0.00862069 0 0">
+                                                                    <body name="tipB_first"
+                                                                      quat="-0.707107 0.707107 0 0">
+                                                                      <geom name="tipG0"
+                                                                        size="0.000445 0.002704"
+                                                                        pos="0.002704 0 0"
+                                                                        quat="0.707107 0 -0.707107 0"
+                                                                        type="capsule" condim="3"
+                                                                        rgba="0 0 1 1" />
+                                                                      <site name="tipS_first"
+                                                                        pos="0 0 0" group="3" />
+                                                                      <plugin
+                                                                        instance="compositetip" />
+                                                                      <body name="tipB_1"
+                                                                        pos="0.00540801 0 0"
+                                                                        quat="1 0 0 0.000229109">
+                                                                        <joint name="tipJ_1"
+                                                                          pos="0 0 0" type="ball"
+                                                                          group="3"
+                                                                          actuatorfrclimited="false"
+                                                                          damping="0.001" />
+                                                                        <geom name="tipG1"
+                                                                          size="0.000445 0.002073"
+                                                                          pos="0.002073 0 0"
+                                                                          quat="0.707107 0 -0.707107 0"
+                                                                          type="capsule" condim="3"
+                                                                          rgba="0 0 1 1" />
+                                                                        <plugin
+                                                                          instance="compositetip" />
+                                                                        <body name="tipB_2"
+                                                                          pos="0.004146 0 0"
+                                                                          quat="1 0 0 0.000440283">
+                                                                          <joint name="tipJ_2"
+                                                                            pos="0 0 0" type="ball"
+                                                                            group="3"
+                                                                            actuatorfrclimited="false"
+                                                                            damping="0.001" />
+                                                                          <geom name="tipG2"
+                                                                            size="0.000445 0.0015365"
+                                                                            pos="0.0015365 0 0"
+                                                                            quat="0.707107 0 -0.707107 0"
+                                                                            type="capsule"
+                                                                            condim="3"
+                                                                            rgba="0 0 1 1" />
+                                                                          <plugin
+                                                                            instance="compositetip" />
+                                                                          <body name="tipB_3"
+                                                                            pos="0.003073 0 0"
+                                                                            quat="1 0 0 0.000619746">
+                                                                            <joint name="tipJ_3"
+                                                                              pos="0 0 0"
+                                                                              type="ball" group="3"
+                                                                              actuatorfrclimited="false"
+                                                                              damping="0.001" />
+                                                                            <geom name="tipG3"
+                                                                              size="0.000445 0.001094"
+                                                                              pos="0.001094 0 0"
+                                                                              quat="0.707107 0 -0.707107 0"
+                                                                              type="capsule"
+                                                                              condim="3"
+                                                                              rgba="0 0 1 1" />
+                                                                            <plugin
+                                                                              instance="compositetip" />
+                                                                            <body name="tipB_4"
+                                                                              pos="0.002188 0 0"
+                                                                              quat="1 0 0 0.000546304">
+                                                                              <joint name="tipJ_4"
+                                                                                pos="0 0 0"
+                                                                                type="ball"
+                                                                                group="3"
+                                                                                actuatorfrclimited="false"
+                                                                                damping="0.001" />
+                                                                              <geom name="tipG4"
+                                                                                size="0.000445 0.000747502"
+                                                                                pos="0.000747502 0 0"
+                                                                                quat="0.707107 0 -0.707107 0"
+                                                                                type="capsule"
+                                                                                condim="3"
+                                                                                rgba="0 0 1 1" />
+                                                                              <plugin
+                                                                                instance="compositetip" />
+                                                                              <body name="tipB_5"
+                                                                                pos="0.001495 0 0"
+                                                                                quat="0.999999 0 0 0.00152189">
+                                                                                <joint name="tipJ_5"
+                                                                                  pos="0 0 0"
+                                                                                  type="ball"
+                                                                                  group="3"
+                                                                                  actuatorfrclimited="false"
+                                                                                  damping="0.001" />
+                                                                                <geom name="tipG5"
+                                                                                  size="0.000445 0.000495006"
+                                                                                  pos="0.000495006 0 0"
+                                                                                  quat="0.707107 0 -0.707107 0"
+                                                                                  type="capsule"
+                                                                                  condim="3"
+                                                                                  rgba="0 0 1 1" />
+                                                                                <plugin
+                                                                                  instance="compositetip" />
+                                                                                <body name="tipB_6"
+                                                                                  pos="0.000990012 0 0"
+                                                                                  quat="1 0 0 0.000442092">
+                                                                                  <joint
+                                                                                    name="tipJ_6"
+                                                                                    pos="0 0 0"
+                                                                                    type="ball"
+                                                                                    group="3"
+                                                                                    actuatorfrclimited="false"
+                                                                                    damping="0.001" />
+                                                                                  <geom name="tipG6"
+                                                                                    size="0.000445 0.000337006"
+                                                                                    pos="0.000337006 0 0"
+                                                                                    quat="0.707107 0 -0.707107 0"
+                                                                                    type="capsule"
+                                                                                    condim="3"
+                                                                                    rgba="0 0 1 1" />
+                                                                                  <plugin
+                                                                                    instance="compositetip" />
+                                                                                  <body
+                                                                                    name="tipB_7"
+                                                                                    pos="0.000674012 0 0"
+                                                                                    quat="1 0 0 -0.00023511">
+                                                                                    <joint
+                                                                                      name="tipJ_7"
+                                                                                      pos="0 0 0"
+                                                                                      type="ball"
+                                                                                      group="3"
+                                                                                      actuatorfrclimited="false"
+                                                                                      damping="0.001" />
+                                                                                    <geom
+                                                                                      name="tipG7"
+                                                                                      size="0.000445 0.000274504"
+                                                                                      pos="0.000274504 0 0"
+                                                                                      quat="0.707107 0 -0.707107 0"
+                                                                                      type="capsule"
+                                                                                      condim="3"
+                                                                                      rgba="0 0 1 1" />
+                                                                                    <plugin
+                                                                                      instance="compositetip" />
+                                                                                    <body
+                                                                                      name="tipB_8"
+                                                                                      pos="0.000549008 0 0"
+                                                                                      quat="0.999996 0 0 -0.00273221">
+                                                                                      <joint
+                                                                                        name="tipJ_8"
+                                                                                        pos="0 0 0"
+                                                                                        type="ball"
+                                                                                        group="3"
+                                                                                        actuatorfrclimited="false"
+                                                                                        damping="0.001" />
+                                                                                      <geom
+                                                                                        name="tipG8"
+                                                                                        size="0.000445 0.000306"
+                                                                                        pos="0.000306 0 0"
+                                                                                        quat="0.707107 0 -0.707107 0"
+                                                                                        type="capsule"
+                                                                                        condim="3"
+                                                                                        rgba="0 0 1 1" />
+                                                                                      <plugin
+                                                                                        instance="compositetip" />
+                                                                                      <body
+                                                                                        name="tipB_9"
+                                                                                        pos="0.000612 0 0"
+                                                                                        quat="0.999999 0 0 -0.00115607">
+                                                                                        <joint
+                                                                                          name="tipJ_9"
+                                                                                          pos="0 0 0"
+                                                                                          type="ball"
+                                                                                          group="3"
+                                                                                          actuatorfrclimited="false"
+                                                                                          damping="0.001" />
+                                                                                        <geom
+                                                                                          name="tipG9"
+                                                                                          size="0.000445 0.000432501"
+                                                                                          pos="0.000432501 0 0"
+                                                                                          quat="0.707107 0 -0.707107 0"
+                                                                                          type="capsule"
+                                                                                          condim="3"
+                                                                                          rgba="0 0 1 1" />
+                                                                                        <plugin
+                                                                                          instance="compositetip" />
+                                                                                        <body
+                                                                                          name="tipB_10"
+                                                                                          pos="0.000865002 0 0"
+                                                                                          quat="0.999544 0 0 0.0301886">
+                                                                                          <joint
+                                                                                            name="tipJ_10"
+                                                                                            pos="0 0 0"
+                                                                                            type="ball"
+                                                                                            group="3"
+                                                                                            actuatorfrclimited="false"
+                                                                                            damping="0.001" />
+                                                                                          <geom
+                                                                                            name="tipG10"
+                                                                                            size="0.000445 0.00099067"
+                                                                                            pos="0.00099067 0 0"
+                                                                                            quat="0.707107 0 -0.707107 0"
+                                                                                            type="capsule"
+                                                                                            condim="3"
+                                                                                            rgba="0 0 1 1" />
+                                                                                          <plugin
+                                                                                            instance="compositetip" />
+                                                                                          <body
+                                                                                            name="tipB_11"
+                                                                                            pos="0.00198134 0 0"
+                                                                                            quat="0.997196 0 0 0.0748379">
+                                                                                            <joint
+                                                                                              name="tipJ_11"
+                                                                                              pos="0 0 0"
+                                                                                              type="ball"
+                                                                                              group="3"
+                                                                                              actuatorfrclimited="false"
+                                                                                              damping="0.001" />
+                                                                                            <geom
+                                                                                              name="tipG11"
+                                                                                              size="0.000445 0.000850308"
+                                                                                              pos="0.000850308 0 0"
+                                                                                              quat="0.707107 0 -0.707107 0"
+                                                                                              type="capsule"
+                                                                                              condim="3"
+                                                                                              rgba="0 0 1 1" />
+                                                                                            <plugin
+                                                                                              instance="compositetip" />
+                                                                                            <body
+                                                                                              name="tipB_12"
+                                                                                              pos="0.00170062 0 0"
+                                                                                              quat="0.995725 0 0 0.0923696">
+                                                                                              <joint
+                                                                                                name="tipJ_12"
+                                                                                                pos="0 0 0"
+                                                                                                type="ball"
+                                                                                                group="3"
+                                                                                                actuatorfrclimited="false"
+                                                                                                damping="0.001" />
+                                                                                              <geom
+                                                                                                name="tipG12"
+                                                                                                size="0.000445 0.000749617"
+                                                                                                pos="0.000749617 0 0"
+                                                                                                quat="0.707107 0 -0.707107 0"
+                                                                                                type="capsule"
+                                                                                                condim="3"
+                                                                                                rgba="0 0 1 1" />
+                                                                                              <plugin
+                                                                                                instance="compositetip" />
+                                                                                              <body
+                                                                                                name="tipB_13"
+                                                                                                pos="0.00149923 0 0"
+                                                                                                quat="0.994725 0 0 0.102582">
+                                                                                                <joint
+                                                                                                  name="tipJ_13"
+                                                                                                  pos="0 0 0"
+                                                                                                  type="ball"
+                                                                                                  group="3"
+                                                                                                  actuatorfrclimited="false"
+                                                                                                  damping="0.001" />
+                                                                                                <geom
+                                                                                                  name="tipG13"
+                                                                                                  size="0.000445 0.000692304"
+                                                                                                  pos="0.000692304 0 0"
+                                                                                                  quat="0.707107 0 -0.707107 0"
+                                                                                                  type="capsule"
+                                                                                                  condim="3"
+                                                                                                  rgba="0 0 1 1" />
+                                                                                                <plugin
+                                                                                                  instance="compositetip" />
+                                                                                                <body
+                                                                                                  name="tipB_14"
+                                                                                                  pos="0.00138461 0 0"
+                                                                                                  quat="0.994763 0 0 0.102211">
+                                                                                                  <joint
+                                                                                                    name="tipJ_14"
+                                                                                                    pos="0 0 0"
+                                                                                                    type="ball"
+                                                                                                    group="3"
+                                                                                                    actuatorfrclimited="false"
+                                                                                                    damping="0.001" />
+                                                                                                  <geom
+                                                                                                    name="tipG14"
+                                                                                                    size="0.000445 0.000675394"
+                                                                                                    pos="0.000675394 0 0"
+                                                                                                    quat="0.707107 0 -0.707107 0"
+                                                                                                    type="capsule"
+                                                                                                    condim="3"
+                                                                                                    rgba="0 0 1 1" />
+                                                                                                  <plugin
+                                                                                                    instance="compositetip" />
+                                                                                                  <body
+                                                                                                    name="tipB_15"
+                                                                                                    pos="0.00135079 0 0"
+                                                                                                    quat="0.996096 0 0 0.088279">
+                                                                                                    <joint
+                                                                                                      name="tipJ_15"
+                                                                                                      pos="0 0 0"
+                                                                                                      type="ball"
+                                                                                                      group="3"
+                                                                                                      actuatorfrclimited="false"
+                                                                                                      damping="0.001" />
+                                                                                                    <geom
+                                                                                                      name="tipG15"
+                                                                                                      size="0.000445 0.000691159"
+                                                                                                      pos="0.000691159 0 0"
+                                                                                                      quat="0.707107 0 -0.707107 0"
+                                                                                                      type="capsule"
+                                                                                                      condim="3"
+                                                                                                      rgba="0 0 1 1" />
+                                                                                                    <plugin
+                                                                                                      instance="compositetip" />
+                                                                                                    <body
+                                                                                                      name="tipB_16"
+                                                                                                      pos="0.00138232 0 0"
+                                                                                                      quat="0.997624 0 0 0.0688947">
+                                                                                                      <joint
+                                                                                                        name="tipJ_16"
+                                                                                                        pos="0 0 0"
+                                                                                                        type="ball"
+                                                                                                        group="3"
+                                                                                                        actuatorfrclimited="false"
+                                                                                                        damping="0.001" />
+                                                                                                      <geom
+                                                                                                        name="tipG16"
+                                                                                                        size="0.000445 0.000729"
+                                                                                                        pos="0.000729 0 0"
+                                                                                                        quat="0.707107 0 -0.707107 0"
+                                                                                                        type="capsule"
+                                                                                                        condim="3"
+                                                                                                        rgba="0 0 1 1" />
+                                                                                                      <plugin
+                                                                                                        instance="compositetip" />
+                                                                                                      <body
+                                                                                                        name="tipB_17"
+                                                                                                        pos="0.001458 0 0"
+                                                                                                        quat="0.99882 0 0 0.0485588">
+                                                                                                        <joint
+                                                                                                          name="tipJ_17"
+                                                                                                          pos="0 0 0"
+                                                                                                          type="ball"
+                                                                                                          group="3"
+                                                                                                          actuatorfrclimited="false"
+                                                                                                          damping="0.001" />
+                                                                                                        <geom
+                                                                                                          name="tipG17"
+                                                                                                          size="0.000445 0.00077663"
+                                                                                                          pos="0.00077663 0 0"
+                                                                                                          quat="0.707107 0 -0.707107 0"
+                                                                                                          type="capsule"
+                                                                                                          condim="3"
+                                                                                                          rgba="0 0 1 1" />
+                                                                                                        <plugin
+                                                                                                          instance="compositetip" />
+                                                                                                        <body
+                                                                                                          name="tipB_18"
+                                                                                                          pos="0.00155326 0 0"
+                                                                                                          quat="0.999543 0 0 0.0302407">
+                                                                                                          <joint
+                                                                                                            name="tipJ_18"
+                                                                                                            pos="0 0 0"
+                                                                                                            type="ball"
+                                                                                                            group="3"
+                                                                                                            actuatorfrclimited="false"
+                                                                                                            damping="0.001" />
+                                                                                                          <geom
+                                                                                                            name="tipG18"
+                                                                                                            size="0.000445 0.000829914"
+                                                                                                            pos="0.000829914 0 0"
+                                                                                                            quat="0.707107 0 -0.707107 0"
+                                                                                                            type="capsule"
+                                                                                                            condim="3"
+                                                                                                            rgba="0 0 1 1" />
+                                                                                                          <plugin
+                                                                                                            instance="compositetip" />
+                                                                                                          <body
+                                                                                                            name="tipB_last"
+                                                                                                            pos="0.00165983 0 0"
+                                                                                                            quat="0.99987 0 0 0.0161458">
+                                                                                                            <joint
+                                                                                                              name="tipJ_last"
+                                                                                                              pos="0 0 0"
+                                                                                                              type="ball"
+                                                                                                              group="3"
+                                                                                                              actuatorfrclimited="false"
+                                                                                                              damping="0.001" />
+                                                                                                            <geom
+                                                                                                              name="tipG19"
+                                                                                                              size="0.000445 0.000882851"
+                                                                                                              pos="0.000882851 0 0"
+                                                                                                              quat="0.707107 0 -0.707107 0"
+                                                                                                              type="capsule"
+                                                                                                              condim="3"
+                                                                                                              rgba="0 0 1 1" />
+                                                                                                            <site
+                                                                                                              name="tipS_last"
+                                                                                                              pos="0.0017657 0 0"
+                                                                                                              group="3" />
+                                                                                                            <plugin
+                                                                                                              instance="compositetip" />
+                                                                                                          </body>
+                                                                                                        </body>
+                                                                                                      </body>
+                                                                                                    </body>
+                                                                                                  </body>
+                                                                                                </body>
+                                                                                              </body>
+                                                                                            </body>
+                                                                                          </body>
+                                                                                        </body>
+                                                                                      </body>
+                                                                                    </body>
+                                                                                  </body>
+                                                                                </body>
+                                                                              </body>
+                                                                            </body>
+                                                                          </body>
+                                                                        </body>
+                                                                      </body>
+                                                                    </body>
+                                                                  </body>
+                                                                </body>
+                                                              </body>
+                                                            </body>
+                                                          </body>
+                                                        </body>
+                                                      </body>
+                                                    </body>
+                                                  </body>
+                                                </body>
+                                              </body>
+                                            </body>
+                                          </body>
+                                        </body>
+                                      </body>
+                                    </body>
+                                  </body>
+                                </body>
+                              </body>
+                            </body>
+                          </body>
+                        </body>
+                      </body>
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </frame>
+    <frame>
+
+    </frame>
+  </worldbody>
+
+  <contact>
+    <exclude body1="guidewireB_first" body2="guidewireB_1" />
+    <exclude body1="guidewireB_1" body2="guidewireB_2" />
+    <exclude body1="guidewireB_2" body2="guidewireB_3" />
+    <exclude body1="guidewireB_3" body2="guidewireB_4" />
+    <exclude body1="guidewireB_4" body2="guidewireB_5" />
+    <exclude body1="guidewireB_5" body2="guidewireB_6" />
+    <exclude body1="guidewireB_6" body2="guidewireB_7" />
+    <exclude body1="guidewireB_7" body2="guidewireB_8" />
+    <exclude body1="guidewireB_8" body2="guidewireB_9" />
+    <exclude body1="guidewireB_9" body2="guidewireB_10" />
+    <exclude body1="guidewireB_10" body2="guidewireB_11" />
+    <exclude body1="guidewireB_11" body2="guidewireB_12" />
+    <exclude body1="guidewireB_12" body2="guidewireB_13" />
+    <exclude body1="guidewireB_13" body2="guidewireB_14" />
+    <exclude body1="guidewireB_14" body2="guidewireB_15" />
+    <exclude body1="guidewireB_15" body2="guidewireB_16" />
+    <exclude body1="guidewireB_16" body2="guidewireB_17" />
+    <exclude body1="guidewireB_17" body2="guidewireB_18" />
+    <exclude body1="guidewireB_18" body2="guidewireB_19" />
+    <exclude body1="guidewireB_19" body2="guidewireB_20" />
+    <exclude body1="guidewireB_20" body2="guidewireB_21" />
+    <exclude body1="guidewireB_21" body2="guidewireB_22" />
+    <exclude body1="guidewireB_22" body2="guidewireB_23" />
+    <exclude body1="guidewireB_23" body2="guidewireB_24" />
+    <exclude body1="guidewireB_24" body2="guidewireB_25" />
+    <exclude body1="guidewireB_25" body2="guidewireB_26" />
+    <exclude body1="guidewireB_26" body2="guidewireB_27" />
+    <exclude body1="guidewireB_27" body2="guidewireB_last" />
+    <exclude body1="guidewireB_last" body2="guidewireB_first" />
+    <exclude body1="tipB_first" body2="tipB_1" />
+    <exclude body1="tipB_1" body2="tipB_2" />
+    <exclude body1="tipB_2" body2="tipB_3" />
+    <exclude body1="tipB_3" body2="tipB_4" />
+    <exclude body1="tipB_4" body2="tipB_5" />
+    <exclude body1="tipB_5" body2="tipB_6" />
+    <exclude body1="tipB_6" body2="tipB_7" />
+    <exclude body1="tipB_7" body2="tipB_8" />
+    <exclude body1="tipB_8" body2="tipB_9" />
+    <exclude body1="tipB_9" body2="tipB_10" />
+    <exclude body1="tipB_10" body2="tipB_11" />
+    <exclude body1="tipB_11" body2="tipB_12" />
+    <exclude body1="tipB_12" body2="tipB_13" />
+    <exclude body1="tipB_13" body2="tipB_14" />
+    <exclude body1="tipB_14" body2="tipB_15" />
+    <exclude body1="tipB_15" body2="tipB_16" />
+    <exclude body1="tipB_16" body2="tipB_17" />
+    <exclude body1="tipB_17" body2="tipB_18" />
+    <exclude body1="tipB_18" body2="tipB_last" />
+  </contact>
+
+  <actuator>
+    <plugin name="slider" actdim="2" ctrlrange="0 0.5" instance="slider-pid" joint="slider"></plugin>
+    <plugin name="rotator" actdim="2" ctrlrange="-12.56 12.56" instance="rotator-pid"
+      joint="rotator"></plugin>
+  </actuator>
+</mujoco>

@@ -1,6 +1,0 @@
-[submodule "src/cathsim/components/phantoms"]
-	path = src/cathsim/components/phantoms
-	url = git@github.com:airvlab/cathsim-phantoms.git
-[submodule "src/cathsim/components/guidewires"]
-	path = src/cathsim/components/guidewires
-	url = git@github.com:airvlab/cathsim-guidewires.git
