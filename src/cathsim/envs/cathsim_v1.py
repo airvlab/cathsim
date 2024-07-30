@@ -1,3 +1,4 @@
+import math
 from pathlib import Path
 from typing import Dict, Optional, Tuple
 
@@ -6,14 +7,14 @@ import gymnasium as gym
 import mujoco
 import numpy as np
 from gymnasium import spaces
+from gymnasium.utils.env_checker import check_env
 from numpy.typing import NDArray
 
 DEFAULT_SIZE = 480
 
 
-def transform_inage(image):
-    image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-    return image
+def deg2rad(deg):
+    return deg * math.pi / 180
 
 
 class CathSim(gym.Env):
@@ -29,25 +30,30 @@ class CathSim(gym.Env):
         frame_skip: int = 5,
         render_mode: Optional[str] = None,
         image_size: int = DEFAULT_SIZE,
-        image_fn: callable = transform_inage,
+        image_fn: callable = None,
+        translation_step: float = 0.005,
+        rotation_step: float = 15,  # in degrees
+        image_n_channels: int = 3,
     ):
         model_path = Path(__file__).parent.parent / "components/scene.xml"
         self.xml_path = model_path.resolve().as_posix()
 
-        self.width, self.height = image_size, image_size
+        self.image_size = image_size
         self.image_fn = image_fn
+        self.image_n_channels = image_n_channels
 
         self._delta: float = 0.004
         self._success_reward: float = 10.0
+
         self._use_relative_position = True
+        self._translation_step = translation_step
+        self._rotation_step = deg2rad(rotation_step)
 
         self.model, self.data = self._initialize_simulation()
 
         # used to reset the model
         self.init_qpos = self.data.qpos.ravel().copy()
         self.init_qvel = self.data.qvel.ravel().copy()
-        self._translation_step = 0.1
-        self._rotation_step = 0.1
 
         self.frame_skip = frame_skip
 
@@ -78,7 +84,7 @@ class CathSim(gym.Env):
 
     def _set_observation_space(self):
         image_space = spaces.Box(
-            0, 255, shape=(self.height, self.width, 3), dtype=np.uint8
+            0, 255, shape=(self.image_size, self.image_size, 3), dtype=np.uint8
         )
 
         obs_space = spaces.Dict(
@@ -93,9 +99,7 @@ class CathSim(gym.Env):
         low, high = bounds.T
         if self._use_relative_position:
             self.action_space = spaces.Box(
-                low=np.array([-self._translation_step, -self._rotation_step]),
-                high=np.array([self._translation_step, self._rotation_step]),
-                dtype=np.float32,
+                -1.0, 1.0, shape=(len(low),), dtype=np.float32
             )
         else:
             self.action_space = spaces.Box(low=low, high=high, dtype=np.float32)
@@ -109,8 +113,8 @@ class CathSim(gym.Env):
         """
         model = mujoco.MjModel.from_xml_path(self.xml_path)
         # MjrContext will copy model.vis.global_.off* to con.off*
-        model.vis.global_.offwidth = self.width
-        model.vis.global_.offheight = self.height
+        model.vis.global_.offwidth = self.image_size
+        model.vis.global_.offheight = self.image_size
         data = mujoco.MjData(model)
         return model, data
 
@@ -190,12 +194,18 @@ class CathSim(gym.Env):
     def _current_control(self):
         return self.data.ctrl
 
+    def _relative_to_global_action(self, action):
+        translation = action[0] * self._translation_step
+        rotation = action[1] * self._rotation_step
+        action = np.array([translation, rotation])
+        action = self._current_control + action
+        action = np.clip(action, self.bounds[:, 0], self.bounds[:, 1])
+        return action
+
     def step(
         self, action: NDArray[np.float32]
     ) -> Tuple[NDArray[np.float64], np.float64, bool, bool, Dict[str, np.float64]]:
-        if self._use_relative_position:
-            action = self._current_control + action
-            action = np.clip(action, self.bounds[:, 0], self.bounds[:, 1])
+        action = self._relative_to_global_action(action)
         self.do_simulation(action, self.frame_skip)
         obs = self._get_obs()
 
@@ -244,6 +254,7 @@ class CathSim(gym.Env):
 
     def _get_obs(self):
         top_img = self.mujoco_renderer.render("rgb_array", camera_name="top")
+        top_img = cv2.cvtColor(top_img, cv2.COLOR_BGR2RGB)
         if self.image_fn:
             top_img = self.image_fn(top_img)
         return {"pixels": top_img}
@@ -275,19 +286,20 @@ if __name__ == "__main__":
 
     import cv2
 
-    cathsim = CathSim(
+    env = CathSim(
         render_mode="rgb_array",
-        width=DEFAULT_SIZE,
-        height=DEFAULT_SIZE,
     )
-    print(cathsim.action_space)
-    print(cathsim.observation_space)
+    check_env(env)
 
-    ob, info = cathsim.reset()
+    print(env.action_space)
+    print(env.observation_space)
+
+    ob, info = env.reset()
     for _ in range(1000):
-        # action = cathsim.action_space.sample()
-        action = [0.1, 0]
-        ob, reward, terminated, _, info = cathsim.step(action)
-        print(f"Reward: {reward}, Info: {info}")
+        action = env.action_space.sample()
+        ob, reward, terminated, _, info = env.step(action)
+        print(f"Reward: {reward}")
+        print("Info: ", info)
+        print("Action: ", action)
         cv2.imshow("Top Camera", ob["pixels"])
         cv2.waitKey(1)
