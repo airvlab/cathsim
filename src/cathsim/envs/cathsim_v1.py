@@ -4,10 +4,10 @@ from typing import Dict, Optional, Tuple
 
 import cv2
 import gymnasium as gym
+import matplotlib.pyplot as plt
 import mujoco
 import numpy as np
 from gymnasium import spaces
-from gymnasium.utils.env_checker import check_env
 from numpy.typing import NDArray
 
 DEFAULT_SIZE = 480
@@ -23,11 +23,11 @@ class CathSim(gym.Env):
             "human",
             "rgb_array",
         ],
+        "render_fps": 71,
     }
 
     def __init__(
         self,
-        frame_skip: int = 5,
         render_mode: Optional[str] = None,
         image_size: int = DEFAULT_SIZE,
         image_fn: callable = None,
@@ -55,7 +55,7 @@ class CathSim(gym.Env):
         self.init_qpos = self.data.qpos.ravel().copy()
         self.init_qvel = self.data.qvel.ravel().copy()
 
-        self.frame_skip = frame_skip
+        self.frame_skip = 7
 
         assert self.metadata["render_modes"] == [
             "human",
@@ -254,7 +254,6 @@ class CathSim(gym.Env):
 
     def _get_obs(self):
         top_img = self.mujoco_renderer.render("rgb_array", camera_name="top")
-        top_img = cv2.cvtColor(top_img, cv2.COLOR_BGR2RGB)
         if self.image_fn:
             top_img = self.image_fn(top_img)
         return {"pixels": top_img}
@@ -289,17 +288,16 @@ if __name__ == "__main__":
     env = CathSim(
         render_mode="rgb_array",
     )
-    check_env(env)
 
     print(env.action_space)
     print(env.observation_space)
 
-    ob, info = env.reset()
     for _ in range(1000):
         action = env.action_space.sample()
         ob, reward, terminated, _, info = env.step(action)
         print(f"Reward: {reward}")
         print("Info: ", info)
         print("Action: ", action)
+        image = cv2.cvtColor(ob["pixels"], cv2.COLOR_RGB2BGR)
         cv2.imshow("Top Camera", ob["pixels"])
         cv2.waitKey(1)
