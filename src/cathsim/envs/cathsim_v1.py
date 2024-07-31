@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import mujoco
 import numpy as np
 from gymnasium import spaces
+from mujoco import Renderer
 from numpy.typing import NDArray
 
 DEFAULT_SIZE = 480
@@ -61,10 +62,7 @@ class CathSim(gym.Env):
             "human",
             "rgb_array",
         ], self.metadata["render_modes"]
-        if "render_fps" in self.metadata:
-            assert (
-                int(np.round(1.0 / self.dt)) == self.metadata["render_fps"]
-            ), f'Expected value: {int(np.round(1.0 / self.dt))}, Actual value: {self.metadata["render_fps"]}'
+        self.metadata["render_fps"] = int(np.round(1.0 / self.dt))
 
         self._set_action_space()
         self._set_observation_space()
@@ -81,6 +79,8 @@ class CathSim(gym.Env):
 
         self.translation_step = 0.01
         self.bounds = self.model.actuator_ctrlrange.copy().astype(np.float32)
+
+        self.human_renderer = Renderer(self.model, DEFAULT_SIZE, DEFAULT_SIZE)
 
     def _set_observation_space(self):
         image_space = spaces.Box(
@@ -147,16 +147,13 @@ class CathSim(gym.Env):
         """
         Render a frame from the MuJoCo simulation as specified by the render_mode.
         """
-        return self.mujoco_renderer.render(self.render_mode)
+        self.human_renderer.update_scene(self.data, camera="top")
+        return self.human_renderer.render()
 
     def close(self):
         """Close rendering contexts processes."""
         if self.mujoco_renderer is not None:
             self.mujoco_renderer.close()
-
-    def get_body_com(self, body_name):
-        """Return the cartesian position of a body frame."""
-        return self.data.body(body_name).xpos
 
     def reset(
         self,
@@ -252,6 +249,9 @@ class CathSim(gym.Env):
     def _get_reset_info(self) -> Dict[str, float]:
         return self._get_info()
 
+    def _reset_simulation(self):
+        mujoco.mj_resetData(self.model, self.data)
+
     def _get_obs(self):
         top_img = self.mujoco_renderer.render("rgb_array", camera_name="top")
         if self.image_fn:
@@ -262,6 +262,7 @@ class CathSim(gym.Env):
         return dict(
             head_pos=self.head_position.copy(),
             target_pos=self.target_position.copy(),
+            image=self.human_renderer.render(),
         )
 
     @property
@@ -285,9 +286,7 @@ if __name__ == "__main__":
 
     import cv2
 
-    env = CathSim(
-        render_mode="rgb_array",
-    )
+    env = CathSim(render_mode="rgb_array")
 
     print(env.action_space)
     print(env.observation_space)
@@ -298,6 +297,8 @@ if __name__ == "__main__":
         print(f"Reward: {reward}")
         print("Info: ", info)
         print("Action: ", action)
-        image = cv2.cvtColor(ob["pixels"], cv2.COLOR_RGB2BGR)
-        cv2.imshow("Top Camera", ob["pixels"])
+
+        img = env.render()
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        cv2.imshow("Top Camera", img)
         cv2.waitKey(1)
