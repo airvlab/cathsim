@@ -43,21 +43,3 @@ class TransformDictObservation(gym.ObservationWrapper):
         if self.key in observation:
             observation[self.key] = self.f(observation[self.key])
         return observation
-
-
-if __name__ == "__main__":
-    import cv2
-
-    from cathsim.gym.envs import CathSim
-
-    def transform_image(observation):
-        observation = cv2.cvtColor(observation, cv2.COLOR_RGB2GRAY)
-        return observation
-
-    env = gym.make("cathsim/CathSim-v0", use_pixels=True)
-    env.unwrapped.print_spaces()
-    obs, _ = env.reset()
-    env = TransformDictObservation(env, transform_image, "pixels")
-    obs, _ = env.reset()
-    print(obs["pixels"].shape)
-    env.unwrapped.print_spaces()

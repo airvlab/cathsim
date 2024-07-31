@@ -47,20 +47,3 @@ class TransformObservationForKey(
         if self.key in observation:
             observation[self.key] = self.f(observation[self.key])
         return observation
-
-
-if __name__ == "__main__":
-    from cathsim.gym.envs import CathSim
-
-    def transform_image(observation):
-        observation = cv2.cvtColor(observation, cv2.COLOR_RGB2GRAY)
-        return np.expand_dims(observation, axis=-1)
-
-    env = gym.make("cathsim/CathSim-v0", use_pixels=True)
-    print("Original observation space:")
-    for key, value in env.observation_space.spaces.items():
-        print("\t", key, value.shape)
-    env = TransformObservationForKey(env, transform_image, "pixels")
-    print("Transformed observation space:")
-    for key, value in env.observation_space.spaces.items():
-        print("\t", key, value.shape)

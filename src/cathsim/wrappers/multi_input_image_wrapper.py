@@ -1,6 +1,6 @@
-import numpy as np
 import cv2
 import gymnasium as gym
+import numpy as np
 
 
 class MultiInputImageWrapper(gym.ObservationWrapper):
@@ -56,14 +56,3 @@ class MultiInputImageWrapper(gym.ObservationWrapper):
 
         observation[self.image_key] = image
         return observation
-
-
-if __name__ == "__main__":
-    from cathsim.gym.envs import CathSim, make_gym_env
-    from cathsim.rl.utils import Config
-
-    config = Config("pixels")
-    env = make_gym_env(config, n_envs=1, monitor_wrapper=True)
-
-    for k, v in env.observation_space.spaces.items():
-        print(k, v.shape)
