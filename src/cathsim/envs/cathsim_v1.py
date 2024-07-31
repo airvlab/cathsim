@@ -145,7 +145,7 @@ class CathSim(gym.Env):
         """
         Render a frame from the MuJoCo simulation as specified by the render_mode.
         """
-        return self.mufoco_renderer.render(self.render_mode, camera_name="top")
+        return self.mujoco_renderer.render(self.render_mode, camera_name="top")
 
     def close(self):
         """Close rendering contexts processes."""
