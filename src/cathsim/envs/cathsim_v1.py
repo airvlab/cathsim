@@ -80,8 +80,6 @@ class CathSim(gym.Env):
         self.translation_step = 0.01
         self.bounds = self.model.actuator_ctrlrange.copy().astype(np.float32)
 
-        self.human_renderer = Renderer(self.model, DEFAULT_SIZE, DEFAULT_SIZE)
-
     def _set_observation_space(self):
         image_space = spaces.Box(
             0, 255, shape=(self.image_size, self.image_size, 3), dtype=np.uint8
@@ -147,8 +145,7 @@ class CathSim(gym.Env):
         """
         Render a frame from the MuJoCo simulation as specified by the render_mode.
         """
-        self.human_renderer.update_scene(self.data, camera="top")
-        return self.human_renderer.render()
+        return self.mufoco_renderer.render(self.render_mode, camera_name="top")
 
     def close(self):
         """Close rendering contexts processes."""
@@ -262,7 +259,6 @@ class CathSim(gym.Env):
         return dict(
             head_pos=self.head_position.copy(),
             target_pos=self.target_position.copy(),
-            image=self.human_renderer.render(),
         )
 
     @property
@@ -286,7 +282,7 @@ if __name__ == "__main__":
 
     import cv2
 
-    env = CathSim(render_mode="rgb_array")
+    env = CathSim(render_mode="rgb_array", image_size=125)
 
     print(env.action_space)
     print(env.observation_space)
@@ -298,7 +294,8 @@ if __name__ == "__main__":
         print("Info: ", info)
         print("Action: ", action)
 
-        img = env.render()
+        # img = env.render()
+        img = ob["pixels"]
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         cv2.imshow("Top Camera", img)
         cv2.waitKey(1)
