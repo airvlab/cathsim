@@ -24,15 +24,14 @@ class CathSim(gym.Env):
             "human",
             "rgb_array",
         ],
-        "render_fps": 71,
     }
 
     def __init__(
         self,
-        render_mode: Optional[str] = None,
+        render_mode: str = "rgb_array",
         image_size: int = DEFAULT_SIZE,
         image_fn: callable = None,
-        translation_step: float = 0.005,
+        translation_step: float = 0.002,  # in meters
         rotation_step: float = 15,  # in degrees
         image_n_channels: int = 3,
     ):
@@ -58,17 +57,17 @@ class CathSim(gym.Env):
 
         self.frame_skip = 7
 
-        assert self.metadata["render_modes"] == [
-            "human",
-            "rgb_array",
-        ], self.metadata["render_modes"]
+        assert (
+            render_mode in self.metadata["render_modes"]
+        ), f"Invalid render mode {render_mode}, must be one of {self.metadata['render_modes']}"
+        self.render_mode = render_mode
+
         self.metadata["render_fps"] = int(np.round(1.0 / self.dt))
 
         self._set_action_space()
         self._set_observation_space()
-        self.target_position = None
 
-        self.render_mode = render_mode
+        self._target_position = None
 
         from gymnasium.envs.mujoco.mujoco_rendering import MujocoRenderer
 
@@ -82,7 +81,10 @@ class CathSim(gym.Env):
 
     def _set_observation_space(self):
         image_space = spaces.Box(
-            0, 255, shape=(self.image_size, self.image_size, 3), dtype=np.uint8
+            0,
+            255,
+            shape=(self.image_size, self.image_size, self.image_n_channels),
+            dtype=np.uint8,
         )
 
         obs_space = spaces.Dict(
@@ -106,9 +108,6 @@ class CathSim(gym.Env):
     def _initialize_simulation(
         self,
     ) -> Tuple["mujoco.MjModel", "mujoco.MjData"]:
-        """
-        Initialize MuJoCo simulation data structures `mjModel` and `mjData`.
-        """
         model = mujoco.MjModel.from_xml_path(self.xml_path)
         # MjrContext will copy model.vis.global_.off* to con.off*
         model.vis.global_.offwidth = self.image_size
@@ -117,10 +116,6 @@ class CathSim(gym.Env):
         return model, data
 
     def set_state(self, qpos, qvel):
-        """Set the joints position qpos and velocity qvel of the model.
-
-        Note: `qpos` and `qvel` is not the full physics state for all mujoco models/environments https://mujoco.readthedocs.io/en/stable/APIreference/APItypes.html#mjtstate
-        """
         assert qpos.shape == (self.model.nq,) and qvel.shape == (self.model.nv,)
         self.data.qpos[:] = np.copy(qpos)
         self.data.qvel[:] = np.copy(qvel)
@@ -129,9 +124,6 @@ class CathSim(gym.Env):
         mujoco.mj_forward(self.model, self.data)
 
     def _step_mujoco_simulation(self, ctrl, n_frames):
-        """
-        Step over the MuJoCo simulation.
-        """
         self.data.ctrl[:] = ctrl
 
         mujoco.mj_step(self.model, self.data, nstep=n_frames)
@@ -163,7 +155,7 @@ class CathSim(gym.Env):
         mujoco.mj_resetData(self.model, self.data)
 
         ob = self.reset_model()
-        info = self._get_reset_info()
+        info = self._get_info()
 
         if self.render_mode == "human":
             self.render()
@@ -203,8 +195,8 @@ class CathSim(gym.Env):
         self.do_simulation(action, self.frame_skip)
         obs = self._get_obs()
 
-        head_position = self.head_position
-        target_position = self.target_position
+        head_position = self._tip_position
+        target_position = self._target_position
 
         info = self._get_info()
         info["action"] = action
@@ -243,9 +235,6 @@ class CathSim(gym.Env):
         observation = self._get_obs()
         return observation
 
-    def _get_reset_info(self) -> Dict[str, float]:
-        return self._get_info()
-
     def _reset_simulation(self):
         mujoco.mj_resetData(self.model, self.data)
 
@@ -257,14 +246,16 @@ class CathSim(gym.Env):
 
     def _get_info(self):
         return dict(
-            head_pos=self.head_position.copy(),
+            head_pos=self._tip_position.copy(),
             target_pos=self.target_position.copy(),
+            time=self.data.time,
+            total_force=self._total_force,
         )
 
     @property
-    def head_position(self):
-        head_pos = self.data.body("tipB_last").xpos
-        return head_pos
+    def _tip_position(self):
+        tip_pos = self.data.body("tipB_last").xpos
+        return tip_pos
 
     @property
     def target_position(self):
@@ -276,26 +267,44 @@ class CathSim(gym.Env):
     def target_position(self, value):
         self._target_position = value
 
+    @property
+    def _total_force(self):
+        forces = self.data.qfrc_constraint[0:3]
+        return np.linalg.norm(forces)
+
 
 if __name__ == "__main__":
     from pathlib import Path
 
     import cv2
+    from gymnasium.utils.env_checker import check_env
 
-    env = CathSim(render_mode="rgb_array", image_size=125)
+    import cathsim
+
+    env = gym.make("CathSim-v1", render_mode="rgb_array", image_size=480)
+    check_env(env.unwrapped, skip_render_check=True)
+    # env = CathSim(render_mode="rgb_array", image_size=480)
+
+    ob, info = env.reset()
 
     print(env.action_space)
     print(env.observation_space)
 
-    for _ in range(1000):
+    done = False
+    while not done:
         action = env.action_space.sample()
-        ob, reward, terminated, _, info = env.step(action)
-        print(f"Reward: {reward}")
-        print("Info: ", info)
-        print("Action: ", action)
+        action[0] = 1
+        ob, reward, terminated, truncated, info = env.step(action)
+        # print(f"Reward: {reward}")
+        # print("Info: ", info)
+        # print("Action: ", action)
+        print(info["total_force"])
 
-        # img = env.render()
-        img = ob["pixels"]
+        img = env.render()
+        # img = ob["pixels"]
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         cv2.imshow("Top Camera", img)
         cv2.waitKey(1)
+        done = terminated or truncated
+    print("Time elapsed: ", info["time"])
+    cv2.destroyAllWindows()
