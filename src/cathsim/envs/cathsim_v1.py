@@ -54,6 +54,7 @@ class CathSim(gym.Env):
         # used to reset the model
         self.init_qpos = self.data.qpos.ravel().copy()
         self.init_qvel = self.data.qvel.ravel().copy()
+        self.init_guidewire_pos = self.model.body("guidewire").pos.copy()
 
         self.frame_skip = 7
 
@@ -226,9 +227,14 @@ class CathSim(gym.Env):
         return distance < self._delta
 
     def reset_model(self) -> NDArray[np.float64]:
-        # can add noise here
         qpos = self.init_qpos
         qvel = self.init_qvel
+
+        guidewire_pos = self.init_guidewire_pos + np.random.uniform(
+            -0.001, 0.001, size=3
+        )
+
+        self.model.body("guidewire").pos = guidewire_pos
 
         self.set_state(qpos, qvel)
 
@@ -249,7 +255,7 @@ class CathSim(gym.Env):
             head_pos=self._tip_position.copy(),
             target_pos=self.target_position.copy(),
             time=self.data.time,
-            total_force=self._total_force,
+            total_force=self._total_force.copy(),
         )
 
     @property
@@ -285,26 +291,21 @@ if __name__ == "__main__":
     check_env(env.unwrapped, skip_render_check=True)
     # env = CathSim(render_mode="rgb_array", image_size=480)
 
-    ob, info = env.reset()
-
     print(env.action_space)
     print(env.observation_space)
 
-    done = False
-    while not done:
-        action = env.action_space.sample()
-        action[0] = 1
-        ob, reward, terminated, truncated, info = env.step(action)
-        # print(f"Reward: {reward}")
-        # print("Info: ", info)
-        # print("Action: ", action)
-        print(info["total_force"])
-
-        img = env.render()
-        # img = ob["pixels"]
-        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-        cv2.imshow("Top Camera", img)
-        cv2.waitKey(1)
-        done = terminated or truncated
-    print("Time elapsed: ", info["time"])
-    cv2.destroyAllWindows()
+    for ep in range(4):
+        done = False
+        ob, info = env.reset()
+        while not done:
+            action = env.action_space.sample()
+            action[0] = 1
+            action[1] = 1
+            ob, reward, terminated, truncated, info = env.step(action)
+            img = env.render()
+            img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+            cv2.imshow("Top Camera", img)
+            cv2.waitKey(1)
+            done = terminated or truncated
+        print("Time elapsed: ", info["time"])
+        cv2.destroyAllWindows()
