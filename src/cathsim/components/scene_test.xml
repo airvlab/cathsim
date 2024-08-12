@@ -16,9 +16,11 @@
     <!-- viscosity="0.004"> -->
     <!-- <flag frictionloss="enable" /> -->
     <!-- </option> -->
-    <option timestep="0.001" solver="CG" tolerance="1e-6" integrator="implicitfast"/>
+    <!-- <option timestep="0.001" solver="CG" tolerance="1e-6" integrator="implicitfast"/> -->
     <include file="guidewires/guidewire_angled.xml"></include>
+    <!-- <include file="phantoms/phantom-elastrat/phantom-elastrat.xml"></include> -->
     <include file="phantoms/phantom-elastrat/2phantom.xml"></include>
+
     <statistic meansize=".05"></statistic>
     <visual>
         <rgba haze="0.15 0.25 0.35 1"></rgba>
