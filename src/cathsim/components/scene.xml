@@ -1,25 +1,24 @@
 <mujoco>
   <compiler meshdir="phantoms/phantom-elastrat"></compiler>
-  <size memory="20G" />
+  <!-- <size memory="20G" /> -->
   <visual>
-    <global elevation="-30" linewidth="0.001" />
+    <global elevation="-90" linewidth="0.001" />
     <scale forcewidth="0.005" contactwidth="0.005" connect="0.001" com="0.01" selectpoint="0.001"
       jointlength="0.01" jointwidth="0.005" framelength="0.01" framewidth="0.005" />
   </visual>
   <default>
     <site group="0" size="0.005" type="sphere" />
-    <geom condim="1" friction="0.5" />
+    <!-- <geom condim="3" friction="0.5" /> -->
   </default>
   <compiler angle="degree"></compiler>
-  <option cone="elliptic" density="1055" integrator="implicitfast" jacobian="sparse"
-    o_margin="0.004" o_solimp="0.9 0.95 0.001 0.1 2" o_solref="0.01 0"
-    solver="PGS" timestep="0.004" viscosity="0.004">
-    <!-- <option cone="elliptic" density="1055" integrator="implicitfast" jacobian="sparse" -->
-    <!--   o_margin="0.005" o_solref="0.02 1" o_friction="1 0.005 0.0001" solver="PGS"
-    timestep="0.005" -->
-    <!--   viscosity="0.004"> -->
-    <flag frictionloss="enable" />
+  <option density="1055" o_margin="0.005" timestep="0.002" viscosity="0.004">
+    <flag autoreset="disable" />
   </option>
+  <!-- <option cone="elliptic" density="1055" integrator="implicitfast" jacobian="sparse" -->
+  <!--   o_margin="0.005" o_solref="0.02 1" o_friction="1 0.005 0.0001" solver="PGS" -->
+  <!--   timestep="0.005" viscosity="0.004"> -->
+  <!--   <flag frictionloss="enable" /> -->
+  <!-- </option> -->
   <include file="guidewires/guidewire_angled.xml"></include>
   <include file="phantoms/phantom-elastrat/phantom-elastrat.xml"></include>
   <statistic meansize=".05"></statistic>
