@@ -30,6 +30,7 @@ class CathSim(gym.Env):
         translation_step: float = 0.001,  # in meters
         rotation_step: float = 5,  # in degrees
         image_n_channels: int = 3,
+        channel_first: bool = False,
     ):
         model_path = Path(__file__).parent.parent / "components/scene.xml"
         self.xml_path = model_path.resolve().as_posix()
@@ -37,6 +38,7 @@ class CathSim(gym.Env):
         self.image_size = image_size
         self.image_fn = image_fn
         self.image_n_channels = image_n_channels
+        self.channel_first = channel_first
 
         self._delta: float = 0.004
         self._success_reward: float = 10.0
@@ -225,12 +227,6 @@ class CathSim(gym.Env):
     def reset_model(self) -> NDArray[np.float64]:
         qpos = self.init_qpos
         qvel = self.init_qvel
-
-        # guidewire_pos = self.init_guidewire_pos + np.random.uniform(
-        #     -0.001, 0.001, size=3
-        # )
-        #
-        # self.model.body("guidewire").pos = guidewire_pos
 
         self.set_state(qpos, qvel)
 
