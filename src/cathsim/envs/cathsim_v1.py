@@ -14,10 +14,6 @@ from numpy.typing import NDArray
 DEFAULT_SIZE = 480
 
 
-def deg2rad(deg):
-    return deg * math.pi / 180
-
-
 class CathSim(gym.Env):
     metadata = {
         "render_modes": [
@@ -31,8 +27,8 @@ class CathSim(gym.Env):
         render_mode: str = "rgb_array",
         image_size: int = DEFAULT_SIZE,
         image_fn: callable = None,
-        translation_step: float = 0.002,  # in meters
-        rotation_step: float = 15,  # in degrees
+        translation_step: float = 0.001,  # in meters
+        rotation_step: float = 5,  # in degrees
         image_n_channels: int = 3,
     ):
         model_path = Path(__file__).parent.parent / "components/scene.xml"
@@ -47,7 +43,7 @@ class CathSim(gym.Env):
 
         self._use_relative_position = True
         self._translation_step = translation_step
-        self._rotation_step = deg2rad(rotation_step)
+        self._rotation_step = math.radians(rotation_step)
 
         self.model, self.data = self._initialize_simulation()
 
@@ -230,11 +226,11 @@ class CathSim(gym.Env):
         qpos = self.init_qpos
         qvel = self.init_qvel
 
-        guidewire_pos = self.init_guidewire_pos + np.random.uniform(
-            -0.001, 0.001, size=3
-        )
-
-        self.model.body("guidewire").pos = guidewire_pos
+        # guidewire_pos = self.init_guidewire_pos + np.random.uniform(
+        #     -0.001, 0.001, size=3
+        # )
+        #
+        # self.model.body("guidewire").pos = guidewire_pos
 
         self.set_state(qpos, qvel)
 
@@ -288,7 +284,7 @@ if __name__ == "__main__":
     import cathsim
 
     env = gym.make("CathSim-v1", render_mode="rgb_array", image_size=480)
-    check_env(env.unwrapped, skip_render_check=True)
+    # check_env(env.unwrapped, skip_render_check=True)
     # env = CathSim(render_mode="rgb_array", image_size=480)
 
     print(env.action_space)
