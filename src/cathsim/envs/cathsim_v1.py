@@ -176,7 +176,6 @@ class CathSim(gym.Env):
             if all(np.abs(np.array(current_j_pos) - np.array(ctrl)) <= tolerance):
                 break
         else:
-            # If the loop exits without breaking (max_iters reached), you can log a warning or handle it as needed
             print(f"Warning: Joint position did not converge within {max_iters} iterations.")
 
     @property
