@@ -27,8 +27,8 @@ class CathSim(gym.Env):
         render_mode: str = "rgb_array",
         image_size: int = DEFAULT_SIZE,
         image_fn: callable = None,
-        translation_step: float = 0.001,  # in meters
-        rotation_step: float = 5,  # in degrees
+        translation_step: float = 0.002,  # in meters
+        rotation_step: float = 10,  # in degrees
         image_n_channels: int = 3,
         channel_first: bool = False,
     ):
@@ -47,14 +47,14 @@ class CathSim(gym.Env):
         self._translation_step = translation_step
         self._rotation_step = math.radians(rotation_step)
 
-        self.model, self.data = self._initialize_simulation()
+        self.spec, self.model, self.data = self._initialize_simulation()
 
         # used to reset the model
         self.init_qpos = self.data.qpos.ravel().copy()
         self.init_qvel = self.data.qvel.ravel().copy()
         self.init_guidewire_pos = self.model.body("guidewire").pos.copy()
 
-        self.frame_skip = 7
+        self.frame_skip = 20
 
         assert (
             render_mode in self.metadata["render_modes"]
@@ -94,25 +94,20 @@ class CathSim(gym.Env):
         self.observation_space = obs_space
 
     def _set_action_space(self):
-        bounds = self.model.actuator_ctrlrange.copy().astype(np.float32)
-        low, high = bounds.T
-        if self._use_relative_position:
-            self.action_space = spaces.Box(
-                -1.0, 1.0, shape=(len(low),), dtype=np.float32
-            )
-        else:
-            self.action_space = spaces.Box(low=low, high=high, dtype=np.float32)
-        return self.action_space
+        self.action_space = spaces.Box(-1.0, 1.0, shape=(2,), dtype=np.float32)
 
     def _initialize_simulation(
         self,
     ) -> Tuple["mujoco.MjModel", "mujoco.MjData"]:
-        model = mujoco.MjModel.from_xml_path(self.xml_path)
+        spec = mujoco.MjSpec()
+        spec.from_file(self.xml_path)
+        model = spec.compile()
+
         # MjrContext will copy model.vis.global_.off* to con.off*
         model.vis.global_.offwidth = self.image_size
         model.vis.global_.offheight = self.image_size
         data = mujoco.MjData(model)
-        return model, data
+        return spec, model, data
 
     def set_state(self, qpos, qvel):
         assert qpos.shape == (self.model.nq,) and qvel.shape == (self.model.nv,)
@@ -164,27 +159,37 @@ class CathSim(gym.Env):
     def dt(self) -> float:
         return self.model.opt.timestep * self.frame_skip
 
-    def do_simulation(self, ctrl, n_frames) -> None:
-        """
-        Step the simulation n number of frames and applying a control action.
-        """
+    def do_simulation(self, ctrl, n_frames, tolerance=1e-3, max_iters=1000) -> None:
         # Check control input is contained in the action space
         if np.array(ctrl).shape != (self.model.nu,):
-            raise ValueError(
-                f"Action dimension mismatch. Expected {(self.model.nu,)}, found {np.array(ctrl).shape}"
-            )
+            raise ValueError(f"Action dimension mismatch. Expected {(self.model.nu,)}, found {np.array(ctrl).shape}")
+
         self._step_mujoco_simulation(ctrl, n_frames)
 
+        # Wait for the joint to reach the desired position within the specified tolerance
+        for _ in range(max_iters):
+            # Step the simulation
+            self._step_mujoco_simulation(ctrl, n_frames)
+
+            # Check if the joint positions are within the tolerance
+            current_j_pos = self._current_j_pos
+            if all(np.abs(np.array(current_j_pos) - np.array(ctrl)) <= tolerance):
+                break
+        else:
+            # If the loop exits without breaking (max_iters reached), you can log a warning or handle it as needed
+            print(f"Warning: Joint position did not converge within {max_iters} iterations.")
+
     @property
-    def _current_control(self):
-        return self.data.ctrl
+    def _current_j_pos(self):
+        slider_joint = self.data.joint("slider").qpos[0]
+        rotator_joint = self.data.joint("rotator").qpos[0]
+        return [slider_joint, rotator_joint]
 
     def _relative_to_global_action(self, action):
         translation = action[0] * self._translation_step
         rotation = action[1] * self._rotation_step
         action = np.array([translation, rotation])
-        action = self._current_control + action
-        action = np.clip(action, self.bounds[:, 0], self.bounds[:, 1])
+        action = self._current_j_pos + action
         return action
 
     def step(
@@ -198,15 +203,11 @@ class CathSim(gym.Env):
         target_position = self._target_position
 
         info = self._get_info()
-        info["action"] = action
+        info["action"] = [round(action[0], 4), round(math.degrees(action[1]))]
 
-        reward = self.compute_reward(
-            achieved_goal=head_position, desired_goal=target_position, info=info
-        )
+        reward = self.compute_reward(achieved_goal=head_position, desired_goal=target_position, info=info)
 
-        terminated = self.compute_terminated(
-            achieved_goal=head_position, desired_goal=target_position, info=info
-        )
+        terminated = self.compute_terminated(achieved_goal=head_position, desired_goal=target_position, info=info)
 
         if self.render_mode == "human":
             self.render()
@@ -289,6 +290,7 @@ if __name__ == "__main__":
     for ep in range(4):
         done = False
         ob, info = env.reset()
+        step = 0
         while not done:
             action = env.action_space.sample()
             action[0] = 1
@@ -296,8 +298,10 @@ if __name__ == "__main__":
             ob, reward, terminated, truncated, info = env.step(action)
             img = env.render()
             img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+            print(f"Step {step:03d} ({info['time']:.1f}): Force {info['total_force']:.3f} Action {info['action']}")
             cv2.imshow("Top Camera", img)
             cv2.waitKey(1)
             done = terminated or truncated
+            step += 1
         print("Time elapsed: ", info["time"])
         cv2.destroyAllWindows()
