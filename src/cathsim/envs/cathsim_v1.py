@@ -31,6 +31,7 @@ class CathSim(gym.Env):
         rotation_step: float = 10,  # in degrees
         image_n_channels: int = 3,
         channel_first: bool = False,
+        time_limit: float = None,  # in seconds
     ):
         model_path = Path(__file__).parent.parent / "components/scene.xml"
         self.xml_path = model_path.resolve().as_posix()
@@ -55,6 +56,7 @@ class CathSim(gym.Env):
         self.init_guidewire_pos = self.model.body("guidewire").pos.copy()
 
         self.frame_skip = 20
+        self.time_limit = time_limit
 
         assert (
             render_mode in self.metadata["render_modes"]
@@ -207,12 +209,12 @@ class CathSim(gym.Env):
         reward = self.compute_reward(achieved_goal=head_position, desired_goal=target_position, info=info)
 
         terminated = self.compute_terminated(achieved_goal=head_position, desired_goal=target_position, info=info)
+        truncated = info["time"] >= self.time_limit if self.time_limit is not None else False
 
         if self.render_mode == "human":
             self.render()
 
-        # truncation=False as the time limit is handled by the `TimeLimit` wrapper added during `make`
-        return obs, reward, terminated, False, info
+        return obs, reward, terminated, truncated, info
 
     def compute_reward(self, achieved_goal, desired_goal, info):
         distance = np.linalg.norm(achieved_goal - desired_goal)
