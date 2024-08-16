@@ -1,41 +1,49 @@
 <mujoco>
-  <compiler meshdir="phantoms/phantom-elastrat"></compiler>
-  <!-- <size memory="20G" /> -->
+
+  <compiler meshdir="phantoms/phantom-elastrat" />
+
   <visual>
     <global elevation="-90" linewidth="0.001" />
     <scale forcewidth="0.005" contactwidth="0.005" connect="0.001" com="0.01" selectpoint="0.001"
       jointlength="0.01" jointwidth="0.005" framelength="0.01" framewidth="0.005" />
+    <rgba haze="0.15 0.25 0.35 1" />
+    <map fogend="15" fogstart="1" haze="1" shadowscale="0.5" stiffness="700" zfar="40" />
   </visual>
+
   <default>
     <site group="0" size="0.005" type="sphere" />
-    <!-- <geom condim="3" friction="0.5" /> -->
   </default>
-  <compiler angle="degree"></compiler>
-  <option density="1055" o_margin="0.005" timestep="0.002" viscosity="0.004">
+
+  <compiler angle="degree" />
+
+  <option density="1055" o_margin="0.005" timestep="0.0005" viscosity="0.004">
     <flag autoreset="disable" />
   </option>
+
   <!-- <option cone="elliptic" density="1055" integrator="implicitfast" jacobian="sparse" -->
   <!--   o_margin="0.005" o_solref="0.02 1" o_friction="1 0.005 0.0001" solver="PGS" -->
   <!--   timestep="0.005" viscosity="0.004"> -->
   <!--   <flag frictionloss="enable" /> -->
   <!-- </option> -->
-  <include file="guidewires/guidewire_angled.xml"></include>
-  <include file="phantoms/phantom-elastrat/phantom-elastrat.xml"></include>
-  <statistic meansize=".05"></statistic>
-  <visual>
-    <rgba haze="0.15 0.25 0.35 1"></rgba>
-    <map fogend="15" fogstart="1" haze="1" shadowscale="0.5" stiffness="700" zfar="40"></map>
-  </visual>
+
+  <include file="guidewires/guidewire_angled.xml" />
+
+  <include file="phantoms/phantom-elastrat/phantom-elastrat.xml" />
+
+  <statistic meansize=".05" />
+
   <asset>
     <texture builtin="checker" height="512" mark="cross" markrgb=".8 .8 .8" name="texplane"
-      rgb1=".2 .3 .4" rgb2=".1 0.15 0.2" type="2d" width="512"></texture>
+      rgb1=".2 .3 .4" rgb2=".1 0.15 0.2" type="2d" width="512" />
     <material name="matplane" reflectance="0.3" texrepeat="10 10" texture="texplane"
-      texuniform="true"></material>
+      texuniform="true" />
     <texture type="skybox" builtin="gradient" rgb1="1 1 1" rgb2="1 1 1" width="256"
-      height="256"></texture>
+      height="256" />
   </asset>
+
   <worldbody>
     <camera name="top" pos="-0.027 0.1 0.29" />
-    <light castshadow="false" pos="0 0 10" dir="20 20 -20"></light>
+    <light castshadow="false" pos="0 0 10" dir="20 20 -20" />
   </worldbody>
+
 </mujoco>

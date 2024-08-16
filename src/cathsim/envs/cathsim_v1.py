@@ -27,8 +27,8 @@ class CathSim(gym.Env):
         render_mode: str = "rgb_array",
         image_size: int = DEFAULT_SIZE,
         image_fn: callable = None,
-        translation_step: float = 0.002,  # in meters
-        rotation_step: float = 10,  # in degrees
+        translation_step: float = 0.001,  # in meters
+        rotation_step: float = 5,  # in degrees
         image_n_channels: int = 3,
         channel_first: bool = False,
         time_limit: float = None,  # in seconds
@@ -55,7 +55,7 @@ class CathSim(gym.Env):
         self.init_qvel = self.data.qvel.ravel().copy()
         self.init_guidewire_pos = self.model.body("guidewire").pos.copy()
 
-        self.frame_skip = 20
+        self.frame_skip = 59
         self.time_limit = time_limit
 
         assert (
@@ -169,13 +169,14 @@ class CathSim(gym.Env):
         self._step_mujoco_simulation(ctrl, n_frames)
 
         # Wait for the joint to reach the desired position within the specified tolerance
-        for _ in range(max_iters):
+        for i in range(max_iters):
             # Step the simulation
             self._step_mujoco_simulation(ctrl, n_frames)
 
             # Check if the joint positions are within the tolerance
             current_j_pos = self._current_j_pos
             if all(np.abs(np.array(current_j_pos) - np.array(ctrl)) <= tolerance):
+                print(f"Joint position converged within {i} iterations.")
                 break
         else:
             print(f"Warning: Joint position did not converge within {max_iters} iterations.")
@@ -281,6 +282,14 @@ if __name__ == "__main__":
 
     import cathsim
 
+    def make_movie(frames, fps):
+        height, width, _ = frames[0].shape
+        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+        out = cv2.VideoWriter("output.mp4", fourcc, fps, (width, height))
+        for frame in frames:
+            out.write(frame)
+        out.release()
+
     env = gym.make("CathSim-v1", render_mode="rgb_array", image_size=480)
     # check_env(env.unwrapped, skip_render_check=True)
     # env = CathSim(render_mode="rgb_array", image_size=480)
@@ -292,17 +301,22 @@ if __name__ == "__main__":
         done = False
         ob, info = env.reset()
         step = 0
+        frames = []
         while not done:
             action = env.action_space.sample()
             action[0] = 1
-            action[1] = 1
+            action[1] = -1
             ob, reward, terminated, truncated, info = env.step(action)
             img = env.render()
             img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+            frames.append(img)
             print(f"Step {step:03d} ({info['time']:.1f}): Force {info['total_force']:.3f} Action {info['action']}")
             cv2.imshow("Top Camera", img)
             cv2.waitKey(1)
             done = terminated or truncated
             step += 1
+        fps = len(frames) / info["time"]
+        make_movie(frames, fps)
+        exit()
         print("Time elapsed: ", info["time"])
         cv2.destroyAllWindows()
