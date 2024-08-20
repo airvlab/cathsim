@@ -14,8 +14,6 @@
     <site group="0" size="0.005" type="sphere" />
   </default>
 
-  <compiler angle="degree" />
-
   <option density="1055" o_margin="0.005" timestep="0.0005" viscosity="0.004">
     <flag autoreset="disable" />
   </option>
