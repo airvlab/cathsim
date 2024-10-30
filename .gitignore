@@ -4,6 +4,10 @@ scratch/
 data/
 .sync*
 
+_site
+.sass-cache
+.jekyll-metadata
+Gemfile.lock
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
