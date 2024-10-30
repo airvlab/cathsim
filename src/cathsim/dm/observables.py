@@ -1,12 +1,9 @@
 import numpy as np
-
-from dm_control.composer.observation.observable import MujocoCamera
-from dm_control.composer.observation import observable
-from dm_control import composer
-from dm_env import specs
-
 from cathsim.dm.utils import get_env_config
-
+from dm_control import composer
+from dm_control.composer.observation import observable
+from dm_control.composer.observation.observable import MujocoCamera
+from dm_env import specs
 
 env_config = get_env_config()
 

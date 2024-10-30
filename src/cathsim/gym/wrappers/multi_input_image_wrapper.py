@@ -1,6 +1,6 @@
-import numpy as np
 import cv2
 import gymnasium as gym
+import numpy as np
 
 
 class MultiInputImageWrapper(gym.ObservationWrapper):
@@ -59,7 +59,7 @@ class MultiInputImageWrapper(gym.ObservationWrapper):
 
 
 if __name__ == "__main__":
-    from cathsim.gym.envs import CathSim, make_gym_env
+    from cathsim.gym.envs import make_gym_env
     from cathsim.rl.utils import Config
 
     config = Config("pixels")

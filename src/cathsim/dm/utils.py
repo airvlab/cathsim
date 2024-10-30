@@ -1,21 +1,21 @@
 """
 utilities module for the environment.
 """
+
+from pathlib import Path
+
+import gymnasium as gym
 import numpy as np
 import yaml
-from gymnasium import wrappers
-import gymnasium as gym
 from cathsim.gym.wrappers import (
     GoalEnvWrapper,
     MultiInputImageWrapper,
     SingleDict2Array,
 )
-
-
-from stable_baselines3.common.monitor import Monitor
-from stable_baselines3.common.vec_env import VecMonitor, SubprocVecEnv
-from pathlib import Path
 from dm_control.viewer.application import Application
+from gymnasium import wrappers
+from stable_baselines3.common.monitor import Monitor
+from stable_baselines3.common.vec_env import SubprocVecEnv, VecMonitor
 from toolz.dicttoolz import itemmap
 
 
@@ -201,8 +201,8 @@ class Application(Application):
             resume: Resume the experiment after this call. Defaults to
         """
         super().__init__(title, width, height)
-        from dm_control.viewer import user_input
         from cathsim.rl.data import Trajectory
+        from dm_control.viewer import user_input
 
         self._input_map.bind(self._move_forward, user_input.KEY_UP)
         self._input_map.bind(self._move_back, user_input.KEY_DOWN)

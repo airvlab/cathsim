@@ -1,18 +1,20 @@
+import tracemalloc
 from pathlib import Path
-import matplotlib.pyplot as plt
-import pandas as pd
-import numpy as np
-import gymnasium as gym
-from tqdm import tqdm
 from pprint import pprint
+from typing import List, Tuple
 
-from cathsim.rl.utils import generate_experiment_paths
+import gymnasium as gym
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 from cathsim.rl.data import Trajectory
 from cathsim.rl.metrics import AGGREGATE_METRICS, INDIVIDUAL_METRICS
-
+from cathsim.rl.utils import generate_experiment_paths
+from memory_profiler import profile
+from pympler.classtracker import ClassTracker
+from pympler.tracker import SummaryTracker
 from stable_baselines3.common.base_class import BaseAlgorithm
-
-from typing import List, Tuple
+from tqdm import tqdm
 
 RESULTS_SUMMARY = Path.cwd() / "results-summary-test"
 
@@ -137,6 +139,7 @@ def analyze_evaluation_data(evaluation_data: dict) -> dict:
     return analysis_data
 
 
+@profile
 def evaluate_policy(
     model: BaseAlgorithm,
     env: gym.Env,
@@ -156,6 +159,7 @@ def evaluate_policy(
         Trajectory: The trajectory of the episode.
     """
     trajectories = []
+
     for i in tqdm(range(n_episodes)):
         trajectory = Trajectory()
         observation, _ = env.reset()
@@ -165,12 +169,12 @@ def evaluate_policy(
             action, _ = model.predict(observation)
             new_observation, reward, terminated, truncated, info = env.step(action)
             done = terminated or truncated
+            continue
             print(
                 f"Step {j} terminated: {terminated}, truncated: {truncated}, done: {done}",
                 flush=True,
                 end="\r",
             )
-            j += 1
             trajectory.add_transition(
                 observation=observation,
                 action=action,
@@ -179,9 +183,12 @@ def evaluate_policy(
                 info=info,
             )
             observation = new_observation
-        trajectories.append(trajectory)
-    if n_episodes == 1:
-        return trajectories[0]
+            j += 1
+    #     trajectories.append(trajectory)
+    # if n_episodes == 1:
+    #     return trajectories[0]
+
+    exit()
     return trajectories
 
 
@@ -209,8 +216,8 @@ def parse_tensorboard_log(path: Path):
     :param path Path: The path to the tensorboard log.
     :return pd.DataFrame: The parsed tensorboard log.
     """
-    from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
     import pandas as pd
+    from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
 
     tag = "rollout/ep_len_mean"
     acc = EventAccumulator(path)
@@ -300,12 +307,45 @@ def plot_human_line(ax, phantom, target, n_interpolations=30):
     ax.fill_between(x, y - y_std, y + y_std, alpha=0.2)
 
 
+def evaluate_models():
+    from cathsim.rl import make_gym_env
+    from cathsim.rl.config_manager import Config
+    from cathsim.rl.utils import generate_experiment_paths
+    from stable_baselines3 import SAC
+
+    config = Config(
+        config_name="test",
+        trial_name="test-trial",
+        base_path=Path.cwd() / "results",
+        task_kwargs=dict(
+            phantom="phantom2",
+            target="bca",
+        ),
+    )
+    model_path, log_path, eval_path = generate_experiment_paths(
+        config.get_env_path(),
+    )
+    models = config.get_env_path() / "models"
+    for model_path in models.iterdir():
+        model = SAC.load(model_path)
+        if (eval_path / f"{model_path.stem}").exists():
+            print(f"{model_path.stem} already exists.")
+            continue
+        trajectories = evaluate_policy(
+            model, make_gym_env(config=config, monitor_wrapper=False), n_episodes=2
+        )
+        save_trajectories(
+            trajectories,
+            eval_path / f"{model_path.stem}",
+        )
+        del model
+
+
 if __name__ == "__main__":
-    # evaluate_model(EXPERIMENT_PATH / 'low_tort' / 'bca' / 'full', n_episodes=10)
     # evaluate_models()
-    # lcca_evaluation.mkdir(exist_ok=True)
+    # exit()
 
     # collate_results(verbose=True)
-    eval_data = collate_evaluation_data(Path.cwd() / "test-base" / "test-trial")
+    eval_data = collate_evaluation_data(Path.cwd() / "results" / "test-trial")
     analysis = analyze_evaluation_data(eval_data)
     pprint(analysis)

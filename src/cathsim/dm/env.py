@@ -1,30 +1,23 @@
 import math
-import numpy as np
-import pandas as pd
-import trimesh
 import random
-from typing import Union, Optional
+from typing import Optional, Union
 
-
-from dm_control import mjcf, mujoco
-from dm_control.mujoco.wrapper.mjbindings import mjlib
-from dm_control.mujoco import wrapper, engine
-from dm_control import composer
-from dm_control.composer import variation
-from dm_control.composer.variation import distributions, noises
-from dm_control.composer.observation import observable
-
-from cathsim.dm.components import Phantom
-from cathsim.dm.components import Guidewire, Tip
+import numpy as np
+import trimesh
+from cathsim.dm.components import Guidewire, Phantom, Tip
 from cathsim.dm.fluid import apply_fluid_force
-from cathsim.dm.utils import distance
 from cathsim.dm.observables import CameraObservable
-from cathsim.dm.utils import filter_mask, get_env_config
+from cathsim.dm.utils import distance, filter_mask, get_env_config
 from cathsim.dm.visualization import (
-    point2pixel,
     create_camera_matrix,
+    point2pixel,
 )
-
+from dm_control import composer, mjcf
+from dm_control.composer import variation
+from dm_control.composer.observation import observable
+from dm_control.composer.variation import distributions, noises
+from dm_control.mujoco import engine, wrapper
+from pympler.classtracker import ClassTracker
 
 env_config = get_env_config()
 
@@ -87,9 +80,6 @@ def sample_points(
 
         if valid_points:
             return random.choice(valid_points)
-
-
-callback_called = 0
 
 
 class Scene(composer.Arena):
@@ -315,6 +305,14 @@ class Navigate(composer.Task):
             image_size=self.image_size, camera_name="top_camera"
         )
         self.set_target(target)
+
+    def __del__(self):
+        # Cleanup code to release resources
+        for obs in self._task_observables.values():
+            obs.enabled = False
+        del self._task_observables
+        del self._arena
+        del self.camera_matrix
 
     def _setup_arena_and_attachments(
         self, phantom: composer.Entity, guidewire: composer.Entity, tip: composer.Entity
@@ -646,9 +644,10 @@ def make_dm_env(
 
 
 if __name__ == "__main__":
-    import matplotlib.pyplot as plt
     from pathlib import Path
+
     import cv2
+    import matplotlib.pyplot as plt
 
     data_path = Path.cwd() / "data"
 
@@ -675,7 +674,7 @@ if __name__ == "__main__":
         image_size=480,
         visualize_sites=False,
         visualize_target=True,
-        sample_target=True,
+        sample_target=False,
         target_from_sites=False,
     )
 

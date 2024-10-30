@@ -13,6 +13,14 @@ def force_mean(trajectory: Trajectory) -> float:
     return trajectory["info-forces"].mean()
 
 
+def reward_mean(trajectory: Trajectory) -> float:
+    return trajectory["reward"].mean()
+
+
+def force_max(trajectory: Trajectory) -> float:
+    return trajectory["info-forces"].max()
+
+
 def head_pos_mean(trajectory: Trajectory) -> float:
     return np.mean(trajectory["info-head_pos"], axis=0)
 
@@ -32,7 +40,7 @@ def total_distance(trajectory: Trajectory) -> float:
 
 
 def success(trajectory: Trajectory) -> float:
-    return np.sum(np.where(episode_length(trajectory) <= 300, 1, 0))
+    return np.sum(np.where(episode_length(trajectory) < 300, 1, 0))
 
 
 def spl(trajectories: List[Trajectory]) -> float:
@@ -51,6 +59,8 @@ def spl(trajectories: List[Trajectory]) -> float:
 
 INDIVIDUAL_METRICS = [
     force_mean,
+    force_max,
+    reward_mean,
     # head_pos_mean,
     episode_length,
     safety,

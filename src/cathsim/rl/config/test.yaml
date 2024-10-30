@@ -6,12 +6,7 @@ task_kwargs:
 
 wrapper_kwargs:
   use_obs:
-    - 'pixels'
-    - 'guidewire'
-    - 'joint_pos'
-    - 'joint_vel'
-
-
-
-
-
+    - "pixels"
+    - "guidewire"
+    - "joint_pos"
+    - "joint_vel"

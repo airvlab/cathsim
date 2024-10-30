@@ -1,5 +1,6 @@
+from typing import Any, Dict, Optional
+
 import gymnasium as gym
-from typing import Optional, Dict, Any
 
 
 def apply_filter_observation(env: gym.Env, filter_keys: Optional[list]) -> gym.Env:
@@ -38,8 +39,8 @@ def make_gym_env(
         gym.Env: The environment
 
     """
-    from stable_baselines3.common.vec_env import SubprocVecEnv, VecMonitor
     from stable_baselines3.common.monitor import Monitor
+    from stable_baselines3.common.vec_env import SubprocVecEnv, VecMonitor
 
     wrapper_kwargs = config.wrapper_kwargs or {}
     task_kwargs = config.task_kwargs or {}
@@ -80,5 +81,6 @@ def make_gym_env(
 if __name__ == "__main__":
     from cathsim.rl import Config
 
-    config = Config("pixels")
+    config = Config()
     env = make_gym_env(config, n_envs=1, monitor_wrapper=True)
+    print(env)

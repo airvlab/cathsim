@@ -1,10 +1,10 @@
-import os
-import torch as th
-from pathlib import Path
 import argparse as ap
+import os
+from pathlib import Path
 
-from cathsim.rl.utils import ALGOS, generate_experiment_paths
+import torch as th
 from cathsim.rl import Config
+from cathsim.rl.utils import ALGOS, generate_experiment_paths
 
 
 def cmd_visualize_agent(args=None):
@@ -13,14 +13,14 @@ def cmd_visualize_agent(args=None):
     :param args:  (Default value = None)
 
     """
+    import argparse as ap
+
     import cv2
     from cathsim.utils import make_gym_env
     from cathsim.visualization import point2pixel
-    import argparse as ap
     from cathsim.wrappers import SingleDict2Array
     from stable_baselines3.common.policies import ActorCriticCnnPolicy
 
-    # from scratch.bc.custom_networks import CustomPolicy
     parser = ap.ArgumentParser()
     parser.add_argument("--config", type=str, default="full")
     parser.add_argument("--base-path", type=str, default="results")
@@ -124,8 +124,9 @@ def cmd_run_env(args=None):
     :param args:  (Default value = None)
 
     """
-    from cathsim.dm import make_dm_env
     from argparse import ArgumentParser
+
+    from cathsim.dm import make_dm_env
     from cathsim.dm.utils import launch
 
     ap = ArgumentParser()
@@ -161,7 +162,7 @@ def cmd_train(args=None):
     parser.add_argument("--base-path", type=Path, default=Path.cwd() / "results")
     parser.add_argument("--n-runs", type=int, default=1)
     parser.add_argument("--n-timesteps", type=int, default=int(6e5))
-    parser.add_argument("-e", action="store_true")
+    parser.add_argument("-e", action="store_false")
     args = parser.parse_args()
 
     train(

@@ -1,8 +1,8 @@
+import pprint
+from pathlib import Path
+
 import torch as th
 import yaml
-import pprint
-
-from pathlib import Path
 from mergedeep import merge
 
 RESULTS_PATH = Path.cwd() / "results"
@@ -18,7 +18,7 @@ class Config:
 
     def set_defaults(self):
         """Set default values for the config."""
-        from cathsim.rl.feature_extractors import CustomExtractor, ViTExtractor
+        from cathsim.rl.feature_extractors import CustomExtractor
 
         self.base_path = RESULTS_PATH
         self.trial_name = "test"
@@ -31,13 +31,13 @@ class Config:
         )
         self.task_kwargs = dict(
             use_pixels=True,
-            use_segment=True,
+            use_segment=False,
             image_size=80,
             phantom="phantom3",
             target="bca",
             random_init_distance=1e-3,
             sample_target=False,
-            target_from_sites=True,
+            target_from_sites=False,
         )
 
         self.wrapper_kwargs = dict(

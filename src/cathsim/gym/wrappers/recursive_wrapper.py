@@ -1,7 +1,8 @@
 from typing import Any, Callable, Dict
+
+import cv2
 import gymnasium as gym
 import numpy as np
-import cv2
 
 
 class TransformObservationForKey(
@@ -49,7 +50,6 @@ class TransformObservationForKey(
 
 
 if __name__ == "__main__":
-    from cathsim.gym.envs import CathSim
 
     def transform_image(observation):
         observation = cv2.cvtColor(observation, cv2.COLOR_RGB2GRAY)

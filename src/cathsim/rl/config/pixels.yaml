@@ -4,5 +4,4 @@ task_kwargs:
 
 wrapper_kwargs:
   use_obs:
-    - 'pixels'
-
+    - "pixels"

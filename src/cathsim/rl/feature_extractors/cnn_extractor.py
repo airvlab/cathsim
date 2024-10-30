@@ -1,15 +1,11 @@
 from typing import Dict
 
-from gymnasium import spaces
-
-import torch.nn as nn
-import torch
 import torch as th
-
-from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
-from stable_baselines3.common.torch_layers import NatureCNN
+import torch.nn as nn
+from gymnasium import spaces
+from stable_baselines3.common.preprocessing import get_flattened_obs_dim, is_image_space
+from stable_baselines3.common.torch_layers import BaseFeaturesExtractor, NatureCNN
 from stable_baselines3.common.type_aliases import TensorDict
-from stable_baselines3.common.preprocessing import is_image_space, get_flattened_obs_dim
 
 
 class CustomExtractor(BaseFeaturesExtractor):
