@@ -87,9 +87,6 @@ footer:
       icon: "fas fa-fw fa-envelope-square"
       url: "https://www.csc.liv.ac.uk/~anguyen/"
 
-collections:
-  papers: output= true
-
 defaults:
   # _posts
   - scope:
