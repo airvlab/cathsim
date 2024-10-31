@@ -6,10 +6,10 @@ header:
   overlay_color: "#3f3f46"
   # overlay_image: /assets/images-cathsim/splash.png
   actions:
-    - label: "<i class='fas fa-download'></i> Install now"
+    - label: "<i class='fas fa-rocket'></i> Quick Start"
       url: "/docs/quick-start-guide/"
 excerpt: >
-  An open-source endovascular simulator.<br />
+  An open-source Endovascular Simulator for Endovascular Navigation.<br />
 feature_row:
   - image_path: /assets/images-cathsim/aorta_side.png
     alt: "customizable"
@@ -29,7 +29,7 @@ feature_row:
     # btn_label: "Learn more"
   - image_path: /assets/images-cathsim/cathbot_sim.png
     alt: "100% free"
-    title: "100% free"
+    title: "Real Hardware Implementation"
     excerpt: >
       Based on real hardware design.
     # url: "/docs/license/"
