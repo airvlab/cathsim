@@ -7,9 +7,9 @@ header:
   # overlay_image: /assets/images-cathsim/splash.png
   actions:
     - label: "<i class='fas fa-rocket'></i> Quick Start"
-      url: "/docs/quick-start-guide/"
+      url: "https://github.com/airvlab/cathsim"
 excerpt: >
-  An open-source Endovascular Simulator for Endovascular Navigation.<br />
+  An open-source Endovascular Simulator for Endovascular Navigation<br />
 feature_row:
   - image_path: /assets/images-cathsim/aorta_side.png
     alt: "customizable"
