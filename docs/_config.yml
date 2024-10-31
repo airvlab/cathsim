@@ -78,27 +78,17 @@ footer:
       url: "https://github.com/airvlab/cathsim"
 
 defaults:
+  # _posts
   - scope:
-      path: ""
-      type: home
+      path: "posts"
+      type: posts
     values:
-      layout: splash
+      layout: single
       author_profile: false
       read_time: false
       comments: false
       share: true
       related: false
-  # _posts
-  # - scope:
-  #     path: "posts"
-  #     type: posts
-  #   values:
-  #     layout: single
-  #     author_profile: false
-  #     read_time: false
-  #     comments: false
-  #     share: true
-  #     related: false
   # _pages
   - scope:
       path: "_pages"

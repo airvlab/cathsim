@@ -1,8 +1,9 @@
 main:
+  - home: "Home"
+    url: "/home"
   - title: "Blog"
     url: /posts/
   - title: "Papers"
     url: /tags/
   - title: "Download"
     url: /categories/
-
