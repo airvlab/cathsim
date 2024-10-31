@@ -1,13 +1,13 @@
 # CathSim: An Open-source Simulator for Endovascular Intervention
-### [[Project Page](https://airvlab.github.io/cathsim/)] [[Paper](https://arxiv.org/abs/2208.01455)]
 
+### [[Project Page](https://airvlab.github.io/cathsim/)] [[Paper](https://arxiv.org/abs/2208.01455)]
 
 <div align="center">
     <a href="https://"><img height="auto" src="/misc/cathsim_dn.gif"></a>
 </div>
 
-
 ## Contents
+
 1. [Requirements](#requirements)
 2. [Installation](#installation)
 3. [Quickstart](#quickstart)
@@ -16,8 +16,8 @@
 6. [Mesh Processing](#mesh-processing)
 7. [Adding Elements](#adding-elements)
 
-
 ## Requirements
+
 1. Ubuntu (tested with Ubuntu 22.04 LTS)
 2. Miniconda (tested with Miniconda 23.5)
 3. Python 3.9
@@ -87,6 +87,7 @@ for _ in range(1):
 ```
 
 Being a `gym` interface, it is compatible with RL libraries such as `stable_baselines3`:
+
 ```python
 import cathsim.gym.envs
 from stable_baselines3 import SAC
@@ -96,9 +97,10 @@ model = SAC("MultiInputPolicy", "cathsim/CathSim-v0").learn(10000)
 
 For a list of the environment libraries at the current time, see the accompanying `environment.yml`
 
-## Training 
+## Training
 
 In order to train the models available run:
+
 ```bash
 bash ./scripts/train.bash
 ```
@@ -107,17 +109,17 @@ The script will create a `results` directory on the `cwd`. The script saves the 
 
 ##### Path Comparison
 
-<img width="1604" alt="path comparison between human and ENN" src="./misc/path.png"> 
-
+<img width="1604" alt="path comparison between human and ENN" src="./misc/path.png">
 
 ## Manual Control
 
 For a quick visualisation of the environment run:
+
 ```bash
 run_env
 ```
-You will now see the guidewire and the aorta along with the two sites that represent the targets. You can interact with the environment using the keyboard arrows.
 
+You will now see the guidewire and the aorta along with the two sites that represent the targets. You can interact with the environment using the keyboard arrows.
 
 ## Mesh Processing
 
@@ -127,7 +129,7 @@ In order to use a custom aorta, it has to be processed using convex decompositio
 pip install git+git@github.com:tudorjnu/stl2mjcf.git
 ```
 
-After the installation, you can use `stl2mjcf --help` to see the available commands. The resultant files can be then added to `cathsim/assets`. The `xml` will go in that folder and the resultant meshes folder will go in `cathsim/assets/meshes/`. 
+After the installation, you can use `stl2mjcf --help` to see the available commands. The resultant files can be then added to `cathsim/assets`. The `xml` will go in that folder and the resultant meshes folder will go in `cathsim/assets/meshes/`.
 
 Note: You will probably have to change the parameters of V-HACD for the best results.
 
@@ -206,7 +208,6 @@ print(my_box)  # MJCF Element: <geom name="my_box" type="box" pos="0. 0.1 0."/>
 
 Please see more information on `mjcf` [here](https://github.com/google-deepmind/dm_control/tree/main/dm_control/mjcf).*
 
-
 ## TODO's
 
 - [x] Code refactoring
@@ -215,7 +216,7 @@ Please see more information on `mjcf` [here](https://github.com/google-deepmind/
 - [x] Implement multiple aortic models
 - [x] Update to `gymnasium`
 - [x] Add guidewire representation
-- [ ] Create tests for the environment 
+- [ ] Create tests for the environment
 
 ## Maintainers (full list of [contributors](contributors.md))
 
@@ -237,8 +238,11 @@ Please feel free to copy, distribute, display, perform or remix our work but for
 If you find our paper useful in your research, please consider citing:
 
 ``` bibtex
-@article{jianu2022cathsim,
-  title={CathSim: An Open-source Simulator for Endovascular Intervention},
-  author={Jianu, Tudor and Huang, Baoru and Abdelaziz, Mohamed EMK and Vu, Minh Nhat and Fichera, Sebastiano and Lee, Chun-Yi and Berthet-Rayne, Pierre and Nguyen, Anh and others},
-  journal={arXiv preprint arXiv:2208.01455},
-  year={2022}
+@article{jianu2024cathsim,
+  title={Cathsim: an open-source simulator for endovascular intervention},
+  author={Jianu, Tudor and Huang, Baoru and Vu, Minh Nhat and Abdelaziz, Mohamed EMK and Fichera, Sebastiano and Lee, Chun-Yi and Berthet-Rayne, Pierre and y Baena, Ferdinando Rodriguez and Nguyen, Anh},
+  journal={IEEE Transactions on Medical Robotics and Bionics},
+  year={2024},
+  publisher={IEEE}
+}
+```
