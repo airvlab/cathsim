@@ -20,7 +20,7 @@ description: >- # this means to ignore newlines until "baseurl:"
   line in _config.yml. It will appear in your document head meta (for
   Google search results) and in your feed.xml site description.
 # twitter_username: username
-github_username: username
+github_username: airvlab
 minimal_mistakes_skin: default
 search: false
 
@@ -32,6 +32,7 @@ permalink: /:categories/:title/
 paginate: 5 # amount of posts to show
 paginate_path: /page:num/
 timezone: # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+repository: "airvlab/cathsim"
 
 include:
   - _pages
