@@ -50,9 +50,9 @@ where \( M \) is inertia, \( \dot{v} \) acceleration, \( c \) bias force, and \(
 ## Aortic Models
 
 <div class="image-container">
-  <img  width="300px" src="{{ site.baseurl }}/images-cathsim/rebuttal/low_tort.png" alt="Low Tort Aorta">
-  <img  width="300px" src="{{ site.baseurl }}/images-cathsim/rebuttal/aneurysm.png" alt="Aneurysm Aorta">
-  <img  width="300px" src="{{ site.baseurl }}/images-cathsim/rebuttal/type2.png" alt="Type 2 Aorta">
+  <img  width="300px" src="{{ site.baseurl }}/assets/images-cathsim/rebuttal/low_tort.png" alt="Low Tort Aorta">
+  <img  width="300px" src="{{ site.baseurl }}/assets/images-cathsim/rebuttal/aneurysm.png" alt="Aneurysm Aorta">
+  <img  width="300px" src="{{ site.baseurl }}/assets/images-cathsim/rebuttal/type2.png" alt="Type 2 Aorta">
 </div>
 
 Detailed 3D meshes from silicone-based phantoms are used to simulate different aortic structures. Convex hulls generated through V-HACD simplify collision modeling. These models include:
@@ -65,14 +65,14 @@ Detailed 3D meshes from silicone-based phantoms are used to simulate different a
 These models diversify the simulator’s anatomical dataset, enhancing its utility in research and education.
 
 <div class="image-container">
-  <img width="300px" src="{{ site.baseurl }}/images-cathsim/aorta_front.png" alt="Low Tort Aorta">
-  <img  width="300px" src="{{ site.baseurl }}/images-cathsim/aorta_side.png" alt="Aneurysm Aorta">
+  <img width="300px" src="{{ site.baseurl }}/assets/images-cathsim/aorta_front.png" alt="Low Tort Aorta">
+  <img  width="300px" src="{{ site.baseurl }}/assets/images-cathsim/aorta_side.png" alt="Aneurysm Aorta">
 </div>
 
 ## Guidewire
 
 <div class="image-container">
-  <img src="{{ site.baseurl }}/images-cathsim/catheter.png" width="80%" alt="Low Tort Aorta">
+  <img src="{{ site.baseurl }}/assets/images-cathsim/catheter.png" width="80%" alt="Low Tort Aorta">
 </div>
 
 The guidewire is a flexible, segmented structure composed of a main body and a softer tip, connected through revolute or spherical joints. This structure allows real-time simulations with accurate, low-cost shape predictions and a capsule-based collision model to mimic real catheter behavior.
@@ -84,8 +84,8 @@ For simplicity, blood is modeled as an incompressible Newtonian fluid with rigid
 ## Robotic Follower
 
 <div class="image-container">
-  <img  width="300px" src="{{ site.baseurl }}/images-cathsim/cathbot-follower.drawio.jpg" alt="Robotic Follower Design">
-  <img  width="300px" src="{{ site.baseurl }}/images-cathsim/cathbot_sim.png" alt="Simulated Robotic Follower">
+  <img  width="300px" src="{{ site.baseurl }}/assets/images-cathsim/cathbot-follower.drawio.jpg" alt="Robotic Follower Design">
+  <img  width="300px" src="{{ site.baseurl }}/assets/images-cathsim/cathbot_sim.png" alt="Simulated Robotic Follower">
 </div>
 
 The robotic follower, based on the CathBot design, maintains a linear relationship between leader and follower positions. Our simulation includes four modular platforms attached to a main rail, with prismatic joints for translational movement and revolute joints for rotation.
@@ -97,7 +97,7 @@ CathBot’s actuation relies on frictional forces between the guidewire and clam
 ## Validation
 
 <div class="image-container">
-  <img width="500px" src="{{ site.baseurl }}/images-cathsim/force_distributions.png" alt="Force Distributions">
+  <img width="500px" src="{{ site.baseurl }}/assets/images-cathsim/force_distributions.png" alt="Force Distributions">
 </div>
 
 ### Statistical Analysis
