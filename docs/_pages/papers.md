@@ -5,7 +5,7 @@ excerpt: "Related papers."
 classes: wide
 ---
 
-List of papers using Grasp-anything dataset.
+List of papers using CathSim.
 
 Please create a [**pull request**](https://github.com/airvlab/cathsim) to include your paper into this list.
 
