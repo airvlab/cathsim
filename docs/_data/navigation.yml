@@ -1,4 +1,6 @@
 main:
+  - title: "Introduction"
+    url: /introduction/
   - title: "Papers"
     url: /papers/
   - title: "About"

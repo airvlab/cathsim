@@ -1,6 +1,6 @@
 ---
-permalink: /materials/
-title: "Materials"
+permalink: /introduction/
+title: "Introduction"
 toc: true
 ---
 
@@ -16,7 +16,13 @@ prototyping of algorithms in the context of endovascular navigation.
   }
 </style>
 
+## Comparison with other simulators
+
+![Simulators](/assets/images-cathsim/table_simulators.png)
+
 <!-- ![Aortas](/assets/images-cathsim/overview.jpg) -->
+
+## Architecture
 
 <div class="image-container">
   <img src="/assets/images-cathsim/overview.jpg" width="80%" alt="Low Tort Aorta">
