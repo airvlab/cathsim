@@ -3,5 +3,5 @@ main:
     url: /introduction/
   - title: "Papers"
     url: /papers/
-  - title: "About"
-    url: /about/
+  # - title: "About"
+  #   url: /about/
