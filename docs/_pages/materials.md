@@ -1,9 +1,11 @@
 ---
 permalink: /materials/
 title: "Materials"
+toc: true
 ---
 
-
+Welcome to CathSim Project! We developed a simulator for rapid development and
+prototyping of algorithms in the context of endovascular navigation.
 
 <style>
   .image-container {
