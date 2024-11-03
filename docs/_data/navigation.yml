@@ -39,16 +39,14 @@ docs:
         url: /docs/paper/
       - title: "Code"
         url: /docs/code/
-      - title: "Download"
-        url: /docs/download/
   - title: Autonomous Catheterization
     children:
-      - title: "Robot"
+      - title: "Endovascular Robot"
         url: /docs/robot/
       - title: "Phantom Validation"
         url: /docs/phantom/
       - title: "Animal Validation"
-        url: /docs/Animal/
+        url: /docs/animal/
   - title: Datasets
     children:
       - title: "CathAction"

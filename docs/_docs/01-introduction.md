@@ -24,17 +24,6 @@ The CathSim simulator includes four components:
 - **Guidewire Model** – A flexible model directing the catheter along paths in the simulator.
 - **Blood Simulation and AR/VR** – Blood modeled as a Newtonian fluid within an augmented or virtual reality environment.
 
-MuJoCo serves as the foundation, chosen for its computational efficiency and machine learning compatibility, which expedites development for endovascular intervention. The modular, real-time, and extensible design allows for easy upgrades.
-
-## Simulation Model
-
-CathSim assumes all components are rigid bodies, a standard in simulators to balance computation speed and accuracy. The components follow continuous-time motion equations:
-
-$$
-M\dot{v} +c = \tau +J^Tf
-$$
-
-where \( M \) is inertia, \( \dot{v} \) acceleration, \( c \) bias force, and \( \tau \) applied force. The Recursive-Newton-Euler algorithm computes \( c \), while the Composite Rigid-Body algorithm calculates \( M \), with forward kinematics determining these quantities and inverse dynamics applying Newton’s method for \( \tau \).
 
 ## Aortic Models
 
