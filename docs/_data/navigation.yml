@@ -24,9 +24,7 @@ main:
     url: /docs/introduction/
   - title: "Autonomous Catheterization"
     url: /docs/autonomous-catheterization/
-  - title: "Papers"
-    url: /docs/paper/
-  - title: "Code"
+  - title: "Code&Datasets"
     url: /docs/code/
 
 
@@ -45,10 +43,10 @@ docs:
         url: /docs/download/
   - title: Datasets
     children:
-      - title: "Grasp-Anything"
-        url: /docs/grasp-anything/
-      - title: "Grasp-Anything++"
-        url: /docs/grasp-anything-pp/
+      - title: "CathAction"
+        url: /docs/cathaction/
+      - title: "Guide3D"
+        url: /docs/guide3D/
   #    - title: "Grasp-Anything-6D"
   #      url: /docs/grasp-anything-6d/
   #     - title: "Upgrading"
