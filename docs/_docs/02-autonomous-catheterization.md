@@ -1,7 +1,7 @@
 ---
-title: "Download"
-permalink: /docs/download/
-excerpt: "Download."
+title: "Autonomous Catheterization"
+permalink: /docs/autonomous-catheterization/
+excerpt: "Autonomous Catheterization."
 ---
 
 All of our datasets are released under [CC BY-NC-SA](https://github.com/airvlab/grasp-anything/blob/main/LICENSE) license.
