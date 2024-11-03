@@ -9,29 +9,29 @@ header:
     - label: "<i class='fas fa-rocket'></i> Quick Start"
       url: "https://github.com/airvlab/cathsim"
 excerpt: >
-  An open-source Endovascular Simulator for Endovascular Navigation<br />
+  Towards Autonomous Endovascular Navigation<br />
 feature_row:
   - image_path: /assets/images-cathsim/aorta_side.png
-    alt: "customizable"
-    title: "High Fidelity Aortic Arches"
+    alt: "CathSim"
+    title: "High-Fidelity Endovascular Simulator"
     excerpt: >
-      A set of high-fidelity, CT-scanned aortic arches are provided.
+      High-fidelity and Realistic Endovascular Simulator.
     url: "/introduction#aortic-models"
     btn_class: "btn--primary"
     btn_label: "Learn more"
   - image_path: /assets/images-cathsim/catheter.png
-    alt: "fully responsive"
-    title: "Discretized Guidewire"
+    alt: "Endovascular Intervention"
+    title: "Autonomous Endovascular Catheterization"
     excerpt: > 
-      A discretized approach has been taken for the guidewire representation
+      Autonomous Endovascular Catheterization
     url: "/introduction#guidewire"
     btn_class: "btn--primary"
     btn_label: "Learn more"
   - image_path: /assets/images-cathsim/cathbot_sim.png
-    alt: "100% free"
-    title: "Real Hardware Implementation"
+    alt: "Endovascular Datasets"
+    title: "Large-Scale Data For Endovascular Intervention"
     excerpt: >
-      Based on real hardware design.
+      Endovascular Datasets.
     url: "/introduction#robotic-follower"
     btn_class: "btn--primary"
     btn_label: "Learn more"      
