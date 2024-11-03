@@ -14,13 +14,13 @@ locale                   : "en-US"
 title                    : "CathSim"
 title_separator          : "-"
 subtitle                 : ""
-name                     : &name "CathSim Simulator" # &name is a YAML anchor which can be *referenced later
+name                     : &name "AI & Robot Vision Lab" # &name is a YAML anchor which can be *referenced later
 description              : &description "University of Liverpool."
 url                      : https://airvlab.github.io # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : "/cathsim" # the subpath of your site, e.g. "/blog"
 repository               : "airvlab/cathsim"
 teaser                   : # path of fallback teaser image, e.g. "/assets/images/500x300.png"
-logo                     : "/assets/images-cathsim/cathsim_logo.png" # path of logo image to display in the masthead, e.g. "/assets/images/88x88.png"
+logo                     : # path of logo image to display in the masthead, e.g. "/assets/images/88x88.png"
 masthead_title           : # overrides the website title displayed in the masthead, use " " for no title
 # breadcrumbs            : false # true, false (default)
 words_per_minute         : 200
