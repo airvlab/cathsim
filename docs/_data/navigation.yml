@@ -24,7 +24,7 @@ main:
     url: /docs/introduction/
   - title: "Autonomous Catheterization"
     url: /docs/autonomous-catheterization/
-  - title: "Code&Datasets"
+  - title: "Code & Data"
     url: /docs/code/
 
 
@@ -41,12 +41,23 @@ docs:
         url: /docs/code/
       - title: "Download"
         url: /docs/download/
+  - title: Autonomous Catheterization
+    children:
+      - title: "Robot"
+        url: /docs/robot/
+      - title: "Phantom Validation"
+        url: /docs/phantom/
+      - title: "Animal Validation"
+        url: /docs/Animal/
   - title: Datasets
     children:
       - title: "CathAction"
         url: /docs/cathaction/
       - title: "Guide3D"
         url: /docs/guide3D/
+        
+        
+        
   #    - title: "Grasp-Anything-6D"
   #      url: /docs/grasp-anything-6d/
   #     - title: "Upgrading"
