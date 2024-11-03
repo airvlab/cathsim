@@ -13,23 +13,23 @@ excerpt: >
 feature_row:
   - image_path: /assets/images-cathsim/aorta_side.png
     alt: "CathSim"
-    title: "High-Fidelity Endovascular Simulator"
+    title: "Endovascular Simulator"
     excerpt: >
-      High-fidelity and Realistic Endovascular Simulator.
+      Realistic Endovascular Simulator.
     url: "/introduction#aortic-models"
     btn_class: "btn--primary"
     btn_label: "Learn more"
-  - image_path: /assets/images-cathsim/catheter.png
+  - image_path: /assets/images-cathsim/aorta_side.png
     alt: "Endovascular Intervention"
-    title: "Autonomous Endovascular Catheterization"
+    title: "Autonomous Catheterization"
     excerpt: > 
       Autonomous Endovascular Catheterization
     url: "/introduction#guidewire"
     btn_class: "btn--primary"
     btn_label: "Learn more"
-  - image_path: /assets/images-cathsim/cathbot_sim.png
+  - image_path: /assets/images-cathsim/aorta_side.png
     alt: "Endovascular Datasets"
-    title: "Large-Scale Data For Endovascular Intervention"
+    title: "Large-Scale Endovascular Data"
     excerpt: >
       Endovascular Datasets.
     url: "/introduction#robotic-follower"
