@@ -22,12 +22,13 @@ foo:
 main:
   - title: "Introduction"
     url: /docs/introduction/
+  - title: "Autonomous Catheterization"
+    url: /docs/autonomous-catheterization/
   - title: "Papers"
     url: /docs/paper/
   - title: "Code"
     url: /docs/code/
-  - title: "Download"
-    url: /docs/download/
+
 
 
 # documentation links
