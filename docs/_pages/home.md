@@ -19,14 +19,14 @@ feature_row:
     url: "/docs/introduction/"
     btn_class: "btn--primary"
     btn_label: "Learn more"
-  - image_path: /assets/images/cathsim_main.png
+  - image_path: /assets/images/autocath2.jpg
     alt: "zero shot"
     title: "Autonomous Endovascular Catheterization"
     excerpt: "Our project enables sim2real for autonomous endovascular catheterization."
     url: "/docs/grasp-anything/"
     btn_class: "btn--primary"
     btn_label: "Learn more"
-  - image_path: /assets/images/cathsim_main.png
+  - image_path: /assets/images/data_main3.jpg
     alt: "language-driven grasp"
     title: "Large-scale Endovascular Datasets"
     excerpt: "Our datasets allows large-scale learning for diffirent endovascular intervention tasks."
