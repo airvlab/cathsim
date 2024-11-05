@@ -9,8 +9,6 @@ toc: true
 
 Welcome to CathSim Project! 
 
-## Overview
-
 <div class="image-container">
   <img src="{{ site.baseurl }}/assets/images/cathsim_overview.jpg" width="80%" alt="Low Tort Aorta">
 </div>
