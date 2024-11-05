@@ -23,14 +23,14 @@ feature_row:
     alt: "zero shot"
     title: "Autonomous Endovascular Catheterization"
     excerpt: "Our project enables sim2real for autonomous endovascular catheterization."
-    url: "/docs/grasp-anything/"
+    url: "/docs/robot//"
     btn_class: "btn--primary"
     btn_label: "Learn more"
   - image_path: /assets/images/data_main3.jpg
     alt: "language-driven grasp"
     title: "Large-scale Endovascular Datasets"
     excerpt: "We release large and manually anotated datasets for diffirent endovascular intervention tasks."
-    url: "/docs/grasp-anything-pp/"
+    url: "/docs/cathaction/"
     btn_class: "btn--primary"
     btn_label: "Learn more"     
 ---
