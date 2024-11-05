@@ -122,7 +122,7 @@ footer:
    links:
      - label: "GitHub"
        icon: "fab fa-fw fa-github"
-       url: "https://github.com/airvlab"
+       url: "https://github.com/airvlab/cathsim"
      - label: "Developer"
        icon: "fas fa-fw fa-link"
        url: "https://tudorjnu.github.io/"
