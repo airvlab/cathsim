@@ -22,7 +22,7 @@ foo:
 main:
   - title: "Introduction"
     url: /docs/introduction/
-  - title: "Autonomous Catheterization"
+  - title: "Robot"
     url: /docs/robot/
   - title: "Code & Data"
     url: /docs/code/
@@ -35,23 +35,17 @@ docs:
     children:
       - title: "Introduction"
         url: /docs/introduction/
-      - title: "Papers"
-        url: /docs/paper/
-      - title: "Code"
-        url: /docs/code/
-  - title: Autonomous Catheterization
-    children:
-      - title: "Endovascular Robot"
+      - title: "Catheterization Robot"
         url: /docs/robot/
-      - title: "Phantom Validation"
-        url: /docs/phantom/
-      - title: "Animal Validation"
-        url: /docs/animal/
-  - title: Datasets
+      - title: "Clinical Validation"
+        url: /docs/validation/
+  - title: Resources
     children:
-      - title: "CathAction"
+      - title: "Papers & Code"
+        url: /docs/paper/
+      - title: "CathAction Dataset"
         url: /docs/cathaction/
-      - title: "Guide3D"
+      - title: "Guide3D Dataset"
         url: /docs/guide3d/
         
         
