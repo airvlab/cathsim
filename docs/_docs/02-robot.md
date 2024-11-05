@@ -13,14 +13,14 @@ We develop endovascular robotic systems specifically designed to assist in robot
   <img src="{{ site.baseurl }}/assets/images/robot_cathease.jpg" width="100%" alt="robot_cathease">
 </div>
 
-The CathSim simulator includes four components: Follower Robot, Aorta Phantom, Guidewire Model, Blood Simulation and AR/VR. 
+CathEase is a simplified endovascular robot that focuses solely on translating and rotating the guidewire, making its design much easier to replicate compared to more complex multi-DoF systems. It uses a Nema 17 stepper motor for translation, an additional motor for rotation, and is controlled by an Arduino Uno Rev3 with a CNC shield and two A4899 drivers, powered by a 12V DC source. Teleoperation input is provided through a Google Stadia joystick, ensuring an accessible and cost-effective setup for basic endovascular procedures.
+
 
 ## CathBot Robot
 
 <div class="image-container">
-  <img src="{{ site.baseurl }}/assets/images/robot_cathboth.jpg" alt="robot_cathbot">
+  <img src="{{ site.baseurl }}/assets/images/robot_cathbot.jpg" alt="robot_cathbot">
 </div>
 
-Detailed 3D meshes from silicone-based phantoms are used to simulate different aortic structures. Convex hulls generated through V-HACD simplify collision modeling.
-
+CathBot is a versatile master-slave robotic system designed for use in Magnetic Resonance (MR) environments. Unlike earlier platforms, CathBot employs pneumatic actuation and additive manufacturing, enabling safe operation within MR settings. The master robot serves as an intuitive human-machine interface (HMI), closely mimicking natural human motion—such as grasping, inserting, retracting, and rotating the instrument—while providing users with haptic feedback from the navigation system. This motion is mapped directly to a 4-degree-of-freedom (DOF) MR-safe slave robot, offering precise control and enhanced user experience during procedures.
 
