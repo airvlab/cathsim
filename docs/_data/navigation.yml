@@ -22,7 +22,7 @@ foo:
 main:
   - title: "Introduction"
     url: /docs/introduction/
-  - title: "Robot"
+  - title: "Endovascular Robot"
     url: /docs/robot/
   - title: "Code & Data"
     url: /docs/code/
@@ -35,7 +35,7 @@ docs:
     children:
       - title: "Introduction"
         url: /docs/introduction/
-      - title: "Catheterization Robot"
+      - title: "Endovascular Robot"
         url: /docs/robot/
       - title: "Clinical Validation"
         url: /docs/validation/
