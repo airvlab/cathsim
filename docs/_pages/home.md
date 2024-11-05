@@ -4,7 +4,7 @@ permalink: /
 hidden: true
 header:
   overlay_color: "#5e616c"
-  overlay_image: /assets/images/grasp-anything-teaser.png
+  overlay_image: /assets/images/mainbg.jpg
   actions:
     - label: "<i class='fas fa-download'></i> Download"
       url: "https://github.com/airvlab/cathsim"
