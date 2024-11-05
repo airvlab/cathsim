@@ -42,7 +42,7 @@ docs:
   - title: Resources
     children:
       - title: "Papers & Code"
-        url: /docs/paper/
+        url: /docs/code/
       - title: "CathAction Dataset"
         url: /docs/cathaction/
       - title: "Guide3D Dataset"
