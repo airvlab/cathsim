@@ -23,6 +23,6 @@ CathEase is a simplified endovascular robot that focuses solely on translating a
 
 CathBot is a versatile master-slave robotic system designed for use in Magnetic Resonance (MR) environments. Unlike earlier platforms, CathBot employs pneumatic actuation and additive manufacturing, enabling safe operation within MR settings. The master robot serves as an intuitive human-machine interface (HMI), closely mimicking natural human motion—such as grasping, inserting, retracting, and rotating the instrument—while providing users with haptic feedback from the navigation system. This motion is mapped directly to a 4-degree-of-freedom (DOF) MR-safe slave robot, offering precise control and enhanced user experience during procedures.
 
-<video width="640" height="480">
-  <source src="{{ site.baseurl }}/assets/videos/cathbot.mp4" type="video/mp4">
+<video width="640" height="480" controls>
+  <source src="{{ site.baseurl }}/assets/videos/cathbot.mp4" alt="cathbot video" type="video/mp4">
 </video>
