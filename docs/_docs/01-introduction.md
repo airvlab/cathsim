@@ -7,9 +7,18 @@ redirect_from:
 toc: true
 ---
 
-Welcome to CathSim Project! We developed a simulator for rapid development and
-prototyping of algorithms in the context of endovascular navigation.
+Welcome to CathSim Project! 
+CathSim is a realistic simulator for autonomous catheterization.
 
+
+
+## Overview
+
+<div class="image-container">
+  <img src="{{ site.baseurl }}/assets/images/cathsim_overview.jpg" width="80%" alt="Low Tort Aorta">
+</div>
+
+CathSim is developed using the Mujoco physics engine, providing a versatile platform for both research and training in robot-assisted endovascular intervention. The simulator is designed to support multiple advanced functionalities, including autonomous catheterization using machine learning, data generation. In addition, CathSim serves as a valuable tool for medical training, allowing practitioners to practice and refine their skills in a controlled, simulated environment via AR/VR devices.
 
 ## Architecture
 
@@ -17,35 +26,17 @@ prototyping of algorithms in the context of endovascular navigation.
   <img src="{{ site.baseurl }}/assets/images-cathsim/overview.jpg" width="80%" alt="Low Tort Aorta">
 </div>
 
-The CathSim simulator includes four components:  
-
-- **Follower Robot** – Based on the design by Abdelaziz et al., the robot controls catheter movement.
-- **Aorta Phantom** – A physical representation of the aorta for realistic simulation.
-- **Guidewire Model** – A flexible model directing the catheter along paths in the simulator.
-- **Blood Simulation and AR/VR** – Blood modeled as a Newtonian fluid within an augmented or virtual reality environment.
-
+The CathSim simulator includes four components: **Follower Robot**, **Aorta Phantom**, **Guidewire Model**, **Blood Simulation and AR/VR**. 
 
 ## Aortic Models
-
-<div class="image-container">
-  <img  width="300px" src="{{ site.baseurl }}/assets/images-cathsim/rebuttal/low_tort.png" alt="Low Tort Aorta">
-  <img  width="300px" src="{{ site.baseurl }}/assets/images-cathsim/rebuttal/aneurysm.png" alt="Aneurysm Aorta">
-  <img  width="300px" src="{{ site.baseurl }}/assets/images-cathsim/rebuttal/type2.png" alt="Type 2 Aorta">
-</div>
-
-Detailed 3D meshes from silicone-based phantoms are used to simulate different aortic structures. Convex hulls generated through V-HACD simplify collision modeling. These models include:
-
-- Type-I Aortic Arch
-- Type-II Aortic Arch
-- Type-I Aortic Arch with Aneurysm
-- Low-Tortuosity Aorta (based on a CT scan)
-
-These models diversify the simulator’s anatomical dataset, enhancing its utility in research and education.
 
 <div class="image-container">
   <img width="300px" src="{{ site.baseurl }}/assets/images-cathsim/aorta_front.png" alt="Low Tort Aorta">
   <img  width="300px" src="{{ site.baseurl }}/assets/images-cathsim/aorta_side.png" alt="Aneurysm Aorta">
 </div>
+
+Detailed 3D meshes from silicone-based phantoms are used to simulate different aortic structures. Convex hulls generated through V-HACD simplify collision modeling.
+
 
 ## Guidewire
 
@@ -66,7 +57,7 @@ For simplicity, blood is modeled as an incompressible Newtonian fluid with rigid
   <img  width="300px" src="{{ site.baseurl }}/assets/images-cathsim/cathbot_sim.png" alt="Simulated Robotic Follower">
 </div>
 
-The robotic follower, based on the CathBot design, maintains a linear relationship between leader and follower positions. Our simulation includes four modular platforms attached to a main rail, with prismatic joints for translational movement and revolute joints for rotation.
+The robotic follower maintains a linear relationship between leader and follower positions. Our simulation includes four modular platforms attached to a main rail, with prismatic joints for translational movement and revolute joints for rotation.
 
 ### Actuation
 
@@ -94,7 +85,7 @@ A study with 10 participants assessed CathSim’s realism and effectiveness. Par
 6. **Motion Accuracy** – Alignment of guidewire movement with real-life expectations.
 7. **Visual Realism** – Visual authenticity of the guidewire in the simulation.
 
-#### User Study Results
+#### Results
 
 | Question             | Average | STD  |
 |----------------------|---------|------|
