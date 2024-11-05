@@ -8,9 +8,6 @@ toc: true
 ---
 
 Welcome to CathSim Project! 
-CathSim is a realistic simulator for autonomous catheterization.
-
-
 
 ## Overview
 
@@ -18,7 +15,7 @@ CathSim is a realistic simulator for autonomous catheterization.
   <img src="{{ site.baseurl }}/assets/images/cathsim_overview.jpg" width="80%" alt="Low Tort Aorta">
 </div>
 
-CathSim is developed using the Mujoco physics engine, providing a versatile platform for both research and training in robot-assisted endovascular intervention. The simulator is designed to support multiple advanced functionalities, including autonomous catheterization using machine learning, data generation. In addition, CathSim serves as a valuable tool for medical training, allowing practitioners to practice and refine their skills in a controlled, simulated environment via AR/VR devices.
+CathSim is developed using the Mujoco physics engine, providing a versatile platform for both research and training in robot-assisted endovascular intervention. The simulator is designed to support autonomous catheterization, data generation, and medical training via AR/VR devices.
 
 ## Architecture
 
@@ -26,7 +23,7 @@ CathSim is developed using the Mujoco physics engine, providing a versatile plat
   <img src="{{ site.baseurl }}/assets/images-cathsim/overview.jpg" width="80%" alt="Low Tort Aorta">
 </div>
 
-The CathSim simulator includes four components: **Follower Robot**, **Aorta Phantom**, **Guidewire Model**, **Blood Simulation and AR/VR**. 
+The CathSim simulator includes four components: Follower Robot, Aorta Phantom, Guidewire Model, Blood Simulation and AR/VR. 
 
 ## Aortic Models
 
