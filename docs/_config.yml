@@ -92,14 +92,14 @@ social:
 analytics:
   provider               : "google-universal" # false (default), "google", "google-universal", "google-gtag", "custom"
   google:
-    tracking_id          : "UA-20ad11187-3" # Replace this with your ID, or delete
+    tracking_id          : "" # Replace this with your ID, or delete
     anonymize_ip         : true
 
 
 # Site Author
 author:
-  name             : *name # *name is a YAML reference pointing to the &anchor earlier
-  avatar           : ""
+  name             : "CathSim" # *name is a YAML reference pointing to the &anchor earlier
+  avatar           : "/assets/images/cathsim_logo.png"
   bio              : "University of Liverpool"
   location         : "United Kingdom"
   links:
@@ -123,16 +123,14 @@ footer:
      - label: "GitHub"
        icon: "fab fa-fw fa-github"
        url: "https://github.com/airvlab"
-     - label: "Code"
+     - label: "Developer"
        icon: "fas fa-fw fa-link"
-       url: "https://andvg3.github.io/"
+       url: "https://tudorjnu.github.io/"
      - label: "Contact"
        icon: "fas fa-fw fa-envelope-square"
        url: "https://www.csc.liv.ac.uk/~anguyen/"
        
-#     - label: "Instagram"
-#       icon: "fab fa-fw fa-instagram"
-#       url: "https://instagram.com/mmistakes"
+
 
 
 # Reading Files
