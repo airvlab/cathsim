@@ -29,7 +29,7 @@ feature_row:
   - image_path: /assets/images/data_main3.jpg
     alt: "language-driven grasp"
     title: "Large-scale Endovascular Datasets"
-    excerpt: "We release large-scale datasets for diffirent endovascular intervention tasks."
+    excerpt: "We release large-scale datasets for different endovascular intervention tasks."
     url: "/docs/cathaction/"
     btn_class: "btn--primary"
     btn_label: "Learn more"     
