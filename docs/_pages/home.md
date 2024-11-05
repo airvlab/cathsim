@@ -9,7 +9,7 @@ header:
     - label: "<i class='fas fa-download'></i> Download"
       url: "https://github.com/airvlab/cathsim"
 excerpt: >
-  Towards Autonomous Endovascular Catheterization<br />
+  Endovascular Simulator for Autonomous Catheterization<br />
   <!--small><a href="https://github.com/andvg3/Grasp-Anything">Latest release (TBD)</a></small-->
 feature_row:
   - image_path: /assets/images/cathsim_main.png
