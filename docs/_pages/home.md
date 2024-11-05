@@ -22,14 +22,14 @@ feature_row:
   - image_path: /assets/images/autocath2.jpg
     alt: "zero shot"
     title: "Autonomous Endovascular Catheterization"
-    excerpt: "Our project enables sim2real for autonomous endovascular catheterization."
+    excerpt: "Our project enables developing learning algorithms for autonomous catheterization."
     url: "/docs/robot//"
     btn_class: "btn--primary"
     btn_label: "Learn more"
   - image_path: /assets/images/data_main3.jpg
     alt: "language-driven grasp"
     title: "Large-scale Endovascular Datasets"
-    excerpt: "We release large and manually anotated datasets for diffirent endovascular intervention tasks."
+    excerpt: "We release large-scale datasets for diffirent endovascular intervention tasks."
     url: "/docs/cathaction/"
     btn_class: "btn--primary"
     btn_label: "Learn more"     
