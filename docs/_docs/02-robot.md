@@ -12,7 +12,7 @@ We develop endovascular robotic systems specifically designed to assist in robot
   <img src="{{ site.baseurl }}/assets/images/robot_cathease.jpg" width="100%" alt="robot_cathease">
 </div>
 
-CathEase is a simplified endovascular robot that focuses on translating and rotating the guidewire. It uses a Nema 17 stepper motor for translation, an additional motor for rotation, and is controlled by an Arduino Uno Rev3 with a CNC shield and two A4899 drivers, powered by a 12V DC source. Teleoperation input is provided through a Google Stadia joystick, ensuring an accessible and cost-effective setup for endovascular procedures.
+CathEase is an accessible and cost-effective endovascular robot that focuses on translating and rotating the guidewire. It uses a Nema 17 stepper motor for translation, an additional motor for rotation, and is controlled by an Arduino Uno Rev3 with a CNC shield and two A4899 drivers, powered by a 12V DC source. Teleoperation input is provided through a Google Stadia joystick.
 
 
 ## CathBot Robot
