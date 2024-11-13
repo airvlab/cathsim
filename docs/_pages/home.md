@@ -22,7 +22,7 @@ feature_row:
   - image_path: /assets/images/autocath2.jpg
     alt: "zero shot"
     title: "Autonomous Endovascular Catheterization"
-    excerpt: "We develop vision and learning algorithms for autonomous catheterization."
+    excerpt: "We develop endovascular robots and learning algorithms for autonomous catheterization."
     url: "/docs/robot//"
     btn_class: "btn--primary"
     btn_label: "Learn more"
